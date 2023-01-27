@@ -21,5 +21,6 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     {
         base.OnLeftRoom();
         PhotonNetwork.Destroy(spawnedPlayerPrefab);
+        Debug.Log("A player has left the room.");
     }
 }
