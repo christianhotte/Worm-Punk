@@ -30,5 +30,23 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     {
         Debug.Log("Connected To Server.");
         base.OnConnectedToMaster();
+        // Setting up the room options
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.IsVisible = true; // The player is able to see the room
+        roomOptions.IsOpen = true; // The room is open.
+        PhotonNetwork.JoinOrCreateRoom("Room 1", roomOptions, TypedLobby.Default);
+    }
+
+    // The connection of the server
+    public override void OnJoinedRoom()
+    {
+        Debug.Log("Joined A Room.");
+    }
+
+    // To let us know if/when another player joins the room.
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        base.OnPlayerEnteredRoom(newPlayer);
+        Debug.Log("A new player has joined the room.");
     }
 }
