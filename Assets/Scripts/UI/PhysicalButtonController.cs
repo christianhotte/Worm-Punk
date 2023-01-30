@@ -17,8 +17,8 @@ public class PhysicalButtonController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        startPos = transform.localPosition;
-        joint = GetComponent<ConfigurableJoint>();
+        joint = GetComponentInChildren<ConfigurableJoint>();
+        startPos = joint.transform.localPosition;
     }
 
     // Update is called once per frame
@@ -36,7 +36,7 @@ public class PhysicalButtonController : MonoBehaviour
     private float GetValue()
     {
         //Get the distance between the starting position and the current position of the button
-        float value = Vector3.Distance(startPos, transform.localPosition) / joint.linearLimit.limit;
+        float value = Vector3.Distance(startPos, joint.transform.localPosition) / joint.linearLimit.limit;
 
         //If the value is less than the deadzone, reset to 0
         if (Mathf.Abs(value) < deadzone)
@@ -53,7 +53,7 @@ public class PhysicalButtonController : MonoBehaviour
     {
         isPressed = true;
         onPressed.Invoke();
-        Debug.Log(transform.parent.gameObject.name + " Pressed.");
+        Debug.Log(gameObject.name + " Pressed.");
     }
 
     /// <summary>
@@ -63,6 +63,6 @@ public class PhysicalButtonController : MonoBehaviour
     {
         isPressed = false;
         onReleased.Invoke();
-        Debug.Log(transform.parent.gameObject.name + " Released.");
+        Debug.Log(gameObject.name + " Released.");
     }
 }

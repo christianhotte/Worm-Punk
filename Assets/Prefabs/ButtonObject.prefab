@@ -203,6 +203,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7035541550829621928}
+  - component: {fileID: 1541423116494370132}
   m_Layer: 0
   m_Name: ButtonObject
   m_TagString: Untagged
@@ -226,6 +227,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1541423116494370132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7035541550829621935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e8f1f1d800ecec448d0c79e58cf1027, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  threshold: 0.45
+  deadzone: 0.025
+  onPressed:
+    m_PersistentCalls:
+      m_Calls: []
+  onReleased:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7035541551013600245
 GameObject:
   m_ObjectHideFlags: 0
@@ -238,7 +259,6 @@ GameObject:
   - component: {fileID: 7035541551013600247}
   - component: {fileID: 7035541551013600241}
   - component: {fileID: 7035541551013600240}
-  - component: {fileID: 7035541551013600242}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -302,7 +322,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: 1.9999983, z: 0.000000037252903}
+  m_ConnectedAnchor: {x: 0, y: 2, z: 0}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -386,23 +406,3 @@ ConfigurableJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &7035541551013600242
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7035541551013600245}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e8f1f1d800ecec448d0c79e58cf1027, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  threshold: 0.45
-  deadzone: 0.025
-  onPressed:
-    m_PersistentCalls:
-      m_Calls: []
-  onReleased:
-    m_PersistentCalls:
-      m_Calls: []
