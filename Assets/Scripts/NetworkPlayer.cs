@@ -31,6 +31,15 @@ public class NetworkPlayer : MonoBehaviour
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
         rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+
+        //Ignore collisions:
+        foreach (Collider collider in GetComponentsInChildren<Collider>())
+        {
+            foreach (Collider otherCollider in XROrigin.transform.parent.GetComponentsInChildren<Collider>())
+            {
+                Physics.IgnoreCollision(collider, otherCollider);
+            }
+        }
     }
 
     // Update is called once per frame
