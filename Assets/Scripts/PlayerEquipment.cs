@@ -73,6 +73,12 @@ public class PlayerEquipment : MonoBehaviour
         joint.angularYMotion = ConfigurableJointMotion.Limited; //Enable Y axis angular motion limits
         joint.angularZMotion = ConfigurableJointMotion.Limited; //Enable Z axis angular motion limits
         ConfigureJoint();                                       //Perform the remainder of joint configuration in a separate function
+
+        //Disable collisions with player:
+        foreach (Collider collider in GetComponentsInChildren<Collider>()) //Iterate through each collider in this equipment
+        {
+            Physics.IgnoreCollision(playerBody.GetComponent<Collider>(), collider, true); //Make physics ignore collisions between equipment colliders and player
+        }
     }
     private protected virtual void Update()
     {
