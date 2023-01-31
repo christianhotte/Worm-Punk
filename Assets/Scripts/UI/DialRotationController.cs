@@ -55,14 +55,18 @@ public class DialRotationController : MonoBehaviour
     private void GrabStart(SelectEnterEventArgs args)
     {
         //Get the earliest interactor that is grabbing the dial
-        interactor = (XRBaseInteractor)GetComponent<XRGrabInteractable>().GetOldestInteractorSelecting();
-        interactor.GetComponent<XRDirectInteractor>().hideControllerOnSelect = true;
+        interactor = (XRBaseInteractor)args.interactorObject;
+        Debug.Log(args.interactorObject);
+        Debug.Log(interactor);
+        interactor.GetComponent<XRBaseControllerInteractor>().hideControllerOnSelect = true;
 
         //Start checking for hand rotation
         shouldGetHandRotation = true;
         startAngle = 0f;
 
         HandModelVisibility(true);  //Show the dummy hand model if applicable
+
+        dialTransform.SetParent(transform); //Make sure the dial stays parented to the base
     }
 
     /// <summary>
@@ -74,6 +78,8 @@ public class DialRotationController : MonoBehaviour
         //Stop checking for hand rotation
         shouldGetHandRotation = false;
         requiresStartAngle = true;
+
+        Debug.Log("Dial Grab End");
 
         HandModelVisibility(false); //Hide the dummy hand model if applicable
     }
@@ -109,7 +115,7 @@ public class DialRotationController : MonoBehaviour
     /// Gets current rotation of our controller.
     /// </summary>
     /// <returns></returns>
-    public float GetInteractorRotation() => interactor.GetComponent<Transform>().eulerAngles.y;
+    public float GetInteractorRotation() => interactor.GetComponent<Transform>().eulerAngles.z;
 
 
 

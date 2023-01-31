@@ -8,7 +8,7 @@ public class SliderController : MonoBehaviour
 {
     public enum SliderRestriction { NONE, LOCKED, UP, DOWN }    //Types of slider restrictions
 
-    private HandleController handle => GetComponentInChildren<HandleController>();
+    private HandleController sliderHandle;
 
     [SerializeField, Tooltip("The bounds for the slider.")] private Transform boundLeft, boundRight;
     [SerializeField, Tooltip("The minimum and maximum value for the slider.")] private Vector2 outputRange;
@@ -34,9 +34,11 @@ public class SliderController : MonoBehaviour
 
     private void OnEnable()
     {
+        sliderHandle = GetComponentInChildren<HandleController>();
+
         //Subscribe handle events
-        handle.OnStartGrabbing += StartGrabbing;
-        handle.OnStopGrabbing += StopGrabbing;
+        sliderHandle.OnStartGrabbing += StartGrabbing;
+        sliderHandle.OnStopGrabbing += StopGrabbing;
 
         //Subscribe events for when the player grabs and releases the slider
         if (grabInteractor != null)
@@ -49,8 +51,8 @@ public class SliderController : MonoBehaviour
     private void OnDisable()
     {
         //Remove handle events
-        handle.OnStartGrabbing -= StartGrabbing;
-        handle.OnStopGrabbing -= StopGrabbing;
+        sliderHandle.OnStartGrabbing -= StartGrabbing;
+        sliderHandle.OnStopGrabbing -= StopGrabbing;
 
         //Removes events for when the player grabs and releases the slider
         if (grabInteractor != null)
@@ -67,10 +69,14 @@ public class SliderController : MonoBehaviour
     private void GrabStart(SelectEnterEventArgs args)
     {
         //Get the earliest interactor that is grabbing the slider
-        interactor = (XRBaseInteractor)GetComponent<XRGrabInteractable>().GetOldestInteractorSelecting();
-        interactor.GetComponent<XRDirectInteractor>().hideControllerOnSelect = true;
+        interactor = (XRBaseInteractor)args.interactorObject;
+        Debug.Log(args.interactorObject);
+        Debug.Log(interactor);
+        interactor.GetComponent<XRBaseControllerInteractor>().hideControllerOnSelect = true;
 
-        handle.StartGrabbing(interactor.transform); //Call the start grabbing function
+        sliderHandle.transform.SetParent(transform);
+        Debug.Log(sliderHandle);
+        sliderHandle.StartGrabbing(interactor.transform); //Call the start grabbing function
     }
 
     /// <summary>
@@ -79,7 +85,9 @@ public class SliderController : MonoBehaviour
     /// <param name="args"></param>
     private void GrabEnd(SelectExitEventArgs args)
     {
-        handle.StopGrabbing();  //Call the stop grabbing function
+        Debug.Log("Slider Grab End");
+
+        sliderHandle.StopGrabbing();  //Call the stop grabbing function
     }
 
 
@@ -90,10 +98,10 @@ public class SliderController : MonoBehaviour
         isGrabbed = true;
 
         //Get handle start position
-        handleLocalStartPos = handle.transform.localPosition;
+        handleLocalStartPos = sliderHandle.transform.localPosition;
 
         //Get position of grabber as if it were a child of the handle
-        handInLocalSpace = handle.transform.parent.InverseTransformPoint(grabber.position);
+        handInLocalSpace = sliderHandle.transform.parent.InverseTransformPoint(grabber.position);
 
         offsetOnGrab = handInLocalSpace.x;
     }
@@ -118,12 +126,12 @@ public class SliderController : MonoBehaviour
     private void DebugSliderMovement()
     {
         //Clamp the handle inside of the slider
-        Vector3 currentPos = handle.transform.localPosition;
+        Vector3 currentPos = sliderHandle.transform.localPosition;
         currentPos.x = Mathf.Clamp(currentPos.x, boundLeft.localPosition.x, boundRight.localPosition.x);
-        handle.transform.localPosition = currentPos;
+        sliderHandle.transform.localPosition = currentPos;
 
         //Get the percent completed of the slider and give it a value based on the output range
-        float percentOfRange = Mathf.InverseLerp(boundLeft.localPosition.x, boundRight.localPosition.x, handle.transform.localPosition.x);
+        float percentOfRange = Mathf.InverseLerp(boundLeft.localPosition.x, boundRight.localPosition.x, sliderHandle.transform.localPosition.x);
         float sliderValue = Mathf.Lerp(outputRange.x, outputRange.y, percentOfRange);
 
         OnValueChanged.Invoke(sliderValue);
@@ -138,12 +146,12 @@ public class SliderController : MonoBehaviour
         if (sliderRestriction == SliderRestriction.LOCKED)
             return;
 
-        float newHandPosition = handle.transform.parent.InverseTransformPoint(activeGrabber.position).x;
+        float newHandPosition = sliderHandle.transform.parent.InverseTransformPoint(activeGrabber.position).x;
         handMovedSinceGrab = newHandPosition - offsetOnGrab;
 
         //Check the old position and the expected position of the handle
         float newX = Mathf.Clamp(handleLocalStartPos.x + handMovedSinceGrab, boundLeft.localPosition.x, boundRight.localPosition.x);
-        float oldX = handle.transform.localPosition.x;
+        float oldX = sliderHandle.transform.localPosition.x;
 
         //If the slider is locked either up or down and the player tries to move the slider, don't move it
         if (sliderRestriction == SliderRestriction.UP && newX < oldX)
@@ -151,10 +159,10 @@ public class SliderController : MonoBehaviour
         else if (sliderRestriction == SliderRestriction.DOWN && newX > oldX)
             return;
 
-        handle.transform.localPosition = new Vector3(newX, handleLocalStartPos.y, handleLocalStartPos.z);
+        sliderHandle.transform.localPosition = new Vector3(newX, handleLocalStartPos.y, handleLocalStartPos.z);
 
         //Get the percent completed of the slider and give it a value based on the output range
-        float percentOfRange = Mathf.InverseLerp(boundLeft.localPosition.x, boundRight.localPosition.x, handle.transform.localPosition.x);
+        float percentOfRange = Mathf.InverseLerp(boundLeft.localPosition.x, boundRight.localPosition.x, sliderHandle.transform.localPosition.x);
         float sliderValue = Mathf.Lerp(outputRange.x, outputRange.y, percentOfRange);
 
         OnValueChanged.Invoke(sliderValue);
