@@ -26,7 +26,7 @@ public class PlayerEquipment : MonoBehaviour
 
 
     //RUNTIME METHODS:
-    private void Awake()
+    private protected virtual void Awake()
     {
         //Validity checks:
         XROrigin origin = GetComponentInParent<XROrigin>();                                                                                                                          //Try to get player XR origin

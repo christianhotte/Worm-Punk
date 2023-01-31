@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class FirstGunScript : MonoBehaviour
+public class FirstGunScript : PlayerEquipment
 {
     public ConfigurableJoint breakJoint;
     private PlayerInput input;
@@ -11,10 +11,10 @@ public class FirstGunScript : MonoBehaviour
     public bool Ejecting = false;
     [SerializeField, Range(0, 90), Tooltip("Angle at which barrels will rest when breach is open")] private float breakAngle;
 
-    private void Awake()
+    private protected override void Awake()
     {
         input = GetComponentInParent<PlayerInput>();
-        
+        base.Awake();
     }
     // Start is called before the first frame update
     void Start()
@@ -27,10 +27,9 @@ public class FirstGunScript : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private protected override void Update()
     {
-
-        
+        base.Update();
     }
     public void Eject()
     {
