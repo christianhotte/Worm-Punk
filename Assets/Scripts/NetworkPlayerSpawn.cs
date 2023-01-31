@@ -19,8 +19,8 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     // When someone leaves a room, we want to remove the player from the game.
     public override void OnLeftRoom()
     {
+        Debug.Log("A player has left the room.");
         base.OnLeftRoom();
         PhotonNetwork.Destroy(spawnedPlayerPrefab);
-        Debug.Log("A player has left the room.");
     }
 }
