@@ -18,10 +18,10 @@ public class BarrelLock : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("oof");
+       // Debug.Log("oof");
         if (other.gameObject.tag == "Barrel" && fgs.Ejecting)
         {
-            Debug.Log("shutting");
+          //  Debug.Log("shutting");
             fgs.CloseBreach();
         }
     }
