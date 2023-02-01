@@ -31,6 +31,10 @@ public class PhysicalButtonController : MonoBehaviour
         //If the button is pressed and the button is not past the threshold
         if (isPressed && GetValue() - threshold <= 0)
             Released();
+
+        Vector3 buttonPos = joint.transform.localPosition;
+        buttonPos.y = Mathf.Clamp(buttonPos.y, startPos.y - joint.linearLimit.limit, startPos.y);
+        joint.transform.localPosition = buttonPos;
     }
 
     private float GetValue()

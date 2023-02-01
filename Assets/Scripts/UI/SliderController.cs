@@ -74,8 +74,10 @@ public class SliderController : MonoBehaviour
         Debug.Log(interactor);
         interactor.GetComponent<XRBaseControllerInteractor>().hideControllerOnSelect = true;
 
+        //Scale the slider so that it matches back to the parent after being unparented
+        Vector3 newScale = ReturnToScale(sliderHandle.transform.localScale);
         sliderHandle.transform.SetParent(transform);
-        Debug.Log(sliderHandle);
+        sliderHandle.transform.GetChild(0).localScale = newScale;
         sliderHandle.StartGrabbing(interactor.transform); //Call the start grabbing function
     }
 
@@ -90,6 +92,16 @@ public class SliderController : MonoBehaviour
         sliderHandle.StopGrabbing();  //Call the stop grabbing function
     }
 
+    private Vector3 ReturnToScale(Vector3 localScale)
+    {
+        Vector3 newScale = localScale;
+
+        newScale.x = 1f / localScale.x;
+        newScale.y = 1f / localScale.y;
+        newScale.z = 1f / localScale.x;
+
+        return newScale;
+    }
 
     private void StartGrabbing(Transform grabber)
     {
