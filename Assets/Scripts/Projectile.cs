@@ -13,7 +13,7 @@ public class Projectile : MonoBehaviour
     [SerializeField, Tooltip("Settings object determining base properties of projectile.")] private ProjectileSettings settings;
 
     //Runtime Variables:
-    private Vector3 velocity; //Speed and direction at which projectile is traveling
+    public Vector3 velocity; //Speed and direction at which projectile is traveling
 
     private float totalDistance; //Total travel distance covered by this projectile
 
