@@ -7,7 +7,8 @@ public class FirstGunScript : PlayerEquipment
 {
     public ConfigurableJoint breakJoint;
     private PlayerInput input;
-    public GameObject projectile,player;
+    public GameObject projectile;
+    private GameObject player;
     public bool Ejecting = false, Cooldown=false;
     public int Barrels = 2, shotsLeft,pellets=30;
     public float maxSpreadAngle=7,projectileSpeed=5,gunCooldown=1,gunBoost=20,recoilForce=20;
@@ -17,6 +18,7 @@ public class FirstGunScript : PlayerEquipment
     private protected override void Awake()
     {
         input = GetComponentInParent<PlayerInput>();
+        player = GameObject.Find("XR Origin");
         base.Awake();
         shotsLeft = Barrels;
     }
@@ -105,7 +107,9 @@ public class FirstGunScript : PlayerEquipment
                 // Rigidbody playerrb = GetComponentInParent<Rigidbody>();
                 Rigidbody playerrb = player.GetComponent<Rigidbody>();
                 Rigidbody gunrb = this.gameObject.GetComponent<Rigidbody>();
-                gunrb.AddForce(barrelpos.up * recoilForce);
+                Vector3 gunTorque = recoilForce * barrelpos.up;
+                gunrb.AddForceAtPosition(gunTorque, barrelpos.position, ForceMode.Impulse);
+               // gunrb.AddForce(barrelpos.up * recoilForce);
                 playerrb.velocity = barrelpos.forward * gunBoost;
               //  newProjectile.
             }
