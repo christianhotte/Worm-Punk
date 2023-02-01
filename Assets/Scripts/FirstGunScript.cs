@@ -10,7 +10,7 @@ public class FirstGunScript : PlayerEquipment
     public GameObject projectile,player;
     public bool Ejecting = false, Cooldown=false;
     public int Barrels = 2, shotsLeft,pellets=30;
-    public float maxSpreadAngle=7,projectileSpeed=5,gunCooldown=1,gunBoost=20;
+    public float maxSpreadAngle=7,projectileSpeed=5,gunCooldown=1,gunBoost=20,recoilForce=20;
     [SerializeField, Range(0, 90), Tooltip("Angle at which barrels will rest when breach is open")] private float breakAngle;
     public Transform BarreTran;
 
@@ -62,7 +62,7 @@ public class FirstGunScript : PlayerEquipment
     public void shootLeft()
     {
         Debug.Log("Tryingshot");
-        if (!Cooldown)
+        if (!Cooldown&&!Ejecting)
         {
             Cooldown = true;
             Fire(true, BarreTran);
@@ -72,7 +72,7 @@ public class FirstGunScript : PlayerEquipment
     public void shootRight()
     {
         Debug.Log("Tryingshot");
-        if (!Cooldown)
+        if (!Cooldown&&!Ejecting)
         {
             Cooldown = true;
             Fire(false, BarreTran);
@@ -104,6 +104,8 @@ public class FirstGunScript : PlayerEquipment
                 newProjectile.velocity = -barrelpos.forward *newProjSpeed;
                 // Rigidbody playerrb = GetComponentInParent<Rigidbody>();
                 Rigidbody playerrb = player.GetComponent<Rigidbody>();
+                Rigidbody gunrb = this.gameObject.GetComponent<Rigidbody>();
+                gunrb.AddForce(barrelpos.up * recoilForce);
                 playerrb.velocity = barrelpos.forward * gunBoost;
               //  newProjectile.
             }
