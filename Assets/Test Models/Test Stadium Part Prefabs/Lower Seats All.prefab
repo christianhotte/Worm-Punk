@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4837761087865696993}
   - component: {fileID: 8398357363840400708}
   - component: {fileID: 6010056791921969550}
+  - component: {fileID: 4275529414245911650}
   m_Layer: 0
   m_Name: Lower Seats All
   m_TagString: Untagged
@@ -81,3 +82,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &4275529414245911650
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5217700266559760475}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4898066493190161973, guid: dd2ac33868d86b84fbcdc25d600a15fd, type: 3}
