@@ -81,13 +81,13 @@ public class FirstGunScript : PlayerEquipment
             BarreTran.localEulerAngles = new Vector3(SpawnPoint.x + exitAngles.x, SpawnPoint.y + exitAngles.y, SpawnPoint.z + exitAngles.z);
             Vector3 projVel = BarreTran.forward * projectileSpeed;
 
-            Projectile newProjectile = PhotonNetwork.Instantiate("DavidProjectile1", BarreTran.position, BarreTran.rotation).GetComponent<Projectile>();
+            Projectile newProjectile = PhotonNetwork.Instantiate("DavidProjectile1", BarreTran.position, Quaternion.Euler(-BarreTran.forward)).GetComponent<Projectile>();
             projectiles.Add(newProjectile);
             newProjectile.transform.position = BarreTran.transform.position;
             float newProjSpeed = newProjectile.velocity.magnitude;
             newProjectile.velocity = -BarreTran.forward * newProjSpeed;
             Rigidbody playerrb = player.GetComponent<Rigidbody>();
-            Rigidbody gunrb = this.gameObject.GetComponent<Rigidbody>();
+            Rigidbody gunrb = gameObject.GetComponent<Rigidbody>();
             Vector3 gunTorque = recoilForce * BarreTran.up;
             gunrb.AddForceAtPosition(gunTorque, BarreTran.position, ForceMode.Impulse);
             playerrb.velocity = BarreTran.forward * gunBoost;
