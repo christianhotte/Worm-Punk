@@ -6,15 +6,12 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    [SerializeField, Tooltip("The loading screen GameObject.")] private GameObject loadingScreen;
 
     private List<AsyncOperation> scenesLoading = new List<AsyncOperation>();
 
     private void Awake()
     {
         Instance = this;
-        //Start with a title screen
-        SceneManager.LoadSceneAsync((int)SceneIndexes.TITLESCREEN, LoadSceneMode.Additive);
     }
 
     /// <summary>
@@ -23,9 +20,8 @@ public class GameManager : MonoBehaviour
     /// <param name="sceneIndex"></param>
     public void LoadGame(SceneIndexes sceneIndex)
     {
-        //Show the loading screen and add the processes to a list of processes
-        loadingScreen.SetActive(true);
-        scenesLoading.Add(SceneManager.UnloadSceneAsync((int)SceneIndexes.TITLESCREEN));
+        //Add the processes to a list of processes
+        scenesLoading.Add(SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().buildIndex));
         scenesLoading.Add(SceneManager.LoadSceneAsync((int)sceneIndex, LoadSceneMode.Additive));
 
         StartCoroutine(GetSceneLoadProgress());
@@ -45,8 +41,5 @@ public class GameManager : MonoBehaviour
                 yield return null;
             }
         }
-
-        //Hide the loading screen when finished
-        loadingScreen.SetActive(false);
     }
 }
