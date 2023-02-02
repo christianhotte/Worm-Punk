@@ -10,8 +10,6 @@ using Photon.Realtime;
 
 public class NetworkPlayer : MonoBehaviour
 {
-    public static PhotonView myPhotonView;
-
     // Declaring the player's VR movements
     public Transform head;
     public Transform leftHand;
@@ -29,18 +27,10 @@ public class NetworkPlayer : MonoBehaviour
     int myNumberInRoom;
 
     // Start is called before the first frame update
-    private void Awake()
-    {
-        // Allows us to get the view component for the network
-        photonView = GetComponent<PhotonView>();
-        if (photonView.IsMine) myPhotonView = photonView;
-    }
-    private void OnDestroy()
-    {
-        myPhotonView = null;
-    }
     void Start()
     {
+        photonView = GetComponent<PhotonView>();
+
         // Gets the network player to move with the player instead of just moving locally.
         XROrigin = GameObject.Find("XR Origin");
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");

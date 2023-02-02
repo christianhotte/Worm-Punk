@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon;
+using Photon.Pun;
 
 /// <summary>
 /// Base class for any non-hitscan ballistic projectiles.
@@ -89,5 +91,9 @@ public class Projectile : MonoBehaviour
     private protected virtual void BurnOut()
     {
         Destroy(gameObject);
+    }
+    private void OnDestroy()
+    {
+        PhotonNetwork.Destroy(gameObject);
     }
 }

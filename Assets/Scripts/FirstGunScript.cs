@@ -17,11 +17,9 @@ public class FirstGunScript : PlayerEquipment
     [SerializeField, Range(0, 90), Tooltip("Angle at which barrels will rest when breach is open")] private float breakAngle;
     public Transform BarreTran;
     private GameObject ShootPoint;
-    private PhotonView photonView;
 
     private protected override void Awake()
     {
-        photonView = GetComponent<PhotonView>();
         input = GetComponentInParent<PlayerInput>();
         player = GameObject.Find("XR Origin");
         base.Awake();
@@ -78,11 +76,12 @@ public class FirstGunScript : PlayerEquipment
     // Calls the fire method.
     public void Fire()
     {
-        photonView.RPC("RpcFire", RpcTarget.All);
+        //photonView.RPC("RpcFire", RpcTarget.All);
+        RpcFire();
     }
 
     // Fires projectiles onto the network
-    [PunRPC]
+    //[PunRPC]
     public void RpcFire()
     {
         //Validate firing sequence:
@@ -96,7 +95,9 @@ public class FirstGunScript : PlayerEquipment
         
         for (int i=0; i < pellets; i++)
         {
-            Projectile newProjectile = Instantiate((GameObject)Resources.Load("DavidProjectile1")).GetComponent<Projectile>();
+            
+            Projectile newProjectile = PhotonNetwork.Instantiate("DavidProjectile1", Vector3.zero, Quaternion.Euler(Vector3.zero)).GetComponent<Projectile>();
+            //Projectile newProjectile = Instantiate((GameObject)Resources.Load("DavidProjectile1")).GetComponent<Projectile>();
             //Projectile newProjController = newProjectile.GetComponent<Projectile>();
             projectiles.Add(newProjectile);
             Vector3 exitAngles = Random.insideUnitCircle * maxSpreadAngle;
