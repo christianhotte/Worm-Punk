@@ -7,7 +7,9 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     public static SpawnManager instance; // Creates a singleton for the script
-    public Transform[] spawnPoints; // A list of spawn points
+    //public Transform[] spawnPoints; // A list of spawn points
+    public List<Transform> spawnPoints = new List<Transform>();
+    public List<Transform> usedSpawnPoints = new List<Transform>();
 
     // Start is called before the first frame update
     void Awake()
@@ -17,6 +19,15 @@ public class SpawnManager : MonoBehaviour
 
     public Transform GetSpawnPoint()
     {
-        return spawnPoints[Random.Range(0, spawnPoints.Length)].transform;
+        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
+        usedSpawnPoints.Add(spawnPoint);
+        spawnPoints.Remove(spawnPoint);
+
+        if (spawnPoints.Count == 0)
+        {
+            spawnPoints = usedSpawnPoints;
+            usedSpawnPoints.Clear();
+        }
+        return spawnPoint;
     }
 }
