@@ -7,9 +7,15 @@ using Photon.Pun;
 
 public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
 {
+    public static NetworkPlayerSpawn instance;
+    
     private GameObject spawnedPlayerPrefab;
     private GameObject demoPlayer1;
 
+    private void Awake()
+    {
+        instance = this;
+    }
     // When someone joins a room, we spawn the player.
     public override void OnJoinedRoom()
     {

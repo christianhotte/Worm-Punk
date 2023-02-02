@@ -1375,6 +1375,7 @@ GameObject:
   - component: {fileID: 841001294}
   - component: {fileID: 841001295}
   - component: {fileID: 841001296}
+  - component: {fileID: 841001297}
   m_Layer: 6
   m_Name: TestGunL
   m_TagString: Untagged
@@ -1444,6 +1445,28 @@ MonoBehaviour:
   recoilForce: 20
   breakAngle: 45
   BarreTran: {fileID: 349611638}
+--- !u!114 &841001297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841001293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &844010017
 GameObject:
   m_ObjectHideFlags: 0
@@ -2364,6 +2387,7 @@ MonoBehaviour:
   - {fileID: 1063233930}
   - {fileID: 776759269}
   - {fileID: 938417548}
+  usedSpawnPoints: []
 --- !u!1 &1170457867
 GameObject:
   m_ObjectHideFlags: 0
@@ -3126,6 +3150,7 @@ GameObject:
   - component: {fileID: 1599023291}
   - component: {fileID: 1599023292}
   - component: {fileID: 1599023293}
+  - component: {fileID: 1599023294}
   m_Layer: 6
   m_Name: TestGunR
   m_TagString: Untagged
@@ -3195,6 +3220,28 @@ MonoBehaviour:
   recoilForce: 20
   breakAngle: 45
   BarreTran: {fileID: 925073662}
+--- !u!114 &1599023294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1599023290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 2
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1001 &1615885371
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3957,7 +4004,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 841001296}
         m_TargetAssemblyTypeName: FirstGunScript, Assembly-CSharp
-        m_MethodName: shootLeft
+        m_MethodName: Fire
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3973,7 +4020,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1599023293}
         m_TargetAssemblyTypeName: FirstGunScript, Assembly-CSharp
-        m_MethodName: shootRight
+        m_MethodName: Fire
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
