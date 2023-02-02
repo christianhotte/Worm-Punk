@@ -97,8 +97,6 @@ public class FirstGunScript : PlayerEquipment
         {
             
             Projectile newProjectile = PhotonNetwork.Instantiate("DavidProjectile1", Vector3.zero, Quaternion.Euler(Vector3.zero)).GetComponent<Projectile>();
-            //Projectile newProjectile = Instantiate((GameObject)Resources.Load("DavidProjectile1")).GetComponent<Projectile>();
-            //Projectile newProjController = newProjectile.GetComponent<Projectile>();
             projectiles.Add(newProjectile);
             Vector3 exitAngles = Random.insideUnitCircle * maxSpreadAngle;
             BarreTran.localEulerAngles = new Vector3(SpawnPoint.x + exitAngles.x, SpawnPoint.y + exitAngles.y, SpawnPoint.z + exitAngles.z);
