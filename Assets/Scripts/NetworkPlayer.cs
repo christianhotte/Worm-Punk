@@ -29,7 +29,8 @@ public class NetworkPlayer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        photonView = GetComponent<PhotonView>();
+        photonView = GetComponent<PhotonView>();                         //Get photonView component from NetworkPlayer object
+        if (photonView.IsMine) PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
 
         // Gets the network player to move with the player instead of just moving locally.
         XROrigin = GameObject.Find("XR Origin");
@@ -57,6 +58,10 @@ public class NetworkPlayer : MonoBehaviour
             }
         }
     }
+    private void OnDestroy()
+    {
+        if (photonView.IsMine) PlayerController.photonView = null; //Clear client photonView referenc
+    }
 
     // Update is called once per frame
     void Update()
@@ -64,11 +69,6 @@ public class NetworkPlayer : MonoBehaviour
         // Synchronizes the player over the network.
         if (photonView.IsMine)
         {
-            /* Disables the network player's camera & hands so that it uses the XR Origin's.
-            rightHand.gameObject.SetActive(false);
-            leftHand.gameObject.SetActive(false);
-            head.gameObject.SetActive(false);*/
-
             // Calls these functions to map the position of the player's hands & headset
             MapPosition(head, headRig);
             MapPosition(leftHand, leftHandRig);

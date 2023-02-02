@@ -16,7 +16,6 @@ public class FirstGunScript : PlayerEquipment
     public float maxSpreadAngle=7,projectileSpeed=5,gunCooldown=1,gunBoost=20,recoilForce=20;
     [SerializeField, Range(0, 90), Tooltip("Angle at which barrels will rest when breach is open")] private float breakAngle;
     public Transform BarreTran;
-    private GameObject ShootPoint;
 
     private protected override void Awake()
     {
@@ -29,15 +28,6 @@ public class FirstGunScript : PlayerEquipment
     // Start is called before the first frame update
     void Start()
     {
-        //Eject();
-        foreach (Transform t in gameObject.transform)
-        {
-            if (t.tag == "Bullet")
-            {
-                ShootPoint = t.gameObject;
-            }
-        }
-
         //StartCoroutine(WaitandClose());
         SoftJointLimit angleCap = new SoftJointLimit();
         angleCap = breakJoint.highAngularXLimit;
@@ -76,14 +66,6 @@ public class FirstGunScript : PlayerEquipment
     // Calls the fire method.
     public void Fire()
     {
-        //photonView.RPC("RpcFire", RpcTarget.All);
-        RpcFire();
-    }
-
-    // Fires projectiles onto the network
-    //[PunRPC]
-    public void RpcFire()
-    {
         //Validate firing sequence:
         if (Cooldown) return;
         if (Ejecting) return;
@@ -92,11 +74,10 @@ public class FirstGunScript : PlayerEquipment
         Vector3 SpawnPoint = BarreTran.localEulerAngles;
         List<Projectile> projectiles = new List<Projectile>();
         if (shotsLeft <= 0) return;
-        
-        for (int i=0; i < pellets; i++)
+
+        for (int i = 0; i < pellets; i++)
         {
-            
-            Projectile newProjectile = PhotonNetwork.Instantiate("DavidProjectile1", Vector3.zero, Quaternion.Euler(Vector3.zero)).GetComponent<Projectile>();
+            Projectile newProjectile = PhotonNetwork.Instantiate("DavidProjectile1", Vector3.zero, Quaternion.identity).GetComponent<Projectile>();
             projectiles.Add(newProjectile);
             Vector3 exitAngles = Random.insideUnitCircle * maxSpreadAngle;
             BarreTran.localEulerAngles = new Vector3(SpawnPoint.x + exitAngles.x, SpawnPoint.y + exitAngles.y, SpawnPoint.z + exitAngles.z);
@@ -105,15 +86,11 @@ public class FirstGunScript : PlayerEquipment
 
             newProjectile.transform.position = BarreTran.transform.position;
             float newProjSpeed = newProjectile.velocity.magnitude;
-            // newProjectile.velocity = barrelpos.forward;
-            //newProjectile.transform.rotation = Quaternion.LookRotation(projVel);
-            newProjectile.velocity = -BarreTran.forward *newProjSpeed;
-            // Rigidbody playerrb = GetComponentInParent<Rigidbody>();
+            newProjectile.velocity = -BarreTran.forward * newProjSpeed;
             Rigidbody playerrb = player.GetComponent<Rigidbody>();
             Rigidbody gunrb = this.gameObject.GetComponent<Rigidbody>();
             Vector3 gunTorque = recoilForce * BarreTran.up;
             gunrb.AddForceAtPosition(gunTorque, BarreTran.position, ForceMode.Impulse);
-            // gunrb.AddForce(barrelpos.up * recoilForce);
             playerrb.velocity = BarreTran.forward * gunBoost;
         }
 

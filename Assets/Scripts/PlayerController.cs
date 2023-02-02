@@ -4,6 +4,8 @@ using UnityEngine;
 using Unity.XR.CoreUtils;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.InputSystem;
+using Photon.Pun;
+using Photon.Realtime;
 
 /// <summary>
 /// Manages overall player stats and abilities.
@@ -11,11 +13,12 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour, IShootable
 {
     //Objects & Components:
-    [Tooltip("Singleton instance of player controller.")] public static PlayerController instance;
+    [Tooltip("Singleton instance of player controller.")]                                    public static PlayerController instance;
+    [Tooltip("Singleton instance of this client's photonNetwork (on their NetworkPlayer).")] public static PhotonView photonView;
 
     [Tooltip("XROrigin component attached to player instance in scene.")] internal XROrigin xrOrigin;
-    [Tooltip("Controller component for player's left hand.")]             public ActionBasedController leftHand;
-    [Tooltip("Controller component for player's right hand.")]            public ActionBasedController rightHand;
+    [Tooltip("Controller component for player's left hand.")]             internal ActionBasedController leftHand;
+    [Tooltip("Controller component for player's right hand.")]            internal ActionBasedController rightHand;
 
     private Camera cam;              //Main player camera
     private PlayerInput input;       //Input manager component used by player to send messages to hands and such
