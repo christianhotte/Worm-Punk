@@ -8,6 +8,8 @@ public class PhysicalButtonController : MonoBehaviour
     [SerializeField, Tooltip("Defines how far the button needs to be move to be registered as pressed. Higher number = more sensitivity.")] private float threshold = 0.1f;    //The threshold for the button that defines when the button is pressed
     [SerializeField, Tooltip("The margin of error when the button is idle so it doesn't detect incredibly small movement.")] private float deadzone = 0.025f;   // Deadzone to ensure the button doesn't rapidly press and release 
 
+    [SerializeField] private AudioClip onPressedSoundEffect;
+
     public UnityEvent onPressed, onReleased;
 
     private bool isPressed;     //Checks to make sure pressed function isn't repeatedly called
@@ -31,6 +33,10 @@ public class PhysicalButtonController : MonoBehaviour
         //If the button is pressed and the button is not past the threshold
         if (isPressed && GetValue() - threshold <= 0)
             Released();
+
+        Vector3 buttonPos = joint.transform.localPosition;
+        buttonPos.y = Mathf.Clamp(buttonPos.y, startPos.y - joint.linearLimit.limit, startPos.y);
+        joint.transform.localPosition = buttonPos;
     }
 
     private float GetValue()
@@ -52,6 +58,10 @@ public class PhysicalButtonController : MonoBehaviour
     private void Pressed()
     {
         isPressed = true;
+
+        if (onPressedSoundEffect != null)
+            GetComponent<AudioSource>().PlayOneShot(onPressedSoundEffect, PlayerPrefs.GetFloat("SFXVolume", 0.5f));
+
         onPressed.Invoke();
         Debug.Log(gameObject.name + " Pressed.");
     }

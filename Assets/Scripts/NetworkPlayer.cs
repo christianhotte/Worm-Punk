@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using Photon.Pun;
+using Photon.Realtime;
 
 // This script was used from https://youtu.be/KHWuTBmT1oI?t=1511
 
@@ -15,11 +16,15 @@ public class NetworkPlayer : MonoBehaviour
     public Transform rightHand;
 
     private GameObject XROrigin;
-    private PhotonView photonView;
+    internal PhotonView photonView;
 
     private Transform headRig;
     private Transform leftHandRig;
     private Transform rightHandRig;
+
+    // Gets a list of all of the players on the network
+    Player[] allPlayers;
+    int myNumberInRoom;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +36,17 @@ public class NetworkPlayer : MonoBehaviour
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
         rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+
+        // Gets the player list
+        allPlayers = PhotonNetwork.PlayerList;
+        foreach (Player p in allPlayers)
+        {
+            // Adds more numbers until the number of players match
+            if (p != PhotonNetwork.LocalPlayer)
+            {
+                myNumberInRoom++;
+            }
+        }
 
         //Ignore collisions:
         foreach (Collider collider in GetComponentsInChildren<Collider>())
@@ -66,6 +82,12 @@ public class NetworkPlayer : MonoBehaviour
                     item.enabled = false;
                 }
             }
+        }
+
+        // The player dies if the player falls too far below the map.
+        if (transform.position.y < -15f)
+        {
+            // You die/lose ();
         }
     }
 

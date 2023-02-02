@@ -66,7 +66,21 @@ public class DialRotationController : MonoBehaviour
 
         HandModelVisibility(true);  //Show the dummy hand model if applicable
 
-        dialTransform.SetParent(transform); //Make sure the dial stays parented to the base
+        //Scale the dial so that it matches back to the parent after being unparented
+        Vector3 newScale = ReturnToScale(dialTransform.transform.localScale);
+        dialTransform.transform.SetParent(transform);
+        dialTransform.transform.GetChild(0).localScale = newScale;
+    }
+
+    private Vector3 ReturnToScale(Vector3 localScale)
+    {
+        Vector3 newScale = localScale;
+
+        newScale.x = 1f / localScale.x;
+        newScale.y = 1f / localScale.y;
+        newScale.z = 1f / localScale.x;
+
+        return newScale;
     }
 
     /// <summary>

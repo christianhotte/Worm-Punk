@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2238055903951438798}
   - component: {fileID: 7039423392988948000}
   - component: {fileID: 7789235324356604348}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,9 +92,9 @@ GameObject:
   - component: {fileID: 2565103271569943414}
   - component: {fileID: 7979012061649950175}
   - component: {fileID: 2089253398467870788}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: DavidProjectile1
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: 4e69ba1d55db39d459b980b5eea1b30f, type: 2}
+  velocity: {x: 0, y: 0, z: 0}
 --- !u!96 &2089253398467870788
 TrailRenderer:
   serializedVersion: 2
