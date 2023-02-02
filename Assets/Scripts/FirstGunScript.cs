@@ -14,6 +14,7 @@ public class FirstGunScript : PlayerEquipment
     public float maxSpreadAngle=7,projectileSpeed=5,gunCooldown=1,gunBoost=20,recoilForce=20;
     [SerializeField, Range(0, 90), Tooltip("Angle at which barrels will rest when breach is open")] private float breakAngle;
     public Transform BarreTran;
+    private GameObject ShootPoint;
 
     private protected override void Awake()
     {
@@ -26,6 +27,13 @@ public class FirstGunScript : PlayerEquipment
     void Start()
     {
         //Eject();
+        foreach (Transform t in gameObject.transform)
+        {
+            if (t.tag == "Bullet")
+            {
+                ShootPoint = t.gameObject;
+            }
+        }
         //StartCoroutine(WaitandClose());
         SoftJointLimit angleCap = new SoftJointLimit();
         angleCap = breakJoint.highAngularXLimit;
@@ -33,9 +41,9 @@ public class FirstGunScript : PlayerEquipment
     }
 
     // Update is called once per frame
-    private protected override void Update()
+    private protected override void FixedUpdate()
     {
-        base.Update();
+        base.FixedUpdate();
     }
     public void Eject()
     {
