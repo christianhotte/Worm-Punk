@@ -77,13 +77,12 @@ public class FirstGunScript : PlayerEquipment
 
         for (int i = 0; i < pellets; i++)
         {
-            Projectile newProjectile = PhotonNetwork.Instantiate("DavidProjectile1", Vector3.zero, Quaternion.identity).GetComponent<Projectile>();
-            projectiles.Add(newProjectile);
             Vector3 exitAngles = Random.insideUnitCircle * maxSpreadAngle;
             BarreTran.localEulerAngles = new Vector3(SpawnPoint.x + exitAngles.x, SpawnPoint.y + exitAngles.y, SpawnPoint.z + exitAngles.z);
-
             Vector3 projVel = BarreTran.forward * projectileSpeed;
 
+            Projectile newProjectile = PhotonNetwork.Instantiate("DavidProjectile1", BarreTran.position, BarreTran.rotation).GetComponent<Projectile>();
+            projectiles.Add(newProjectile);
             newProjectile.transform.position = BarreTran.transform.position;
             float newProjSpeed = newProjectile.velocity.magnitude;
             newProjectile.velocity = -BarreTran.forward * newProjSpeed;

@@ -94,9 +94,6 @@ public class NetworkPlayer : MonoBehaviour
     // This synchronizes the positions of the headset & the hand controllers 
     void MapPosition(Transform target, Transform rigTransform)
     {
-        /*InputDevices.GetDeviceAtXRNode(node).TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 position);
-        InputDevices.GetDeviceAtXRNode(node).TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rotation);*/
-
         target.position = rigTransform.position;
         target.rotation = rigTransform.rotation;
     }

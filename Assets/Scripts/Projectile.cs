@@ -83,17 +83,24 @@ public class Projectile : MonoBehaviour
     private protected virtual void HitObject(RaycastHit hitInfo)
     {
         print("Hit!"); //TEMP
-        Destroy(gameObject);
+        Delete();
     }
     /// <summary>
     /// Called if projectile range is exhausted and projectile hasn't hit anything.
     /// </summary>
     private protected virtual void BurnOut()
     {
-        Destroy(gameObject);
+        Delete();
     }
-    private void OnDestroy()
+    private void Delete()
     {
-        PhotonNetwork.Destroy(gameObject);
+        if (TryGetComponent(out PhotonView photonView))
+        {
+            if (photonView.IsMine) PhotonNetwork.Destroy(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }
