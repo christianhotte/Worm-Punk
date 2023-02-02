@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Photon;
+using Photon.Pun;
 
 public class FirstGunScript : PlayerEquipment
 {
@@ -15,6 +17,7 @@ public class FirstGunScript : PlayerEquipment
     [SerializeField, Range(0, 90), Tooltip("Angle at which barrels will rest when breach is open")] private float breakAngle;
     public Transform BarreTran;
     private GameObject ShootPoint;
+    private PhotonView photonView;
 
     private protected override void Awake()
     {
@@ -23,9 +26,13 @@ public class FirstGunScript : PlayerEquipment
         base.Awake();
         shotsLeft = Barrels;
     }
+
     // Start is called before the first frame update
     void Start()
     {
+        // Gets the PhotonView component
+        photonView = GetComponent<PhotonView>();
+
         //Eject();
         foreach (Transform t in gameObject.transform)
         {
@@ -34,6 +41,7 @@ public class FirstGunScript : PlayerEquipment
                 ShootPoint = t.gameObject;
             }
         }
+
         //StartCoroutine(WaitandClose());
         SoftJointLimit angleCap = new SoftJointLimit();
         angleCap = breakJoint.highAngularXLimit;
@@ -77,18 +85,20 @@ public class FirstGunScript : PlayerEquipment
             Cooldown = true;
             Fire(true, BarreTran);
         }
-
     }
+
     public void shootRight()
     {
         Debug.Log("Tryingshot");
         if (!Cooldown&&!Ejecting)
         {
             Cooldown = true;
-            Fire(false, BarreTran);
+            photonView.RPC("Fire", RpcTarget.All, false, BarreTran);
+            //Fire(false, BarreTran);
         }
-
     }
+
+    [PunRPC]
     public void Fire(bool left,Transform barrelpos)
     {
         StartCoroutine(CooldownTime(gunCooldown));
@@ -98,8 +108,10 @@ public class FirstGunScript : PlayerEquipment
         {
             for(int i=0; i < pellets; i++)
             {
-                Projectile newProjectile = Instantiate(projectile).GetComponent<Projectile>();
-                projectiles.Add(newProjectile);
+                //Projectile newProjectile = Instantiate(projectile).GetComponent<Projectile>();
+                GameObject newProjectile = Instantiate(projectile, ShootPoint.transform.position, ShootPoint.transform.rotation);
+                Projectile newProjController = newProjectile.GetComponent<Projectile>();
+                projectiles.Add(newProjController);
                 Vector3 exitAngles = Random.insideUnitCircle * maxSpreadAngle;
                 barrelpos.localEulerAngles = new Vector3(SpawnPoint.x + exitAngles.x, SpawnPoint.y + exitAngles.y, SpawnPoint.z + exitAngles.z);
            
@@ -108,10 +120,10 @@ public class FirstGunScript : PlayerEquipment
 
 
                 newProjectile.transform.position = barrelpos.transform.position;
-                float newProjSpeed = newProjectile.velocity.magnitude;
-               // newProjectile.velocity = barrelpos.forward;
+                float newProjSpeed = newProjController.velocity.magnitude;
+                // newProjectile.velocity = barrelpos.forward;
                 //newProjectile.transform.rotation = Quaternion.LookRotation(projVel);
-                newProjectile.velocity = -barrelpos.forward *newProjSpeed;
+                newProjController.velocity = -barrelpos.forward *newProjSpeed;
                 // Rigidbody playerrb = GetComponentInParent<Rigidbody>();
                 Rigidbody playerrb = player.GetComponent<Rigidbody>();
                 Rigidbody gunrb = this.gameObject.GetComponent<Rigidbody>();
