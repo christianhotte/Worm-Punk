@@ -7,6 +7,7 @@ TagManager:
   - Barrel
   - Bullet
   - ShootPoint
+  - Ground
   layers:
   - Default
   - TransparentFX
