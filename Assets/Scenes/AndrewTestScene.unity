@@ -4398,7 +4398,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 4515774518652404534}
         m_TargetAssemblyTypeName: FirstGunScript, Assembly-CSharp
-        m_MethodName: shootLeft
+        m_MethodName: Fire
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4414,7 +4414,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 30564857}
         m_TargetAssemblyTypeName: FirstGunScript, Assembly-CSharp
-        m_MethodName: shootRight
+        m_MethodName: Fire
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

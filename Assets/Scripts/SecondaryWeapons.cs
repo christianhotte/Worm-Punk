@@ -38,7 +38,7 @@ public class SecondaryWeapons : PlayerEquipment
         }
         if (grindin&&deployed)
         {
-            Debug.Log("Grindin");
+            //Debug.Log("Grindin");
             playerRB.velocity = bladeDeployed.forward * grindSpeed;
         }
         Vector3 handPos,handMotion;
