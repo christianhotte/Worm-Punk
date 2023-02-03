@@ -296,6 +296,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "RocketStart",
+                    "type": "Button",
+                    "id": "d24b9c5d-44b2-4eaa-809e-8f9d6b60d650",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RocketStop",
+                    "type": "Button",
+                    "id": "4f0cd9dd-e509-4299-aeba-6cbfba54a672",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -406,6 +424,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ed6a3ebb-10c0-4d1d-a9a7-70bb8ef06fd1",
+                    "path": "<XRController>{LeftHand}/gripPressed",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RocketStart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b6946a24-034a-4ba3-a702-2b21e3d7a0f9",
+                    "path": "<XRController>{LeftHand}/gripPressed",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RocketStop",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

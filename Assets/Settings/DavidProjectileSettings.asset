@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: DavidProjectileSettings
   m_EditorClassIdentifier: 
   damage: 1
-  initialVelocity: 5
-  range: 30
+  knockback: 0
+  initialVelocity: 30
+  range: 50
   barrelGap: 0
   drop: 0
   ignoreLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64

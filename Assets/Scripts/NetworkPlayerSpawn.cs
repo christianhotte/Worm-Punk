@@ -7,20 +7,25 @@ using Photon.Pun;
 
 public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
 {
+    public static NetworkPlayerSpawn instance;
+    
     private GameObject spawnedPlayerPrefab;
-    private GameObject demoPlayer1;
+    private GameObject player;
 
+    private void Awake()
+    {
+        instance = this;
+    }
     // When someone joins a room, we spawn the player.
     public override void OnJoinedRoom()
     {
-        demoPlayer1 = GameObject.Find("DemoPlayer1");
+        player = GameObject.Find("DemoPlayer2");
         // Spawns the network player at a random spawn location when the player joins a room.
         base.OnJoinedRoom();
         Transform spawnpoint = SpawnManager.instance.GetSpawnPoint();
-        //spawnedPlayerPrefab = PhotonNetwork.Instantiate("Network Player", transform.position, transform.rotation);
-        spawnedPlayerPrefab = PhotonNetwork.Instantiate("Network Player", spawnpoint.position, spawnpoint.rotation);
-        demoPlayer1.transform.position = new Vector3(spawnpoint.position.x, spawnpoint.position.y, spawnpoint.position.z);
-        demoPlayer1.transform.eulerAngles = new Vector3(spawnpoint.rotation.x, spawnpoint.rotation.y, spawnpoint.rotation.z);
+        spawnedPlayerPrefab = PhotonNetwork.Instantiate("Network Player", Vector3.zero, Quaternion.identity);
+        player.transform.position = new Vector3(spawnpoint.position.x, spawnpoint.position.y, spawnpoint.position.z);
+        player.transform.eulerAngles = new Vector3(spawnpoint.rotation.x, spawnpoint.rotation.y, spawnpoint.rotation.z);
     }
 
     // When someone leaves a room, we want to remove the player from the game.

@@ -10,6 +10,7 @@ public class ProjectileSettings : ScriptableObject
 {
     [Header("Hit Effect:")]
     [Min(0), Tooltip("How much damage this projectile deals to targets it hits.")] public int damage = 1;
+    [Min(0), Tooltip("How much force this projectile applies to struck objects.")] public float knockback = 0;
     [Header("Travel Properties:")]
     [Tooltip("Speed at which projectile travels upon spawn.")]                                     public float initialVelocity;
     [Tooltip("Maximum distance projectile can travel (leave zero to make infinite).")]             public float range = 0;
