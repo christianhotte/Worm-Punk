@@ -35,7 +35,7 @@ public class PhysicalButtonController : MonoBehaviour
             Released();
 
         Vector3 buttonPos = joint.transform.localPosition;
-        buttonPos.y = Mathf.Clamp(buttonPos.y, startPos.y - joint.linearLimit.limit, startPos.y);
+        buttonPos.z = Mathf.Clamp(buttonPos.z, startPos.z, startPos.z + joint.linearLimit.limit);
         joint.transform.localPosition = buttonPos;
     }
 

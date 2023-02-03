@@ -9,6 +9,9 @@ public class DialRotationController : MonoBehaviour
     [SerializeField, Tooltip("The number of degrees to rotate the dial on one click.")] private int snapRotationAmount = 25;
     [SerializeField, Tooltip("The minimum amount that the player must rotate the dial to start registering input.")] private float angleTolerance;
 
+    [SerializeField] private float minVal;
+    [SerializeField] private float maxVal;
+
     [SerializeField, Tooltip("Dummy models to show when grabbing the dial.")] private GameObject leftHandModel, rightHandModel;
     [SerializeField, Tooltip("Determine if a dummy model is shown when rotating the dial.")] private bool useDummyHands;
 
@@ -211,7 +214,7 @@ public class DialRotationController : MonoBehaviour
         dialTransform.localEulerAngles = new Vector3(dialTransform.localEulerAngles.x, dialTransform.localEulerAngles.y + snapRotationAmount, dialTransform.localEulerAngles.z);
 
         Debug.Log("Rotating " + gameObject.name + " Clockwise.");
-        OnValueChanged.Invoke(dialTransform.localEulerAngles.y);
+        OnValueChanged.Invoke(GetDialValue(dialTransform.localEulerAngles.y));
     }
 
     /// <summary>
@@ -224,6 +227,11 @@ public class DialRotationController : MonoBehaviour
 
         Debug.Log("Rotating " + gameObject.name + " Counter-Clockwise.");
 
-        OnValueChanged.Invoke(dialTransform.localEulerAngles.y);
+        OnValueChanged.Invoke(GetDialValue(dialTransform.localEulerAngles.y));
+    }
+
+    private float GetDialValue(float angle)
+    {
+        return minVal + (angle / 360f * maxVal);
     }
 }
