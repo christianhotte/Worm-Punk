@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Photon;
+using Photon.Pun;
 
 public class FirstGunScript : PlayerEquipment
 {
@@ -14,7 +16,6 @@ public class FirstGunScript : PlayerEquipment
     public float maxSpreadAngle=7,projectileSpeed=5,gunCooldown=1,gunBoost=20,recoilForce=20;
     [SerializeField, Range(0, 90), Tooltip("Angle at which barrels will rest when breach is open")] private float breakAngle;
     public Transform BarreTran;
-    private GameObject ShootPoint;
 
     private protected override void Awake()
     {
@@ -23,17 +24,10 @@ public class FirstGunScript : PlayerEquipment
         base.Awake();
         shotsLeft = Barrels;
     }
+
     // Start is called before the first frame update
     void Start()
     {
-        //Eject();
-        foreach (Transform t in gameObject.transform)
-        {
-            if (t.tag == "Bullet")
-            {
-                ShootPoint = t.gameObject;
-            }
-        }
         //StartCoroutine(WaitandClose());
         SoftJointLimit angleCap = new SoftJointLimit();
         angleCap = breakJoint.highAngularXLimit;
@@ -67,89 +61,42 @@ public class FirstGunScript : PlayerEquipment
         yield return new WaitForSeconds(5f);
         Debug.Log("closing");
         CloseBreach();
-
     }
-    public void shootLeft()
+    
+    // Calls the fire method.
+    public void Fire()
     {
-        Debug.Log("Tryingshot");
-        if (!Cooldown&&!Ejecting)
-        {
-            Cooldown = true;
-            Fire(true, BarreTran);
-        }
+        //Validate firing sequence:
+        if (Cooldown) return;
+        if (Ejecting) return;
 
-    }
-    public void shootRight()
-    {
-        Debug.Log("Tryingshot");
-        if (!Cooldown&&!Ejecting)
-        {
-            Cooldown = true;
-            Fire(false, BarreTran);
-        }
-
-    }
-    public void Fire(bool left,Transform barrelpos)
-    {
         StartCoroutine(CooldownTime(gunCooldown));
-        Vector3 SpawnPoint = barrelpos.localEulerAngles;
+        Vector3 SpawnPoint = BarreTran.localEulerAngles;
         List<Projectile> projectiles = new List<Projectile>();
-        if (shotsLeft > 0&&left)
+        if (shotsLeft <= 0) return;
+
+        for (int i = 0; i < pellets; i++)
         {
-            for(int i=0; i < pellets; i++)
-            {
-                Projectile newProjectile = Instantiate(projectile).GetComponent<Projectile>();
-                projectiles.Add(newProjectile);
-                Vector3 exitAngles = Random.insideUnitCircle * maxSpreadAngle;
-                barrelpos.localEulerAngles = new Vector3(SpawnPoint.x + exitAngles.x, SpawnPoint.y + exitAngles.y, SpawnPoint.z + exitAngles.z);
-           
+            Vector3 exitAngles = Random.insideUnitCircle * maxSpreadAngle;
+            BarreTran.localEulerAngles = new Vector3(SpawnPoint.x + exitAngles.x, SpawnPoint.y + exitAngles.y, SpawnPoint.z + exitAngles.z);
+            Vector3 projVel = BarreTran.forward * projectileSpeed;
 
-                Vector3 projVel = barrelpos.forward * projectileSpeed;
-
-
-                newProjectile.transform.position = barrelpos.transform.position;
-                float newProjSpeed = newProjectile.velocity.magnitude;
-               // newProjectile.velocity = barrelpos.forward;
-                //newProjectile.transform.rotation = Quaternion.LookRotation(projVel);
-                newProjectile.velocity = -barrelpos.forward *newProjSpeed;
-                // Rigidbody playerrb = GetComponentInParent<Rigidbody>();
-                Rigidbody playerrb = player.GetComponent<Rigidbody>();
-                Rigidbody gunrb = this.gameObject.GetComponent<Rigidbody>();
-                Vector3 gunTorque = recoilForce * barrelpos.up;
-                gunrb.AddForceAtPosition(gunTorque, barrelpos.position, ForceMode.Impulse);
-               // gunrb.AddForce(barrelpos.up * recoilForce);
-                playerrb.velocity = barrelpos.forward * gunBoost;
-              //  newProjectile.
-            }
-            shotsLeft--;
-            Debug.Log("LeftShot");
-                
+            Projectile newProjectile = PhotonNetwork.Instantiate("DavidProjectile1", BarreTran.position, Quaternion.Euler(-BarreTran.forward)).GetComponent<Projectile>();
+            projectiles.Add(newProjectile);
+            newProjectile.transform.position = BarreTran.transform.position;
+            float newProjSpeed = newProjectile.velocity.magnitude;
+            newProjectile.velocity = -BarreTran.forward * newProjSpeed;
+            Rigidbody playerrb = player.GetComponent<Rigidbody>();
+            Rigidbody gunrb = gameObject.GetComponent<Rigidbody>();
+            Vector3 gunTorque = recoilForce * BarreTran.up;
+            gunrb.AddForceAtPosition(gunTorque, BarreTran.position, ForceMode.Impulse);
+            playerrb.velocity = BarreTran.forward * gunBoost;
         }
-        else if (shotsLeft>0 && !left) {
-            for (int i = 0; i < pellets; i++)
-            {
-                Projectile newProjectile = Instantiate(projectile).GetComponent<Projectile>();
-                projectiles.Add(newProjectile);
-                Vector3 exitAngles = Random.insideUnitCircle * maxSpreadAngle;
-                barrelpos.localEulerAngles = new Vector3(SpawnPoint.x + exitAngles.x, SpawnPoint.y + exitAngles.y, SpawnPoint.z + exitAngles.z);
 
-
-                Vector3 projVel = barrelpos.forward * projectileSpeed;
-
-
-                newProjectile.transform.position = barrelpos.transform.position;
-                float newProjSpeed = newProjectile.velocity.magnitude;
-                // newProjectile.velocity = barrelpos.forward;
-                //newProjectile.transform.rotation = Quaternion.LookRotation(projVel);
-                newProjectile.velocity = -barrelpos.forward * newProjSpeed;
-                // Rigidbody playerrb = GetComponentInParent<Rigidbody>();
-                Rigidbody playerrb = player.GetComponent<Rigidbody>();
-                playerrb.velocity = barrelpos.forward * gunBoost;
-                //  newProjectile.
-            }
-            shotsLeft--;
-            Debug.Log("rightShot");
-        }
+        //Cleanup:
+        Cooldown = true;
+        shotsLeft--;
+        Debug.Log("Shots fired");
     }
     public IEnumerator CooldownTime(float time)
     {

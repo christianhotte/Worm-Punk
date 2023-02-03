@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon;
+using Photon.Pun;
 
 /// <summary>
 /// Base class for any non-hitscan ballistic projectiles.
@@ -81,13 +83,24 @@ public class Projectile : MonoBehaviour
     private protected virtual void HitObject(RaycastHit hitInfo)
     {
         print("Hit!"); //TEMP
-        Destroy(gameObject);
+        Delete();
     }
     /// <summary>
     /// Called if projectile range is exhausted and projectile hasn't hit anything.
     /// </summary>
     private protected virtual void BurnOut()
     {
-        Destroy(gameObject);
+        Delete();
+    }
+    private void Delete()
+    {
+        if (TryGetComponent(out PhotonView photonView))
+        {
+            if (photonView.IsMine) PhotonNetwork.Destroy(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }

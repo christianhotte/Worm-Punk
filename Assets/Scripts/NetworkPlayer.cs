@@ -16,7 +16,7 @@ public class NetworkPlayer : MonoBehaviour
     public Transform rightHand;
 
     private GameObject XROrigin;
-    private PhotonView photonView;
+    internal PhotonView photonView;
 
     private Transform headRig;
     private Transform leftHandRig;
@@ -29,8 +29,8 @@ public class NetworkPlayer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Allows us to get the view component for the network
-        photonView = GetComponent<PhotonView>();
+        photonView = GetComponent<PhotonView>();                         //Get photonView component from NetworkPlayer object
+        if (photonView.IsMine) PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
 
         // Gets the network player to move with the player instead of just moving locally.
         XROrigin = GameObject.Find("XR Origin");
@@ -58,6 +58,10 @@ public class NetworkPlayer : MonoBehaviour
             }
         }
     }
+    private void OnDestroy()
+    {
+        if (photonView.IsMine) PlayerController.photonView = null; //Clear client photonView referenc
+    }
 
     // Update is called once per frame
     void Update()
@@ -65,11 +69,6 @@ public class NetworkPlayer : MonoBehaviour
         // Synchronizes the player over the network.
         if (photonView.IsMine)
         {
-            /* Disables the network player's camera & hands so that it uses the XR Origin's.
-            rightHand.gameObject.SetActive(false);
-            leftHand.gameObject.SetActive(false);
-            head.gameObject.SetActive(false);*/
-
             // Calls these functions to map the position of the player's hands & headset
             MapPosition(head, headRig);
             MapPosition(leftHand, leftHandRig);
@@ -95,9 +94,6 @@ public class NetworkPlayer : MonoBehaviour
     // This synchronizes the positions of the headset & the hand controllers 
     void MapPosition(Transform target, Transform rigTransform)
     {
-        /*InputDevices.GetDeviceAtXRNode(node).TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 position);
-        InputDevices.GetDeviceAtXRNode(node).TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rotation);*/
-
         target.position = rigTransform.position;
         target.rotation = rigTransform.rotation;
     }
