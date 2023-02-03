@@ -11,7 +11,7 @@ public class RocketBoost : PlayerEquipment
     // Start is called before the first frame update
     private protected override void Awake()
     {
-        
+        base.Awake();
     }
 
     // Update is called once per frame
@@ -21,6 +21,7 @@ public class RocketBoost : PlayerEquipment
         {
             player.velocity = (rocketTip.forward * rocketPower);
         }
+        base.Update();
     }
     public void RocketStart()
     {
