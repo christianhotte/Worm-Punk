@@ -14,6 +14,7 @@ public class NetworkPlayer : MonoBehaviour
     public Transform head;
     public Transform leftHand;
     public Transform rightHand;
+    public Transform body;
 
     private GameObject XROrigin;
     internal PhotonView photonView;
@@ -21,6 +22,7 @@ public class NetworkPlayer : MonoBehaviour
     private Transform headRig;
     private Transform leftHandRig;
     private Transform rightHandRig;
+    private Transform bodyRig;
 
     // Gets a list of all of the players on the network
     Player[] allPlayers;
@@ -37,6 +39,7 @@ public class NetworkPlayer : MonoBehaviour
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
         rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+        bodyRig = XROrigin.transform.Find("Body");
 
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
@@ -73,16 +76,17 @@ public class NetworkPlayer : MonoBehaviour
             MapPosition(head, headRig);
             MapPosition(leftHand, leftHandRig);
             MapPosition(rightHand, rightHandRig);
-
-            // Disables all of the renderers in the Network player so that we can just render the XR Origin's.
-            if (photonView.IsMine)
-            {
-                foreach (var item in GetComponentsInChildren<Renderer>())
-                {
-                    item.enabled = false;
-                }
-            }
+            MapPosition(body, bodyRig);
         }
+
+        /* Disables all of the renderers in the Network player so that we can just render the XR Origin's.
+        if (photonView.IsMine)
+        {
+            foreach (var item in GetComponentsInChildren<Renderer>())
+            {
+                item.enabled = false;
+            }
+        }*/
 
         // The player dies if the player falls too far below the map.
         if (transform.position.y < -15f)
