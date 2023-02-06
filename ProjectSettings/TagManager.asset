@@ -9,6 +9,8 @@ TagManager:
   - ShootPoint
   - Ground
   - NetworkPlayer
+  - PlayerEquipment
+  - PlayerHand
   layers:
   - Default
   - TransparentFX
