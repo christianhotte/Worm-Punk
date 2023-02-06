@@ -80,6 +80,8 @@ public class PlayerController : MonoBehaviour, IShootable
             foreach (Transform transform in controller.transform)
                 if (transform.CompareTag("PlayerEquipment"))
                     transform.gameObject.SetActive(inCombat);
+                if (transform.CompareTag("PlayerHand"))
+                    transform.gameObject.SetActive(!inCombat);
         }
     }
 
@@ -94,4 +96,6 @@ public class PlayerController : MonoBehaviour, IShootable
     }
 
     //FUNCTIONALITY METHODS:
+
+    public bool InCombat() => inCombat;
 }

@@ -69,6 +69,7 @@ public class FirstGunScript : PlayerEquipment
         //Validate firing sequence:
         if (Cooldown) return;
         if (Ejecting) return;
+        if (!player.GetComponentInParent<PlayerController>().InCombat()) return;
 
         StartCoroutine(CooldownTime(gunCooldown));
         Vector3 SpawnPoint = BarreTran.localEulerAngles;

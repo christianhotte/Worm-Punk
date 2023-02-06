@@ -11,6 +11,7 @@ TagManager:
   - RoomLight
   - SamplesInfoPanel
   - PlayerEquipment
+  - PlayerHand
   layers:
   - Default
   - TransparentFX
