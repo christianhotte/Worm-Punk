@@ -17,7 +17,9 @@ public class Projectile : MonoBehaviour
     //Runtime Variables:
     public Vector3 velocity; //Speed and direction at which projectile is traveling
 
-    private float totalDistance; //Total travel distance covered by this projectile
+    internal PlayerController originPlayer; //The player which shot this projectile
+    private Transform target;               //Transform which projectile is currently homing toward
+    private float totalDistance;            //Total travel distance covered by this projectile
 
     //RUNTIME METHODS:
     private protected virtual void Awake()
