@@ -39,7 +39,7 @@ public class NetworkPlayer : MonoBehaviour
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
         rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
-        bodyRig = XROrigin.transform.Find("Body");
+        //bodyRig = XROrigin.transform.Find("Body");
 
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
@@ -76,7 +76,7 @@ public class NetworkPlayer : MonoBehaviour
             MapPosition(head, headRig);
             MapPosition(leftHand, leftHandRig);
             MapPosition(rightHand, rightHandRig);
-            MapPosition(body, bodyRig);
+            //MapPosition(body, bodyRig);
         }
 
         /* Disables all of the renderers in the Network player so that we can just render the XR Origin's.
