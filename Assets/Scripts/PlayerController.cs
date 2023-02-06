@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour, IShootable
         //Setup runtime variables:
         currentHealth = healthSettings.defaultHealth; //Set base health value
 
-        inCombat = false;
+        inCombat = true;
         UpdateWeaponry();
     }
     private void Update()
@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour, IShootable
     /// </summary>
     private void UpdateWeaponry()
     {
-        //Show or hide all objects under the tag "Weapon"
+        //Show or hide all objects under the tag "PlayerEquipment"
         foreach (var controller in GetComponentsInChildren<ActionBasedController>())
         {
             foreach (Transform transform in controller.transform)

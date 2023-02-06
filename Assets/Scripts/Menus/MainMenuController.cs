@@ -7,9 +7,9 @@ public class MainMenuController : MonoBehaviour
 {
     public void GoToArena()
     {
-        if (GameManager.Instance != null)
+/*        if (GameManager.Instance != null)
             GameManager.Instance.LoadGame(SceneIndexes.ARENA);
         else
-            SceneManager.LoadScene((int)SceneIndexes.ARENA);
+            SceneManager.LoadScene((int)SceneIndexes.ARENA);*/
     }
 }
