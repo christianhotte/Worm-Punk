@@ -79,14 +79,14 @@ public class NetworkPlayer : MonoBehaviour
             MapPosition(body, bodyRig);
         }
 
-        /* Disables all of the renderers in the Network player so that we can just render the XR Origin's.
+        // Disables all of the renderers in the Network player so that we can just render the XR Origin's.
         if (photonView.IsMine)
         {
             foreach (var item in GetComponentsInChildren<Renderer>())
             {
                 item.enabled = false;
             }
-        }*/
+        }
 
         // The player dies if the player falls too far below the map.
         if (transform.position.y < -15f)
