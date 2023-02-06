@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour, IShootable
 
     //Runtime Variables:
     private float currentHealth; //How much health player currently has
+    private bool inCombat;  //Whether the player is actively in combat
 
     //RUNTIME METHODS:
     private void Awake()
@@ -56,12 +57,31 @@ public class PlayerController : MonoBehaviour, IShootable
 
         //Setup runtime variables:
         currentHealth = healthSettings.defaultHealth; //Set base health value
+
+        inCombat = false;
+        UpdateWeaponry();
     }
     private void Update()
     {
         if (debugUpdateSettings && Application.isEditor) //Debug settings updates are enabled (only necessary while running in Unity Editor)
         {
 
+        }
+    }
+
+    /// <summary>
+    /// Updates the weaponry so that the player can / can't fight under certain conditions.
+    /// </summary>
+    private void UpdateWeaponry()
+    {
+        //Show or hide all objects under the tag "Weapon"
+        foreach (var controller in GetComponentsInChildren<ActionBasedController>())
+        {
+            foreach (Transform transform in controller.transform)
+                if (transform.CompareTag("PlayerEquipment"))
+                    transform.gameObject.SetActive(inCombat);
+                if (transform.CompareTag("PlayerHand"))
+                    transform.gameObject.SetActive(!inCombat);
         }
     }
 
@@ -76,4 +96,6 @@ public class PlayerController : MonoBehaviour, IShootable
     }
 
     //FUNCTIONALITY METHODS:
+
+    public bool InCombat() => inCombat;
 }

@@ -8,6 +8,10 @@ TagManager:
   - Bullet
   - ShootPoint
   - Ground
+  - RoomLight
+  - SamplesInfoPanel
+  - PlayerEquipment
+  - PlayerHand
   layers:
   - Default
   - TransparentFX
@@ -18,7 +22,7 @@ TagManager:
   - PlayerWeapon
   - Bullet
   - 
-  - 
+  - HUD
   - 
   - 
   - 

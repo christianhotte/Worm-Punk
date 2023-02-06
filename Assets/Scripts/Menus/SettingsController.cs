@@ -1,0 +1,55 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+using UnityEngine.XR.Interaction.Toolkit;
+
+public class SettingsController : MonoBehaviour
+{
+    public enum ColorOptions { WHITE, RED, BLUE, GREEN, PURPLE, BLACK}
+
+    [SerializeField] private TextMeshProUGUI colorSettingsObject;
+
+    public void ChangeHandColor(float colorOption)
+    {
+        Color newColor;
+        string newColorText;
+
+        Debug.Log((int)colorOption);
+
+        switch ((int)colorOption)
+        {
+            case (int)ColorOptions.RED:
+                newColor = Color.red;
+                newColorText = "RED";
+                break;
+            case (int)ColorOptions.BLUE:
+                newColor = Color.blue;
+                newColorText = "BLUE";
+                break;
+            case (int)ColorOptions.GREEN:
+                newColor = Color.green;
+                newColorText = "GREEN";
+                break;
+            case (int)ColorOptions.PURPLE:
+                newColor = Color.magenta;
+                newColorText = "PURPLE";
+                break;
+            case (int)ColorOptions.BLACK:
+                newColor = Color.black;
+                newColorText = "BLACK";
+                break;
+            default:
+                newColor = Color.white;
+                newColorText = "DEFAULT";
+                break;
+        }
+
+        foreach(var controller in FindObjectsOfType<ActionBasedController>())
+        {
+            controller.GetComponentInChildren<MeshRenderer>().material.color = newColor;
+        }
+
+        colorSettingsObject.text = "Player Color: " + newColorText;
+    }
+}
