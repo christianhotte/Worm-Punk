@@ -41,6 +41,8 @@ MonoBehaviour:
   - RespawnSpaceship
   - NetworkShoot
   - RpcFire
+  - RPC_ShootProjectile
+  - RPC_DestroyProjectile
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

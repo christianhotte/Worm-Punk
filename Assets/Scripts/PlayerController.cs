@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour, IShootable
     [Tooltip("Controller component for player's right hand.")]            internal ActionBasedController rightHand;
 
     private Camera cam;              //Main player camera
-    private PlayerInput input;       //Input manager component used by player to send messages to hands and such
+    internal PlayerInput input;       //Input manager component used by player to send messages to hands and such
     private AudioSource audioSource; //Main player audio source
 
     //Settings:
