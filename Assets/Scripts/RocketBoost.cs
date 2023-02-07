@@ -13,9 +13,11 @@ public class RocketBoost : PlayerEquipment  //renametograpple
     public bool Grapplin = false,grappleCooldown=true,grapplinWall=false,shootinHook=false;
     public int hitType = 0;
     public MeshRenderer Rocket;
+    public LineRenderer cable;
     // Start is called before the first frame update
     private protected override void Awake()
     {
+        Destroy(this.gameObject.GetComponent<LineRenderer>());
         base.Awake();
        
     }
@@ -35,10 +37,18 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             Rocket.enabled = false;
             HookInstance.transform.LookAt(rayHitPoint);
             HookInstance.transform.position = Vector3.MoveTowards(HookInstance.transform.position, rayHitPoint, hookSpeed);
+            if (this.gameObject.GetComponent<LineRenderer>() != null)
+            {
+
+                cable.SetPosition(0, rocketTip.transform.position);
+                cable.SetPosition(1, HookInstance.transform.position);
+            }
+
         }
 
         if (Grapplin&&!grappleCooldown)
         {
+           
             rocketTip.LookAt(rayHitPoint);//sets grapple to look at grapple point
             Vector3 newPlayerVelocity = (rocketTip.forward * rocketPower);
 
@@ -91,7 +101,14 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             hookedPos = hit.transform;
             Debug.Log(hit.normal);
             rayHitPoint = hit.point;
-           // StartCoroutine(GrappleLaunch());
+            // StartCoroutine(GrappleLaunch());
+            
+            cable = this.gameObject.AddComponent<LineRenderer>();
+            cable.startColor = Color.black;
+            cable.endColor = Color.black;
+            cable.material = new Material(Shader.Find("Sprites/Default"));
+            cable.startWidth = 0.01f;
+            cable.endWidth = 0.01f;
             Grapplin = true;
             shootinHook = true;
 
@@ -110,12 +127,13 @@ public class RocketBoost : PlayerEquipment  //renametograpple
     {
         //Debug.Log("release");
         Rocket.enabled = true;
+        Destroy(this.gameObject.GetComponent<LineRenderer>());
         hitType = 0;
         Rocket.enabled = true;
         Grapplin = false;
         grappleCooldown = true;
         rocketTip.LookAt(rocketTipReset);
-        HookInstance.SetActive(false);
+        Destroy(HookInstance);
 
 
     }
