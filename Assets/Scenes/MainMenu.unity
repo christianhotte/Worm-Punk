@@ -592,7 +592,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1541423116494370132, guid: aa2225f372d5e1c41ad2b3abf77358d6, type: 3}
       propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
-      value: DavidScene
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1541423116494370132, guid: aa2225f372d5e1c41ad2b3abf77358d6, type: 3}
       propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -3999,7 +3999,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jointSettings: {fileID: 11400000, guid: 1e63c6643072cdd4e92741e97fcc64ae, type: 2}
   debugUpdateSettings: 0
-  player: {fileID: 1450009067}
+  playerrb: {fileID: 0}
   rocketTip: {fileID: 196597335}
   rocketPower: 15
 --- !u!136 &881672573
@@ -9639,3 +9639,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthSettings: {fileID: 0}
   debugUpdateSettings: 0
+  useSpawnPoint: 1
