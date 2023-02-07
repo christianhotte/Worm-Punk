@@ -149,12 +149,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7570470b729367d49ba17120b58aa9fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jointSettings: {fileID: 0}
+  jointSettings: {fileID: 11400000, guid: 5093f50b96876fb4cae52422dcb85e6f, type: 2}
   debugUpdateSettings: 0
   barrels:
   - {fileID: 6739765718685924980}
   - {fileID: 4431649453514865024}
-  gunSettings: {fileID: 0}
+  gunSettings: {fileID: 11400000, guid: db175be0a6438d54384e7cded3b44f02, type: 2}
 --- !u!1 &4572272537239105951
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,7 +283,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: -0.5, z: -0.5}
   m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.114982605, y: -0.20313773, z: 0.42447495}
+  m_ConnectedAnchor: {x: 0, y: -0.20313773, z: 0.42447495}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0

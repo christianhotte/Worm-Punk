@@ -20,6 +20,7 @@ public class NewShotgunController : PlayerEquipment
     private int currentBarrelIndex = 0; //Index of barrel currently selected as next to fire
     private int loadedShots;            //Number of shots weapon is able to fire before needing to reload again
     private bool breachOpen = false;    //Indicates whether or not weapon breach is swung open
+    private float breachOpenTime = 0;   //Time breach has been open for (zero if breach is closed)
 
     //RUNTIME METHODS:
     private protected override void Awake()
@@ -38,6 +39,18 @@ public class NewShotgunController : PlayerEquipment
         //Get objects & components:
         breakJoint = GetComponentInChildren<ConfigurableJoint>(); if (breakJoint == null) { Debug.LogWarning("Shotgun does not have Configurable Joint for break action!"); } //Make sure shotgun has break joint
     }
+    private protected override void Update()
+    {
+        //Initialization:
+        base.Update(); //Run base update method
+
+        //Update timers:
+        if (breachOpen && loadedShots < gunSettings.maxLoadedShots) //Breach is currently open and weapon has not been loaded
+        {
+            breachOpenTime = Mathf.Min(breachOpenTime + Time.deltaTime, gunSettings.cooldownTime); //Increment time tracker and max out at cooldown time
+            if (breachOpenTime >= gunSettings.cooldownTime) Reload();                              //Reload weapon once cooldown time has been reached
+        }
+    }
 
     //INPUT METHODS:
     /// <summary>
@@ -45,6 +58,13 @@ public class NewShotgunController : PlayerEquipment
     /// </summary>
     public void Eject()
     {
+        //Validity checks:
+        if (breachOpen) //Breach is already open
+        {
+            //SOUND EFFECT
+            return; //Ignore everything else
+        }
+
         //Open joint:
         SoftJointLimit newJointLimit = breakJoint.highAngularXLimit; //Copy current joint limit setting
         newJointLimit.limit = gunSettings.breakAngle;                //Set break angle to open position
@@ -55,6 +75,9 @@ public class NewShotgunController : PlayerEquipment
     /// </summary>
     public void Close()
     {
+        //Validity checks:
+        if (!breachOpen) return; //Do not attempt to close if breach is open
+
         //Close joint:
         SoftJointLimit newJointLimit = breakJoint.highAngularXLimit; //Copy current joint limit setting
         newJointLimit.limit = 0;                                     //Set break angle to closed value
@@ -74,7 +97,7 @@ public class NewShotgunController : PlayerEquipment
     /// </summary>
     public void Fire()
     {
-
+        
     }
 
     //FUNCTIONALITY METHODS:

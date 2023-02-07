@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: DefaultShotgunSettings
   m_EditorClassIdentifier: 
   projectileResourceName: HotteProjectile1
+  maxLoadedShots: 2
+  breakAngle: 45
+  recoilTorque: 10
