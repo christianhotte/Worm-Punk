@@ -14,7 +14,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
 
     //Settings:
     [Header("Resource References:")]
-    [SerializeField, Tooltip("Exact name of network player prefab in Resources folder.")] private string networkPlayerName = "NewNetworkPlayer";
+    [SerializeField, Tooltip("Exact name of network player prefab in Resources folder.")] private string networkPlayerName = "Network Player";
 
     private void Awake()
     {
@@ -28,8 +28,8 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         base.OnJoinedRoom();
         
         //Spawn network player:
-        clientNetworkPlayer = PhotonNetwork.Instantiate("Network Player", Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
-        if (clientNetworkPlayer == null) Debug.LogError("Tried to spawn network player prefab that doesn't have NetworkPlayer component!"); //Indicate problem if relevant
+        clientNetworkPlayer = PhotonNetwork.Instantiate(networkPlayerName, Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
+        if (clientNetworkPlayer == null) Debug.LogError("Tried to spawn network player prefab that doesn't have NetworkPlayer component!");  //Indicate problem if relevant
     }
 
     // When someone leaves a room, we want to remove the player from the game.
@@ -37,6 +37,6 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     {
         Debug.Log("A player has left the room.");
         base.OnLeftRoom();
-        PhotonNetwork.Destroy(clientNetworkPlayer.gameObject);
+        if (clientNetworkPlayer != null) PhotonNetwork.Destroy(clientNetworkPlayer.gameObject);
     }
 }

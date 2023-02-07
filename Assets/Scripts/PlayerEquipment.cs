@@ -43,8 +43,8 @@ public class PlayerEquipment : MonoBehaviour
         //Check for settings:
         if (jointSettings == null) //No joint settings were provided
         {
-            Debug.LogWarning("PlayerEquipment " + name + " is missing jointSettings, using system defaults."); //Log warning in case someone forgot
-            jointSettings = (EquipmentJointSettings)Resources.Load("DefaultEquipmentJointSettings");           //Load default settings from Resources folder
+            Debug.Log("PlayerEquipment " + name + " is missing jointSettings, using system defaults.");              //Log warning in case someone forgot
+            jointSettings = (EquipmentJointSettings)Resources.Load("DefaultSettings/DefaultEquipmentJointSettings"); //Load default settings from Resources folder
         }
 
         //Instantiate rigidbody follower:
