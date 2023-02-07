@@ -21,7 +21,7 @@ public class PlayerEquipment : MonoBehaviour
     //Settings:
     [Header("Settings:")]
     [SerializeField, Tooltip("Settings defining this equipment's physical joint behavior.")] private EquipmentJointSettings jointSettings;
-    [SerializeField, Tooltip("Enables constant joint updates for testing purposes.")]        private bool debugUpdateSettings;
+    [SerializeField, Tooltip("Enables constant joint updates for testing purposes.")]        private protected bool debugUpdateSettings;
 
     //Runtime Variables:
 
