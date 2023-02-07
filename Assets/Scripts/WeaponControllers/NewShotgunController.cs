@@ -11,11 +11,14 @@ public class NewShotgunController : PlayerEquipment
     private ConfigurableJoint breakJoint; //Joint controlling weapon's break action
 
     //Settings:
+    [Header("Gun Components:")]
+    [SerializeField, Tooltip("Transforms representing position and direction of weapon barrels.")] private Transform[] barrels;
     [Header("Settings:")]
     [SerializeField, Tooltip("Settings object which determines general weapon behavior.")] private ShotgunSettings gunSettings;
 
     //Runtime Variables:
-
+    private int loadedShots;         //Number of shots weapon is able to fire before needing to reload again
+    private bool breachOpen = false; //Indicates whether or not weapon breach is swung open
 
     //RUNTIME METHODS:
     private protected override void Awake()
@@ -31,10 +34,17 @@ public class NewShotgunController : PlayerEquipment
         }
 
         //Get objects & components:
-
+        breakJoint = GetComponentInChildren<ConfigurableJoint>(); if (breakJoint == null) { Debug.LogWarning("Shotgun does not have Configurable Joint for break action!"); } //Make sure shotgun has break joint
     }
 
     //INPUT METHODS:
+    /// <summary>
+    /// Opens weapon breach and ejects shells.
+    /// </summary>
+    public void Eject()
+    {
+
+    }
     /// <summary>
     /// Shoots the gun (instantiates projectiles in network if possible).
     /// </summary>
