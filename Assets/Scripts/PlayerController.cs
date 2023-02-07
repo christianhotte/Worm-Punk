@@ -21,14 +21,15 @@ public class PlayerController : MonoBehaviour, IShootable
     [Tooltip("Controller component for player's right hand.")]            internal ActionBasedController rightHand;
 
     private Camera cam;              //Main player camera
-    internal PlayerInput input;       //Input manager component used by player to send messages to hands and such
+    internal PlayerInput input;      //Input manager component used by player to send messages to hands and such
     private AudioSource audioSource; //Main player audio source
 
     //Settings:
     [Header("Settings Objects:")]
-    [SerializeField, Tooltip("Settings determining player health properties")] private HealthSettings healthSettings;
+    [SerializeField, Tooltip("Settings determining player health properties.")] private HealthSettings healthSettings;
     [Header("Debug Options:")]
-    [SerializeField, Tooltip("Enables constant settings checks in order to test changes.")] private bool debugUpdateSettings;
+    [SerializeField, Tooltip("Enables constant settings checks in order to test changes.")]                                private bool debugUpdateSettings;
+    [SerializeField, Tooltip("Enables usage of SpawnManager system to automatically position player upon instantiation.")] private bool useSpawnPoint = true;
 
     //Runtime Variables:
     private float currentHealth; //How much health player currently has
@@ -61,6 +62,16 @@ public class PlayerController : MonoBehaviour, IShootable
         inCombat = false;
         UpdateWeaponry();
     }
+    private void Start()
+    {
+        //Move to spawnpoint:
+        if (SpawnManager.instance != null && useSpawnPoint) //Spawn manager is present in scene
+        {
+            Transform spawnpoint = SpawnManager.instance.GetSpawnPoint(); //Get spawnpoint from spawnpoint manager
+            xrOrigin.transform.position = spawnpoint.position;            //Move spawned player to target position
+            xrOrigin.transform.rotation = spawnpoint.rotation;            //Orient network player according to target rotation
+        }
+    }
     private void Update()
     {
         if (debugUpdateSettings && Application.isEditor) //Debug settings updates are enabled (only necessary while running in Unity Editor)
@@ -80,8 +91,8 @@ public class PlayerController : MonoBehaviour, IShootable
             foreach (Transform transform in controller.transform)
                 if (transform.CompareTag("PlayerEquipment"))
                     transform.gameObject.SetActive(inCombat);
-                if (transform.CompareTag("PlayerHand"))
-                    transform.gameObject.SetActive(!inCombat);
+            if (transform.CompareTag("PlayerHand"))
+                transform.gameObject.SetActive(!inCombat);
         }
     }
 
@@ -92,7 +103,22 @@ public class PlayerController : MonoBehaviour, IShootable
     /// <param name="projectile">The projectile which hit the player.</param>
     public void IsHit(Projectile projectile)
     {
+        //Hit effects:
         audioSource.PlayOneShot((AudioClip)Resources.Load("Default_Hurt_Sound")); //TEMP play hurt sound
+        currentHealth -= projectile.settings.damage;                              //Deal projectile damage to player
+
+        //Death check:
+        if (currentHealth <= 0) //Player is being killed by this projectile hit
+        {
+            IsKilled(); //Indicate that player has been killed
+        }
+    }
+    /// <summary>
+    /// Method called when something kills this player.
+    /// </summary>
+    public void IsKilled()
+    {
+
     }
 
     //FUNCTIONALITY METHODS:
