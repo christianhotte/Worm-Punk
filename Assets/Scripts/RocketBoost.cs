@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RocketBoost : PlayerEquipment
 {
-    public Rigidbody player;
+    public Rigidbody playerrb;
     public Transform rocketTip;
     public float rocketPower=20;
     bool rocketin = false;
@@ -19,7 +19,7 @@ public class RocketBoost : PlayerEquipment
     {
         if (rocketin)
         {
-            player.velocity = (rocketTip.forward * rocketPower);
+            playerrb.velocity = (rocketTip.forward * rocketPower);
         }
         base.Update();
     }

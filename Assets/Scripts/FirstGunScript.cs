@@ -10,7 +10,7 @@ public class FirstGunScript : PlayerEquipment
     public ConfigurableJoint breakJoint;
     private PlayerInput input;
     public GameObject projectile;
-    private GameObject player;
+    //private GameObject player;
     public bool Ejecting = false, Cooldown=false;
     public int Barrels = 2, shotsLeft,pellets=30;
     public float maxSpreadAngle=7,projectileSpeed=5,gunCooldown=1,gunBoost=20,recoilForce=20;
@@ -20,7 +20,7 @@ public class FirstGunScript : PlayerEquipment
     private protected override void Awake()
     {
         input = GetComponentInParent<PlayerInput>();
-        player = GameObject.Find("XR Origin");
+        //player = GameObject.Find("XR Origin");
         base.Awake();
         shotsLeft = Barrels;
     }
@@ -85,8 +85,8 @@ public class FirstGunScript : PlayerEquipment
             Projectile newProjectile = PhotonNetwork.Instantiate("DavidProjectile1", BarreTran.position, Quaternion.Euler(-BarreTran.forward)).GetComponent<Projectile>();
             projectiles.Add(newProjectile);
             newProjectile.transform.position = BarreTran.transform.position;
-            float newProjSpeed = newProjectile.velocity.magnitude;
-            newProjectile.velocity = -BarreTran.forward * newProjSpeed;
+            //float newProjSpeed = newProjectile.velocity.magnitude;
+            //newProjectile.velocity = -BarreTran.forward * newProjSpeed;
             Rigidbody playerrb = player.GetComponent<Rigidbody>();
             Rigidbody gunrb = gameObject.GetComponent<Rigidbody>();
             Vector3 gunTorque = recoilForce * BarreTran.up;

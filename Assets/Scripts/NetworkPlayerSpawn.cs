@@ -7,25 +7,29 @@ using Photon.Pun;
 
 public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
 {
-    public static NetworkPlayerSpawn instance;
+    //Objects & Components:
+    public static NetworkPlayerSpawn instance; //Singleton instance of this script in scene
     
-    private GameObject spawnedPlayerPrefab;
-    private GameObject player;
+    private NetworkPlayer clientNetworkPlayer; //Instance of local client's network player in scene
+
+    //Settings:
+    [Header("Resource References:")]
+    [SerializeField, Tooltip("Exact name of network player prefab in Resources folder.")] private string networkPlayerName = "Network Player";
 
     private void Awake()
     {
-        instance = this;
+        //Initialization:
+        if (instance == null) { instance = this; } else { Debug.LogError("Tried to load two NetworkPlayerSpawn scripts in the same scene!"); Destroy(this); } //Singleton-ize this script
     }
     // When someone joins a room, we spawn the player.
     public override void OnJoinedRoom()
     {
-        player = GameObject.Find("DemoPlayer2");
-        // Spawns the network player at a random spawn location when the player joins a room.
+        //Initialization:
         base.OnJoinedRoom();
-        Transform spawnpoint = SpawnManager.instance.GetSpawnPoint();
-        spawnedPlayerPrefab = PhotonNetwork.Instantiate("Network Player", Vector3.zero, Quaternion.identity);
-        player.transform.position = new Vector3(spawnpoint.position.x, spawnpoint.position.y, spawnpoint.position.z);
-        player.transform.eulerAngles = new Vector3(spawnpoint.rotation.x, spawnpoint.rotation.y, spawnpoint.rotation.z);
+        
+        //Spawn network player:
+        clientNetworkPlayer = PhotonNetwork.Instantiate(networkPlayerName, Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
+        if (clientNetworkPlayer == null) Debug.LogError("Tried to spawn network player prefab that doesn't have NetworkPlayer component!");  //Indicate problem if relevant
     }
 
     // When someone leaves a room, we want to remove the player from the game.
@@ -33,6 +37,6 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     {
         Debug.Log("A player has left the room.");
         base.OnLeftRoom();
-        PhotonNetwork.Destroy(spawnedPlayerPrefab);
+        if (clientNetworkPlayer != null) PhotonNetwork.Destroy(clientNetworkPlayer.gameObject);
     }
 }
