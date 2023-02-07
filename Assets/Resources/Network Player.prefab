@@ -136,6 +136,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 2672952002782553872}
   - {fileID: 1897244419514603091}
   - {fileID: 8280270145973470429}
   - {fileID: 1082075741073289626}
@@ -700,6 +701,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6540933588347905299}
+  - component: {fileID: 2672952002782553872}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -722,6 +724,22 @@ Transform:
   m_Father: {fileID: 1467450030744979757}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2672952002782553872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4198593847257922037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &4467122708958360405
 GameObject:
   m_ObjectHideFlags: 0

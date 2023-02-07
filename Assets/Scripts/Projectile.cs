@@ -12,12 +12,13 @@ public class Projectile : MonoBehaviour
     //Objects & Components:
 
     //Settings:
-    [SerializeField, Tooltip("Settings object determining base properties of projectile.")] private ProjectileSettings settings;
+    [Tooltip("Settings object determining base properties of projectile.")] public ProjectileSettings settings;
 
     //Runtime Variables:
-    public Vector3 velocity; //Speed and direction at which projectile is traveling
-
-    private float totalDistance; //Total travel distance covered by this projectile
+    private Vector3 velocity;              //Speed and direction at which projectile is traveling
+    private PlayerController originPlayer; //The player which shot this projectile
+    private Transform target;              //Transform which projectile is currently homing toward
+    private float totalDistance;           //Total travel distance covered by this projectile
 
     //RUNTIME METHODS:
     private protected virtual void Awake()
@@ -27,20 +28,6 @@ public class Projectile : MonoBehaviour
         {
             Debug.LogWarning("Projectile " + name + " is missing settings, using system defaults."); //Log warning in case someone forgot
             settings = (ProjectileSettings)Resources.Load("DefaultProjectileSettings");              //Load default settings from Resources folder
-        }
-
-        //Initialize values:
-        velocity = transform.forward * settings.initialVelocity; //Give projectile initial velocity
-        if (settings.barrelGap > 0) //Projectile is spawning slightly ahead of barrel
-        {
-            //Perform a mini position update:
-            Vector3 targetPos = transform.position + (transform.forward * settings.barrelGap);                                                   //Get target starting position (with barrel gap)
-            if (Physics.Linecast(transform.position, targetPos, out RaycastHit hitInfo, ~settings.ignoreLayers)) { HitObject(hitInfo); return; } //Check for collisions (just in case)
-
-            //Move projectile to target:
-            transform.position = targetPos;                                  //Move projectile to starting position
-            if (settings.range <= settings.barrelGap) { BurnOut(); return; } //Burn projectile out in the unlikely event that the barrel gap is greater than its range
-            totalDistance += settings.barrelGap;                             //Include distance in total distance traveled
         }
     }
     private protected virtual void FixedUpdate()
@@ -75,6 +62,34 @@ public class Projectile : MonoBehaviour
         if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
     }
 
+    //INPUT METHODS:
+    /// <summary>
+    /// Call this method to fire this projectile from designated barrel.
+    /// </summary>
+    /// <param name="barrel">Determines starting position, orientation and velocity of projectile.</param>
+    public void Fire(Transform barrel)
+    {
+        //Check for origin player:
+        originPlayer = barrel.GetComponentInParent<PlayerController>();                               //Try to get playercontroller from barrel
+        if (originPlayer == null) originPlayer = barrel.GetComponentInParent<NetworkPlayer>().player; //Get player script from network player if necessary
+
+        //Initialize values:
+        velocity = barrel.forward * settings.initialVelocity; //Give projectile initial velocity (aligned with forward direction of barrel)
+        transform.position = barrel.transform.position;       //Move to initial position
+        transform.rotation = barrel.transform.rotation;       //Rotate to initial orientation
+        if (settings.barrelGap > 0) //Projectile is spawning slightly ahead of barrel
+        {
+            //Perform a mini position update:
+            Vector3 targetPos = barrel.position + (barrel.forward * settings.barrelGap);                                                         //Get target starting position (with barrel gap)
+            if (Physics.Linecast(transform.position, targetPos, out RaycastHit hitInfo, ~settings.ignoreLayers)) { HitObject(hitInfo); return; } //Check for collisions (just in case)
+
+            //Move projectile to target:
+            transform.position = targetPos;                                  //Move projectile to starting position
+            if (settings.range <= settings.barrelGap) { BurnOut(); return; } //Burn projectile out in the unlikely event that the barrel gap is greater than its range
+            totalDistance += settings.barrelGap;                             //Include distance in total distance traveled
+        }
+    }
+
     //FUNCTIONALITY METHODS:
     /// <summary>
     /// Called whenever projectile strikes an object.
@@ -82,8 +97,14 @@ public class Projectile : MonoBehaviour
     /// <param name="hitInfo">Data about object struck.</param>
     private protected virtual void HitObject(RaycastHit hitInfo)
     {
+        //Look for shootable interface:
+        IShootable shootable = hitInfo.collider.GetComponent<IShootable>();                     //Try to get shootable component from hit collider object
+        if (shootable == null) shootable = hitInfo.collider.GetComponentInParent<IShootable>(); //Try to get shootable component from hit collider object parent
+        if (shootable != null) shootable.IsHit(this);                                           //Indicate to object that it has been shot by this projectile
+
+        //Cleanup:
         print("Hit!"); //TEMP
-        Delete();
+        Delete();      //Destroy projectile
     }
     /// <summary>
     /// Called if projectile range is exhausted and projectile hasn't hit anything.

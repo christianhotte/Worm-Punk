@@ -3162,6 +3162,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthSettings: {fileID: 0}
   debugUpdateSettings: 0
+  useSpawnPoint: 1
 --- !u!1 &8290651123066708156
 GameObject:
   m_ObjectHideFlags: 0
