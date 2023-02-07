@@ -12,4 +12,13 @@ public class MainMenuController : MonoBehaviour
         else
             SceneManager.LoadScene((int)SceneIndexes.ARENA);*/
     }
+
+    public void ToggleDoor(DoorController doorController)
+    {
+        //If the door is not open, open the door
+        if(!doorController.IsDoorOpen())
+            doorController.OpenDoor();
+        else
+            doorController.CloseDoor();
+    }
 }
