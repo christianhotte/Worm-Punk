@@ -26,8 +26,8 @@ public class Projectile : MonoBehaviour
         //Check settings:
         if (settings == null) //Settings were not provided
         {
-            Debug.LogWarning("Projectile " + name + " is missing settings, using system defaults."); //Log warning in case someone forgot
-            settings = (ProjectileSettings)Resources.Load("DefaultProjectileSettings");              //Load default settings from Resources folder
+            Debug.LogWarning("Projectile " + name + " is missing settings, using system defaults.");    //Log warning in case someone forgot
+            settings = (ProjectileSettings)Resources.Load("DefaultSettings/DefaultProjectileSettings"); //Load default settings from Resources folder
         }
     }
     private protected virtual void FixedUpdate()

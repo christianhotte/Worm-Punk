@@ -21,7 +21,7 @@ public class PlayerEquipment : MonoBehaviour
     //Settings:
     [Header("Settings:")]
     [SerializeField, Tooltip("Settings defining this equipment's physical joint behavior.")] private EquipmentJointSettings jointSettings;
-    [SerializeField, Tooltip("Enables constant joint updates for testing purposes.")]        private bool debugUpdateSettings;
+    [SerializeField, Tooltip("Enables constant joint updates for testing purposes.")]        private protected bool debugUpdateSettings;
 
     //Runtime Variables:
 
@@ -43,8 +43,8 @@ public class PlayerEquipment : MonoBehaviour
         //Check for settings:
         if (jointSettings == null) //No joint settings were provided
         {
-            Debug.LogWarning("PlayerEquipment " + name + " is missing jointSettings, using system defaults."); //Log warning in case someone forgot
-            jointSettings = (EquipmentJointSettings)Resources.Load("DefaultEquipmentJointSettings");           //Load default settings from Resources folder
+            Debug.Log("PlayerEquipment " + name + " is missing jointSettings, using system defaults.");              //Log warning in case someone forgot
+            jointSettings = (EquipmentJointSettings)Resources.Load("DefaultSettings/DefaultEquipmentJointSettings"); //Load default settings from Resources folder
         }
 
         //Instantiate rigidbody follower:
