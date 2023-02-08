@@ -46,6 +46,7 @@ public class PlayerEquipment : MonoBehaviour
         XROrigin origin = GetComponentInParent<XROrigin>();                                                                                                                                                    //Try to get player XR origin
         if (origin == null) { Debug.LogError("PlayerEquipment " + name + " is not childed to an XR Origin and must be destroyed."); Destroy(gameObject); }                                                     //Call error message and abort if player could not be found
         if (!origin.TryGetComponent(out playerBody)) { Debug.LogError("PlayerEquipment " + name + " could not find player rigidbody and must be destroyed."); Destroy(gameObject); }                           //Call error message and abort if player rigidbody could not be found
+        player.attachedEquipment.Add(this);                                                                                                                                                                    //Indicate that this equipment has now been attached to player
 
         //Initial component get:
         basePlayerTransform = origin.transform.parent;                                               //Get root player transform (above XR Origin)

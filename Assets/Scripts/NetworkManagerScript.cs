@@ -48,7 +48,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     // Once a player has connected to a lobby.
     public override void OnJoinedLobby()
     {
-        LobbyUIScript.instance.OpenMenu("title");
+        //LobbyUIScript.instance.OpenMenu("title");
         Debug.Log("Joined a lobby.");
         base.OnJoinedLobby();
 

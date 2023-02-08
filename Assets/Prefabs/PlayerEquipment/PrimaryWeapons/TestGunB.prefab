@@ -469,6 +469,7 @@ MonoBehaviour:
   - {fileID: 6739765718685924980}
   - {fileID: 158747479579887327}
   gunSettings: {fileID: 11400000, guid: db175be0a6438d54384e7cded3b44f02, type: 2}
+  debugFireLocal: 0
 --- !u!1 &4572272537239105951
 GameObject:
   m_ObjectHideFlags: 0

@@ -20,6 +20,8 @@ public class Projectile : MonoBehaviour
     private Transform target;              //Transform which projectile is currently homing toward
     private float totalDistance;           //Total travel distance covered by this projectile
 
+    internal bool localOnly = false; //Indicates that this projectile does not have equivalents on the network
+
     //RUNTIME METHODS:
     private protected virtual void Awake()
     {
@@ -69,18 +71,26 @@ public class Projectile : MonoBehaviour
     /// <param name="barrel">Determines starting position, orientation and velocity of projectile.</param>
     public void Fire(Transform barrel)
     {
+        //Initialization:
+        Fire(barrel.position, barrel.rotation); //Perform normal firing initialization
+
         //Check for origin player:
         originPlayer = barrel.GetComponentInParent<PlayerController>();                               //Try to get playercontroller from barrel
         if (originPlayer == null) originPlayer = barrel.GetComponentInParent<NetworkPlayer>().player; //Get player script from network player if necessary
-
+    }
+    /// <summary>
+    /// Call this method if projectile needs to be fired without an object reference (safe for remote projectiles).
+    /// </summary>
+    public void Fire(Vector3 startPosition, Quaternion startRotation)
+    {
         //Initialize values:
-        velocity = barrel.forward * settings.initialVelocity; //Give projectile initial velocity (aligned with forward direction of barrel)
-        transform.position = barrel.transform.position;       //Move to initial position
-        transform.rotation = barrel.transform.rotation;       //Rotate to initial orientation
+        transform.rotation = startRotation;                      //Rotate to initial orientation
+        transform.position = startPosition;                      //Move to initial position
+        velocity = transform.forward * settings.initialVelocity; //Give projectile initial velocity (aligned with forward direction of barrel)
         if (settings.barrelGap > 0) //Projectile is spawning slightly ahead of barrel
         {
             //Perform a mini position update:
-            Vector3 targetPos = barrel.position + (barrel.forward * settings.barrelGap);                                                         //Get target starting position (with barrel gap)
+            Vector3 targetPos = startPosition + (transform.forward * settings.barrelGap);                                                        //Get target starting position (with barrel gap)
             if (Physics.Linecast(transform.position, targetPos, out RaycastHit hitInfo, ~settings.ignoreLayers)) { HitObject(hitInfo); return; } //Check for collisions (just in case)
 
             //Move projectile to target:
@@ -115,7 +125,7 @@ public class Projectile : MonoBehaviour
     }
     private void Delete()
     {
-        if (TryGetComponent(out PhotonView photonView))
+        if (!localOnly && TryGetComponent(out PhotonView photonView))
         {
             if (photonView.IsMine) PhotonNetwork.Destroy(gameObject);
         }

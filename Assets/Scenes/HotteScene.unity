@@ -2518,6 +2518,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1121253887837515577, guid: c093f8ad89249864ab655e5685191a20, type: 3}
+      propertyPath: networkPlayerName
+      value: NewNetworkPlayer
+      objectReference: {fileID: 0}
     - target: {fileID: 1121253887837515582, guid: c093f8ad89249864ab655e5685191a20, type: 3}
       propertyPath: m_Name
       value: Network Manager
