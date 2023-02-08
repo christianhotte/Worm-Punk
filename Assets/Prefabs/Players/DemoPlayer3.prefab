@@ -803,7 +803,7 @@ MonoBehaviour:
         m_RotationOrder: 0
       useAnimatedBendNormal: 0
     locomotion:
-      weight: 1
+      weight: 0
       footDistance: 0.3
       stepThreshold: 0.35
       angleThreshold: 60

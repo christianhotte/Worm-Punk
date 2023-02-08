@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DefaultEquipmentJointSettings
   m_EditorClassIdentifier: 
   offset: {x: 0, y: 0, z: 0}
-  velocityCompensation: 0.01
+  velocityCompensation: 0.02
   mass: 0.5
   limitAngle: 160
   limitBounciness: 0.3
