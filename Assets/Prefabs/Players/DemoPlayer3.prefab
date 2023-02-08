@@ -2279,6 +2279,7 @@ MonoBehaviour:
   hitType: 0
   Rocket: {fileID: 5772645904460756729}
   cable: {fileID: 0}
+  maneuverStrength: 15
 --- !u!120 &1072501453279715259
 LineRenderer:
   m_ObjectHideFlags: 0
