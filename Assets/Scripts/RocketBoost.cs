@@ -36,7 +36,7 @@ public class RocketBoost : PlayerEquipment  //renametograpple
         {
             realDistance = Vector3.Distance(rocketTip.position, HookInstance.transform.position); // gets distance to the hit
             RaycastHit checkSaw;
-            var sawRay = Physics.Raycast(rocketTip.position, rocketTip.forward, out checkSaw, grappleDistance);
+            var sawRay = Physics.Raycast(rocketTip.position, rocketTip.forward, out checkSaw);
             if (checkSaw.collider == null) return;
             if (checkSaw.collider.tag == "Blade")
             {

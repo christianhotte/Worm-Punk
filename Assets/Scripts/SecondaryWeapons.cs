@@ -10,7 +10,7 @@ public class SecondaryWeapons : PlayerEquipment
     public GameObject blade,hand;
     public Rigidbody playerRB,bladeRB;
     public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,rocketTip;
-    public float activationTime, activationSpeed,timeAtSpeed,grindSpeed=10,grindRange=2;
+    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5;
     public AnimationCurve deployMotionCurve, deployScaleCurve, sheathMotionCurve, sheathScaleCurve;
     public bool deployed = false,cooldown=false,grindin=false;
     public Vector3 prevHandPos,tipPos;
@@ -61,31 +61,31 @@ public class SecondaryWeapons : PlayerEquipment
         handMotion = handPos - prevHandPos;
         float forwardAngle = Vector3.Angle(handMotion, transform.forward);
 
-        if ((!deployed && forwardAngle < 90&&!cooldown) || (deployed && forwardAngle > 90&&!cooldown))
-        {
-            handMotion = Vector3.Project(handPos - prevHandPos, hand.transform.forward);
+        //if ((!deployed && forwardAngle < 90&&!cooldown) || (deployed && forwardAngle > 90&&!cooldown))
+        //{
+        //    handMotion = Vector3.Project(handPos - prevHandPos, hand.transform.forward);
 
-            float punchSpeed = handMotion.magnitude / Time.deltaTime;
-            if ((!deployed&&punchSpeed >= activationSpeed)||(deployed&&punchSpeed>=(activationSpeed-0.035f)))
-            {
-                timeAtSpeed += Time.deltaTime;
-                if (timeAtSpeed >= activationTime)
-                {
-                    if (!deployed)
-                    {
-                        Deploy();
-                    }
-                    else
-                    {
-                        Sheethe();
-                    }
-                }
-            }
-        }
-        else
-        {
-            timeAtSpeed = 0;
-        }
+        //    float punchSpeed = handMotion.magnitude / Time.deltaTime;
+        //    if ((!deployed&&punchSpeed >= activationSpeed)||(deployed&&punchSpeed>=(activationSpeed-0.035f)))
+        //    {
+        //        timeAtSpeed += Time.deltaTime;
+        //        if (timeAtSpeed >= activationTime)
+        //        {
+        //            if (!deployed)
+        //            {
+        //                Deploy();
+        //            }
+        //            else
+        //            {
+        //                Sheethe();
+        //            }
+        //        }
+        //    }
+        //}
+        //else
+        //{
+        //    timeAtSpeed = 0;
+        //}
         base.Update();
         prevHandPos = handPos;
     }
@@ -97,6 +97,7 @@ public class SecondaryWeapons : PlayerEquipment
             float gripPosition = context.ReadValue<float>(); //Get current position of trigger as a value
             if (!gripPressed) //Trigger has not yet been pulled
             {
+                Debug.Log(gripPosition);
                 if (gripPosition >= gripThreshold) //Trigger has just been pulled
                 {
                     gripPressed = true; //Indicate that trigger is now pulled
@@ -119,7 +120,10 @@ public class SecondaryWeapons : PlayerEquipment
         //blade.transform.position = bladeDeployed.position;
         bladeRB.isKinematic = false;
         bladeRB.useGravity = true;
-       // bladeRB.velocity += blade.transform.forward;
+        //  blade.transform.LookAt(bladeTip);
+        blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeDeployed.transform.position, deploySpeed);
+        //  bladeRB.velocity += blade.transform.forward*-deploySpeed;
+        blade.transform.localRotation = bladeDeployed.transform.localRotation;
       //  deployed = true;
         StartCoroutine(StartCooldown());
 
@@ -127,10 +131,12 @@ public class SecondaryWeapons : PlayerEquipment
     public void Sheethe()
     {
         Debug.Log("Sheethe");
+        blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeSheethed.transform.position, deploySpeed);
         bladeRB.isKinematic = true;
         bladeRB.useGravity = false;
-        blade.transform.position = bladeSheethed.transform.position;
+       // blade.transform.position = bladeSheethed.transform.position;
         deployed = false;
+        blade.transform.localRotation = bladeSheethed.transform.localRotation;
         StartCoroutine(StartCooldown());
     }
     public IEnumerator StartCooldown()
