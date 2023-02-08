@@ -56,8 +56,9 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
         if (!this.photonView.IsMine) return; //Ignore if this method is not being called on this client
 
         //Launch projectile:
-        photonView.RPC("RPC_Fire", RpcTarget.All, barrel.position, barrel.rotation);                                                         //Call fire on remote weapons
-        //Projectile projectile = PhotonNetwork.Instantiate(projectileResourceName, barrel.position, barrel.rotation).GetComponent<Projectile>(); //Instantiate projectile on network
+        //photonView.RPC("RPC_Fire", RpcTarget.All, barrel.position, barrel.rotation);                                                          //Call fire on remote weapons
+        Projectile projectile = PhotonNetwork.Instantiate(projectileResourceName, barrel.position, barrel.rotation).GetComponent<Projectile>(); //Instantiate projectile on network
+        projectile.photonView.RPC("RPC_Fire", RpcTarget.All, barrel.position, barrel.rotation);
         //projectile.Fire(barrel);                                                                                                                //Initialize projectile
         print("fired client projectile");
     }
