@@ -23,9 +23,6 @@ public class NetworkPlayer : MonoBehaviour
     public Transform head;
     public Transform leftHand;
     public Transform rightHand;
-    public Transform body;
-
-    
 
     // Gets a list of all of the players on the network
     Player[] allPlayers;
@@ -63,6 +60,15 @@ public class NetworkPlayer : MonoBehaviour
                 Physics.IgnoreCollision(collider, otherCollider);
             }
         }
+
+        //Hide client renderers:
+        if (photonView.IsMine)
+        {
+            foreach (var item in GetComponentsInChildren<Renderer>())
+            {
+                item.enabled = false;
+            }
+        }
     }
     private void OnDestroy()
     {
@@ -79,15 +85,6 @@ public class NetworkPlayer : MonoBehaviour
             MapPosition(head, headRig);
             MapPosition(leftHand, leftHandRig);
             MapPosition(rightHand, rightHandRig);
-        }
-
-        // Disables all of the renderers in the Network player so that we can just render the XR Origin's.
-        if (photonView.IsMine)
-        {
-            foreach (var item in GetComponentsInChildren<Renderer>())
-            {
-                item.enabled = false;
-            }
         }
 
         // The player dies if the player falls too far below the map.

@@ -13,7 +13,7 @@ public class PlayerEquipment : MonoBehaviour
     //Objects & Components:
     internal PlayerController player;       //Player currently controlling this equipment
     private Transform basePlayerTransform;  //Master player object which all player equipment (and XR Origin) is under
-    private Transform targetTransform;      //Position and orientation for equipment joint to target (should be parent transform)
+    private protected Transform targetTransform;      //Position and orientation for equipment joint to target (should be parent transform)
     private Rigidbody followerBody;         //Transform for object with mimics position and orientation of target equipment joint
     private protected Rigidbody playerBody; //Rigidbody attached to player XROrigin
     private InputActionMap inputMap;        //Input map which this equipment will use

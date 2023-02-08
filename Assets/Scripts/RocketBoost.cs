@@ -13,6 +13,11 @@ public class RocketBoost : PlayerEquipment  //renametograpple
     public int hitType = 0;
     public MeshRenderer Rocket;
     public LineRenderer cable;
+    [Space()]
+    public float maneuverStrength = 5f;
+
+    Vector3 hitHandPos;
+
     // Start is called before the first frame update
     private protected override void Awake()
     {
@@ -24,11 +29,11 @@ public class RocketBoost : PlayerEquipment  //renametograpple
     // Update is called once per frame
     private protected override void Update()
     {
-       // if(realDistance!= null) Debug.Log(realDistance);
+        // if(realDistance!= null) Debug.Log(realDistance);
 
-        if (hookedPos != null)
+        if (HookInstance != null)
         {
-            realDistance = Vector3.Distance(rocketTip.position, hookedPos.position); // gets distance to the hit
+            realDistance = Vector3.Distance(rocketTip.position, HookInstance.transform.position); // gets distance to the hit
         }
 
         if (shootinHook)
@@ -50,18 +55,21 @@ public class RocketBoost : PlayerEquipment  //renametograpple
 
         if (Grapplin&&!grappleCooldown)
         {
-           
+            
             rocketTip.LookAt(rayHitPoint);//sets grapple to look at grapple point
-            Vector3 newPlayerVelocity = (rocketTip.forward * rocketPower);
+            Vector3 newHandPos = player.xrOrigin.transform.InverseTransformPoint(targetTransform.position);
+            Vector3 diff = hitHandPos - newHandPos;
 
+            Vector3 newPlayerVelocity = (rocketTip.forward * rocketPower);
+            newPlayerVelocity += diff * maneuverStrength;
             playerBody.velocity = newPlayerVelocity;//move the player
         }
-        if (!grappleCooldown && realDistance < 5.5&&grapplinWall)
+        if (!grappleCooldown && realDistance < 2.5&&grapplinWall)
         {
             playerBody.velocity = (rocketTip.up * releasePower); //the bounce after grapple is released
             GrappleStop();
         }
-        else if (!grappleCooldown && realDistance < 16 && !grapplinWall)
+        else if (!grappleCooldown && realDistance < 2.5 && !grapplinWall)
         {
             playerBody.velocity = (rocketTip.forward * releasePower); //the bounce after grapple is released
             GrappleStop();
@@ -131,10 +139,14 @@ public class RocketBoost : PlayerEquipment  //renametograpple
         }
       
     }
+    public void HookHit()
+    {
+        hitHandPos = player.xrOrigin.transform.InverseTransformPoint(targetTransform.position);
+    }
     public void GrappleStop()
     {
         //Debug.Log("release");
-        Rocket.enabled = true;
+        //Rocket.enabled = true;
         Destroy(this.gameObject.GetComponent<LineRenderer>());
         hitType = 0;
         Rocket.enabled = true;
