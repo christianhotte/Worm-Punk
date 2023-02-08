@@ -92,9 +92,9 @@ public class PhysicalButtonController : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Locks or unlocks the button's position.
     /// </summary>
-    /// <param name="locked"></param>
+    /// <param name="locked">If true, the position of the button is locked. If false, the button can be pressed freely.</param>
     private void LockButton(bool locked)
     {
         isLocked = locked;
