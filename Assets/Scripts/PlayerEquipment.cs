@@ -11,26 +11,31 @@ using UnityEngine.InputSystem;
 public class PlayerEquipment : MonoBehaviour
 {
     //Objects & Components:
-    internal PlayerController player;      //Player currently controlling this equipment
-    private Transform basePlayerTransform; //Master player object which all player equipment (and XR Origin) is under
-    private Transform targetTransform;     //Position and orientation for equipment joint to target (should be parent transform)
-    private Rigidbody followerBody;        //Transform for object with mimics position and orientation of target equipment joint
-    private Rigidbody playerBody;          //Rigidbody attached to player XROrigin
-    private InputActionMap inputMap;       //Input map which this equipment will use
+    internal PlayerController player;       //Player currently controlling this equipment
+    private Transform basePlayerTransform;  //Master player object which all player equipment (and XR Origin) is under
+    private Transform targetTransform;      //Position and orientation for equipment joint to target (should be parent transform)
+    private Rigidbody followerBody;         //Transform for object with mimics position and orientation of target equipment joint
+    private protected Rigidbody playerBody; //Rigidbody attached to player XROrigin
+    private InputActionMap inputMap;        //Input map which this equipment will use
 
-    private protected Rigidbody rb;  //Rigidbody component attached to this script's gameobject
-    private ConfigurableJoint joint; //Physical joint connecting this weapon to the player
+    private protected Rigidbody rb;            //Rigidbody component attached to this script's gameobject
+    private protected AudioSource audioSource; //Audio source component for playing sounds made by this equipment
+    private ConfigurableJoint joint;           //Physical joint connecting this weapon to the player
 
     //Settings:
     [Header("Settings:")]
     [SerializeField, Tooltip("Settings defining this equipment's physical joint behavior.")] private EquipmentJointSettings jointSettings;
-    [SerializeField, Tooltip("Enables constant joint updates for testing purposes.")]        private protected bool debugUpdateSettings;
+    [SerializeField, Tooltip("Enables constant joint updates for testing purposes.")] private protected bool debugUpdateSettings;
 
     //Runtime Variables:
     /// <summary>
     /// Which hand this equipment is associated with (if any).
     /// </summary>
     internal Handedness handedness;
+    /// <summary>
+    /// Equipment in stasis will do nothing and check nothing until it is re-equipped to a player.
+    /// </summary>
+    internal bool inStasis = false;
 
     //RUNTIME METHODS:
     private protected virtual void Awake()
@@ -41,11 +46,12 @@ public class PlayerEquipment : MonoBehaviour
         XROrigin origin = GetComponentInParent<XROrigin>();                                                                                                                                                    //Try to get player XR origin
         if (origin == null) { Debug.LogError("PlayerEquipment " + name + " is not childed to an XR Origin and must be destroyed."); Destroy(gameObject); }                                                     //Call error message and abort if player could not be found
         if (!origin.TryGetComponent(out playerBody)) { Debug.LogError("PlayerEquipment " + name + " could not find player rigidbody and must be destroyed."); Destroy(gameObject); }                           //Call error message and abort if player rigidbody could not be found
-        
+
         //Initial component get:
-        basePlayerTransform = origin.transform.parent; //Get root player transform (above XR Origin)
-        targetTransform = transform.parent;            //Use current parent as target transform
-        transform.parent = basePlayerTransform;        //Reparent equipment to base player transform
+        basePlayerTransform = origin.transform.parent;                                               //Get root player transform (above XR Origin)
+        targetTransform = transform.parent;                                                          //Use current parent as target transform
+        transform.parent = basePlayerTransform;                                                      //Reparent equipment to base player transform
+        if (!TryGetComponent(out audioSource)) audioSource = gameObject.AddComponent<AudioSource>(); //Make sure equipment has audio source
 
         //Check for settings:
         if (jointSettings == null) //No joint settings were provided
@@ -54,7 +60,7 @@ public class PlayerEquipment : MonoBehaviour
             jointSettings = (EquipmentJointSettings)Resources.Load("DefaultSettings/DefaultEquipmentJointSettings"); //Load default settings from Resources folder
         }
 
-        //Check handedness:
+        //Check handedness & setup input:
         if (targetTransform.name.Contains("Left") || targetTransform.name.Contains("left")) //Equipment is being attached to the left hand/side
         {
             inputMap = playerInput.actions.FindActionMap("XRI LeftHand Interaction"); //Get left hand input map
@@ -70,8 +76,9 @@ public class PlayerEquipment : MonoBehaviour
             inputMap = playerInput.actions.FindActionMap("XRI Generic Interaction"); //Get generic input map
             handedness = Handedness.None;                                            //Indicate that equipment is not attached to a side
         }
-        if (inputMap == null) Debug.LogWarning("PlayerEquipment " + name + " could not get its desired input map, make sure PlayerInput's actions are set up properly."); //Post warning if input get was unsuccessful
-        else inputMap.actionTriggered += OnInputActionTriggered;                                                                                                          //Otherwise, subscribe to input triggered event
+        if (inputMap != null) inputMap.actionTriggered += InputActionTriggered; //Otherwise, subscribe to input triggered event
+        else Debug.LogWarning("PlayerEquipment " + name + " could not get its desired input map, make sure PlayerInput's actions are set up properly."); //Post warning if input get was unsuccessful
+
 
         //Instantiate rigidbody follower:
         Transform followerTransform = new GameObject(name + "Follower").transform; //Instantiate empty gameobject as follower
@@ -88,6 +95,7 @@ public class PlayerEquipment : MonoBehaviour
         rb.drag = 0;                                                                                                  //Turn off linear drag
         rb.angularDrag = 0;                                                                                           //Turn off angular drag
         rb.useGravity = false;                                                                                        //Turn off rigidbody gravity
+        rb.isKinematic = false;                                                                                       //Make sure rigidbody is not kinematic
         rb.interpolation = RigidbodyInterpolation.Interpolate;                                                        //Enable interpolation
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;                                         //Enable continuous dynamic collisions
 
@@ -123,11 +131,26 @@ public class PlayerEquipment : MonoBehaviour
     private protected virtual void OnDestroy()
     {
         //Unsubscribe from events:
-        inputMap.actionTriggered -= OnInputActionTriggered; //Unsubscribe from input event
+        if (inputMap != null) inputMap.actionTriggered -= InputActionTriggered; //Unsubscribe from input event
     }
-    public virtual void OnInputActionTriggered(InputAction.CallbackContext context) { }
+    private protected virtual void InputActionTriggered(InputAction.CallbackContext context) { }
 
     //FUNCTIONALITY METHODS:
+    /// <summary>
+    /// Detaches equipment from player and puts it into stasis.
+    /// </summary>
+    public void UnEquip()
+    {
+
+    }
+    /// <summary>
+    /// Equips equipment onto target transform (should be under a player's XR Origin).
+    /// </summary>
+    /// <param name="target">Needs to be under a specific player's XR Origin, named "Left..." or "Right..." if it's on a specific side of the player.</param>
+    public void Equip(Transform target)
+    {
+
+    }
     /// <summary>
     /// Updates position of rigidbody follower to match position of target.
     /// </summary>
