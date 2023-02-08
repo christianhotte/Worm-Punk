@@ -98,8 +98,8 @@ public class NewShotgunController : PlayerEquipment
         Transform currentBarrel = barrels[currentBarrelIndex]; //Get reference to active barrel
 
         //Rigidbody effects:
-        player.bodyRb.velocity = -currentBarrel.forward * gunSettings.fireVelocity;         //Launch player based on current barrel facing direction
-        rb.AddForceAtPosition(currentBarrel.up, currentBarrel.position, ForceMode.Impulse); //Apply upward torque to weapon at end of barrel
+        player.bodyRb.velocity = -currentBarrel.forward * gunSettings.fireVelocity;                                    //Launch player based on current barrel facing direction
+        rb.AddForceAtPosition(currentBarrel.up * gunSettings.recoilTorque, currentBarrel.position, ForceMode.Impulse); //Apply upward torque to weapon at end of barrel
 
         //Cleanup:
         if (gunSettings.fireSound != null) audioSource.PlayOneShot(gunSettings.fireSound); //Play sound effect
