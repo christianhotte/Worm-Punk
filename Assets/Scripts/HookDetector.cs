@@ -13,8 +13,9 @@ public class HookDetector : MonoBehaviour
     }
 
     // Update is called once per frame
-     void Update()
+    void Update()
     {
+
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -22,5 +23,6 @@ public class HookDetector : MonoBehaviour
         hookrb.isKinematic = true;
         Debug.Log("hit");
         RBScript.grappleCooldown = false;
+        RBScript.HookHit();
     }
 }
