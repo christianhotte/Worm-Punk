@@ -7,7 +7,7 @@ using Photon.Pun;
 /// <summary>
 /// Base class for any non-hitscan ballistic projectiles.
 /// </summary>
-public class Projectile : MonoBehaviour
+public class Projectile : MonoBehaviourPunCallbacks
 {
     //Objects & Components:
 
@@ -99,6 +99,8 @@ public class Projectile : MonoBehaviour
             totalDistance += settings.barrelGap;                             //Include distance in total distance traveled
         }
     }
+    [PunRPC]
+    public void RPC_Fire(Vector3 startPosition, Quaternion startRotation) { Fire(startPosition, startRotation); }
 
     //FUNCTIONALITY METHODS:
     /// <summary>
