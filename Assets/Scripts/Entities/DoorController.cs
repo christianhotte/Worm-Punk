@@ -113,4 +113,5 @@ public class DoorController : MonoBehaviour
     }
 
     public bool IsDoorOpen() => isOpen;
+    public float GetDoorSpeed() => speed;
 }
