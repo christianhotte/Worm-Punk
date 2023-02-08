@@ -464,8 +464,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jointSettings: {fileID: 11400000, guid: 5093f50b96876fb4cae52422dcb85e6f, type: 2}
-  debugUpdateSettings: 0
-  breakJoint: {fileID: 0}
+  debugUpdateSettings: 1
   barrels:
   - {fileID: 6739765718685924980}
   - {fileID: 158747479579887327}

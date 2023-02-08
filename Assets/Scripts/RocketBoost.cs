@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 
 public class RocketBoost : PlayerEquipment  //renametograpple
 {
-    public Rigidbody playerBody;
     public Transform rocketTip,rocketTipReset,hookedPos,hookStartPos;
     public GameObject HookModel,HookInstance;
     public Vector3 rayHitPoint, rocketTipStart;
@@ -35,13 +34,16 @@ public class RocketBoost : PlayerEquipment  //renametograpple
         if (shootinHook)
         {
             Rocket.enabled = false;
-            HookInstance.transform.LookAt(rayHitPoint);
-            HookInstance.transform.position = Vector3.MoveTowards(HookInstance.transform.position, rayHitPoint, hookSpeed);
-            if (this.gameObject.GetComponent<LineRenderer>() != null)
+            if (HookInstance != null) //Put this here to MissingReferenceException error
             {
+                HookInstance.transform.LookAt(rayHitPoint);
+                HookInstance.transform.position = Vector3.MoveTowards(HookInstance.transform.position, rayHitPoint, hookSpeed);
+                if (this.gameObject.GetComponent<LineRenderer>() != null)
+                {
 
-                cable.SetPosition(0, rocketTip.transform.position);
-                cable.SetPosition(1, HookInstance.transform.position);
+                    cable.SetPosition(0, rocketTip.transform.position);
+                    cable.SetPosition(1, HookInstance.transform.position);
+                }
             }
 
         }
@@ -65,6 +67,12 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             GrappleStop();
         }
         base.Update();
+    }
+
+    //This is the new system for processing equipment inputs, equipment now automatically subscribes to the event for you so now you don't have to manually assign it in the inspector
+    private protected override void InputActionTriggered(InputAction.CallbackContext context)
+    {
+        if (context.action.name == "Grip") OnGripInput(context);
     }
     public void OnGripInput(InputAction.CallbackContext context)
     {

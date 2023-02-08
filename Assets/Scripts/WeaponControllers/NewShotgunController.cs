@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 public class NewShotgunController : PlayerEquipment
 {
     //Objects & Components:
-    [SerializeField] internal ConfigurableJoint breakJoint; //Joint controlling weapon's break action
+    internal ConfigurableJoint breakJoint; //Joint controlling weapon's break action
 
     //Settings:
     [SerializeField, Tooltip("Transforms representing position and direction of weapon barrels.")] private Transform[] barrels;
