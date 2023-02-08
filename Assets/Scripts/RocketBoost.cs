@@ -12,7 +12,13 @@ public class RocketBoost : PlayerEquipment  //renametograpple
     public bool Grapplin = false,grappleCooldown=true,grapplinWall=false,shootinHook=false;
     public int hitType = 0;
     public MeshRenderer Rocket;
+    public HookDetector hookScript;
     public LineRenderer cable;
+    [Space()]
+    public float maneuverStrength = 5f;
+
+    Vector3 hitHandPos;
+
     // Start is called before the first frame update
     private protected override void Awake()
     {
@@ -24,11 +30,19 @@ public class RocketBoost : PlayerEquipment  //renametograpple
     // Update is called once per frame
     private protected override void Update()
     {
-       // if(realDistance!= null) Debug.Log(realDistance);
+        // if(realDistance!= null) Debug.Log(realDistance);
 
-        if (hookedPos != null)
+        if (HookInstance != null)
         {
-            realDistance = Vector3.Distance(rocketTip.position, hookedPos.position); // gets distance to the hit
+            realDistance = Vector3.Distance(rocketTip.position, HookInstance.transform.position); // gets distance to the hit
+            RaycastHit checkSaw;
+            var sawRay = Physics.Raycast(rocketTip.position, rocketTip.forward, out checkSaw, grappleDistance);
+            if (checkSaw.collider == null) return;
+            if (checkSaw.collider.tag == "Blade")
+            {
+                Debug.Log("cut");
+                GrappleStop();
+            }
         }
 
         if (shootinHook)
@@ -36,32 +50,38 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             Rocket.enabled = false;
             if (HookInstance != null) //Put this here to MissingReferenceException error
             {
-                HookInstance.transform.LookAt(rayHitPoint);
-                HookInstance.transform.position = Vector3.MoveTowards(HookInstance.transform.position, rayHitPoint, hookSpeed);
-                if (this.gameObject.GetComponent<LineRenderer>() != null)
-                {
+                // HookInstance.transform.LookAt(rayHitPoint);
+              //  HookInstance.transform.LookAt(hookScript.hookLead);
+              //  hookScript = HookInstance.GetComponent<HookDetector>();
+               // HookInstance.transform.position = Vector3.MoveTowards(HookInstance.transform.position, hookScript.hookLead.transform.position, hookSpeed);
+                //HookInstance.transform.position = Vector3.MoveTowards(HookInstance.transform.position, rayHitPoint, hookSpeed);
+                //if (this.gameObject.GetComponent<LineRenderer>() != null)
+                //{
 
-                    cable.SetPosition(0, rocketTip.transform.position);
-                    cable.SetPosition(1, HookInstance.transform.position);
-                }
+                //    cable.SetPosition(0, rocketTip.transform.position);
+                //    cable.SetPosition(1, HookInstance.transform.position);
+                //}
             }
 
         }
 
         if (Grapplin&&!grappleCooldown)
         {
-           
-            rocketTip.LookAt(rayHitPoint);//sets grapple to look at grapple point
-            Vector3 newPlayerVelocity = (rocketTip.forward * rocketPower);
+ 
+            rocketTip.LookAt(HookInstance.transform);//sets grapple to look at grapple point
+            Vector3 newHandPos = player.xrOrigin.transform.InverseTransformPoint(targetTransform.position);
+            Vector3 diff = hitHandPos - newHandPos;
 
+            Vector3 newPlayerVelocity = (rocketTip.forward * rocketPower);
+            newPlayerVelocity += diff * maneuverStrength;
             playerBody.velocity = newPlayerVelocity;//move the player
         }
-        if (!grappleCooldown && realDistance < 5.5&&grapplinWall)
+        if (!grappleCooldown && realDistance < 2.5&&grapplinWall)
         {
             playerBody.velocity = (rocketTip.up * releasePower); //the bounce after grapple is released
             GrappleStop();
         }
-        else if (!grappleCooldown && realDistance < 16 && !grapplinWall)
+        else if (!grappleCooldown && realDistance < 2.5 && !grapplinWall)
         {
             playerBody.velocity = (rocketTip.forward * releasePower); //the bounce after grapple is released
             GrappleStop();
@@ -100,15 +120,15 @@ public class RocketBoost : PlayerEquipment  //renametograpple
         {
             RaycastHit hit;
             var ray = Physics.Raycast(rocketTip.position, rocketTip.forward, out hit, grappleDistance);
-            if (hit.collider == null) return;
+           // if (hit.collider == null) return;
 
             HookInstance = Instantiate(HookModel);
             HookDetector detector = HookInstance.GetComponent<HookDetector>();
             detector.RBScript = this.gameObject.GetComponent<RocketBoost>();
             HookInstance.transform.position = hookStartPos.position;
-            hookedPos = hit.transform;
-            Debug.Log(hit.normal);
-            rayHitPoint = hit.point;
+           // hookedPos = hit.transform;
+           // Debug.Log(hit.normal);
+           // rayHitPoint = hit.point;
             // StartCoroutine(GrappleLaunch());
             
             cable = this.gameObject.AddComponent<LineRenderer>();
@@ -119,7 +139,7 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             cable.endWidth = 0.01f;
             Grapplin = true;
             shootinHook = true;
-
+            if (hit.collider == null) return;
             if (hit.normal.y!=0&&hit.normal!=Vector3.zero)//if hit ground, also stopps iff null
             {
                 grapplinWall = false;
@@ -131,10 +151,14 @@ public class RocketBoost : PlayerEquipment  //renametograpple
         }
       
     }
+    public void HookHit()
+    {
+        hitHandPos = player.xrOrigin.transform.InverseTransformPoint(targetTransform.position);
+    }
     public void GrappleStop()
     {
         //Debug.Log("release");
-        Rocket.enabled = true;
+        //Rocket.enabled = true;
         Destroy(this.gameObject.GetComponent<LineRenderer>());
         hitType = 0;
         Rocket.enabled = true;
