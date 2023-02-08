@@ -16,9 +16,10 @@ public class PlayerController : MonoBehaviour, IShootable
     [Tooltip("Singleton instance of player controller.")]                                    public static PlayerController instance;
     [Tooltip("Singleton instance of this client's photonNetwork (on their NetworkPlayer).")] public static PhotonView photonView;
 
-    [Tooltip("XROrigin component attached to player instance in scene.")] internal XROrigin xrOrigin;
-    [Tooltip("Controller component for player's left hand.")]             internal ActionBasedController leftHand;
-    [Tooltip("Controller component for player's right hand.")]            internal ActionBasedController rightHand;
+    [Tooltip("XROrigin component attached to player instance in scene.")]  internal XROrigin xrOrigin;
+    [Tooltip("Rigidbody for player's body (the part that flies around).")] internal Rigidbody bodyRb;
+    [Tooltip("Controller component for player's left hand.")]              internal ActionBasedController leftHand;
+    [Tooltip("Controller component for player's right hand.")]             internal ActionBasedController rightHand;
 
     private Camera cam;              //Main player camera
     internal PlayerInput input;      //Input manager component used by player to send messages to hands and such
@@ -42,6 +43,7 @@ public class PlayerController : MonoBehaviour, IShootable
         if (instance == null) { instance = this; } else { Debug.LogError("Tried to spawn a second instance of PlayerController in scene."); Destroy(gameObject); }             //Singleton-ize player object
         if (!TryGetComponent(out input)) { Debug.LogError("PlayerController could not find PlayerInput component!"); Destroy(gameObject); }                                    //Make sure player input component is present on same object
         xrOrigin = GetComponentInChildren<XROrigin>(); if (xrOrigin == null) { Debug.LogError("PlayerController could not find XROrigin in children."); Destroy(gameObject); } //Make sure XROrigin is present inside player
+        bodyRb = xrOrigin.GetComponent<Rigidbody>(); if (bodyRb == null) { Debug.LogError("PlayerController could not find Rigidbody on XR Origin."); Destroy(gameObject); }   //Make sure player has a rigidbody on origin
         cam = GetComponentInChildren<Camera>(); if (cam == null) { Debug.LogError("PlayerController could not find camera in children."); Destroy(gameObject); }               //Make sure system has camera
         audioSource = cam.GetComponent<AudioSource>(); if (audioSource == null) audioSource = cam.gameObject.AddComponent<AudioSource>();                                      //Make sure system has an audio source
 
@@ -52,8 +54,8 @@ public class PlayerController : MonoBehaviour, IShootable
         //Check settings:
         if (healthSettings == null) //No health settings were provided
         {
-            Debug.LogWarning("PlayerController is missing HealthSettings, using system defaults."); //Log warning in case someone forgot
-            healthSettings = (HealthSettings)Resources.Load("DefaultHealthSettings");               //Load default settings from Resources folder
+            Debug.Log("PlayerController is missing HealthSettings, using system defaults."); //Log warning in case someone forgot
+            healthSettings = (HealthSettings)Resources.Load("DefaultHealthSettings");        //Load default settings from Resources folder
         }
 
         //Setup runtime variables:
