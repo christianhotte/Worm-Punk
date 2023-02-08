@@ -4316,9 +4316,9 @@ GameObject:
   - component: {fileID: 5276987456485641664}
   - component: {fileID: 5276987456485641665}
   - component: {fileID: 5276987456485641666}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Blade
-  m_TagString: Untagged
+  m_TagString: Blade
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4381,7 +4381,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 5276987456485641276}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
@@ -4953,16 +4953,17 @@ MonoBehaviour:
   rayHitPoint: {x: 0, y: 0, z: 0}
   rocketTipStart: {x: 0, y: 0, z: 0}
   rocketPower: 20
-  grappleDistance: 30
+  grappleDistance: 50
   releasePower: 5
   realDistance: 0
-  hookSpeed: 1
+  hookSpeed: 3
   Grapplin: 0
   grappleCooldown: 1
   grapplinWall: 0
   shootinHook: 0
   hitType: 0
   Rocket: {fileID: 5276987458290609391}
+  hookScript: {fileID: 0}
   cable: {fileID: 0}
   maneuverStrength: 15
 --- !u!33 &5276987458290609390
@@ -5384,7 +5385,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 171124135041867653}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 2.226181, z: -0.0000002542408}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5276987458290609385}

@@ -30,8 +30,10 @@ public class SecondaryWeapons : PlayerEquipment
         grindin = false;
         foreach (var hit in hits)
         {
-            if (hit.gameObject.tag != "Player")
+
+            if (hit.gameObject.tag != "Player"&&hit.name!="Blade")
             {
+                Debug.Log(hit.name);
                 grindin = true;
                 break;
             }
