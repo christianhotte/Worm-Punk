@@ -9,11 +9,12 @@ using UnityEngine.InputSystem;
 public class NewShotgunController : PlayerEquipment
 {
     //Objects & Components:
-    internal ConfigurableJoint breakJoint; //Joint controlling weapon's break action
+    internal ConfigurableJoint breakJoint;         //Joint controlling weapon's break action
+    internal RemoteShotgunController networkedGun; //Remote weapon script used to fire guns on the network
 
     //Settings:
     [SerializeField, Tooltip("Transforms representing position and direction of weapon barrels.")] private Transform[] barrels;
-    [SerializeField, Tooltip("Settings object which determines general weapon behavior.")]         private ShotgunSettings gunSettings;
+    [Tooltip("Settings object which determines general weapon behavior.")]                         public ShotgunSettings gunSettings;
 
     //Runtime Variables:
     private int currentBarrelIndex = 0; //Index of barrel currently selected as next to fire
@@ -100,6 +101,8 @@ public class NewShotgunController : PlayerEquipment
         //Rigidbody effects:
         player.bodyRb.velocity = -currentBarrel.forward * gunSettings.fireVelocity;                                    //Launch player based on current barrel facing direction
         rb.AddForceAtPosition(currentBarrel.up * gunSettings.recoilTorque, currentBarrel.position, ForceMode.Impulse); //Apply upward torque to weapon at end of barrel
+
+        //Instantiate projectile(s):
 
         //Cleanup:
         if (gunSettings.fireSound != null) audioSource.PlayOneShot(gunSettings.fireSound); //Play sound effect

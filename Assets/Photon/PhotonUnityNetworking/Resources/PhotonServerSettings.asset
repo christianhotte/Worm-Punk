@@ -43,6 +43,7 @@ MonoBehaviour:
   - RpcFire
   - RPC_ShootProjectile
   - RPC_DestroyProjectile
+  - RPC_Fire
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
