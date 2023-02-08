@@ -30,7 +30,7 @@ public class SecondaryWeapons : PlayerEquipment
         grindin = false;
         foreach (var hit in hits)
         {
-            if (hit.gameObject.tag == "Ground")
+            if (hit.gameObject.tag != "Player")
             {
                 grindin = true;
                 break;
