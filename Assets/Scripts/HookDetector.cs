@@ -29,17 +29,18 @@ public class HookDetector : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (this.gameObject.GetComponent<LineRenderer>() != null)
+        {
+
+            cable.SetPosition(0, RBScript.rocketTip.transform.position);
+            cable.SetPosition(1, this.transform.position);
+        }
         if (flying)
         {
            // this.transform.LookAt(hookLead);
             hookrb.velocity = (RBScript.rocketTip.forward * hookSpeed);
            // this.transform.position = Vector3.MoveTowards(this.transform.position, hookLead.transform.position, hookSpeed);
-            if (this.gameObject.GetComponent<LineRenderer>() != null)
-            {
 
-                cable.SetPosition(0, RBScript.rocketTip.transform.position);
-                cable.SetPosition(1, this.transform.position);
-            }
         }
        
     }

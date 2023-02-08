@@ -140,14 +140,14 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             Grapplin = true;
             shootinHook = true;
             if (hit.collider == null) return;
-            if (hit.normal.y!=0&&hit.normal!=Vector3.zero)//if hit ground, also stopps iff null
-            {
-                grapplinWall = false;
-            }
-            else if (hit.normal != Vector3.zero)//if hit wall, also stopps iff null
-            {
-                grapplinWall = true;
-            }
+            //if (hit.normal.y!=0&&hit.normal!=Vector3.zero)//if hit ground, also stopps iff null
+            //{
+            //    grapplinWall = false;
+            //}
+            //else if (hit.normal != Vector3.zero)//if hit wall, also stopps iff null
+            //{
+            //    grapplinWall = true;
+            //}
         }
       
     }

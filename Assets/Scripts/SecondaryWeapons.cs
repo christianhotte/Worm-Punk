@@ -8,23 +8,36 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class SecondaryWeapons : PlayerEquipment
 {
     public GameObject blade,hand;
-    public Rigidbody playerRB;
+    public Rigidbody playerRB,bladeRB;
     public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,rocketTip;
     public float activationTime, activationSpeed,timeAtSpeed,grindSpeed=10,grindRange=2;
     public AnimationCurve deployMotionCurve, deployScaleCurve, sheathMotionCurve, sheathScaleCurve;
     public bool deployed = false,cooldown=false,grindin=false;
     public Vector3 prevHandPos,tipPos;
+    [Space()]
+    [SerializeField, Range(0, 1)] private float gripThreshold = 1;
+
+    private bool gripPressed = false;
 
     // Start is called before the first frame update
     private protected override void Awake()
     {
         attachedHand = hand.transform;
+        //bladeRB = this.gameObject.GetComponent<Rigidbody>();
         base.Awake();
         StartCoroutine(StartCooldown());
     }
     // Update is called once per frame
     private protected override void Update()
     {
+
+        if (blade.transform.localPosition.z >= 1.29)
+        {
+            bladeRB.isKinematic = true;
+            bladeRB.useGravity = false;
+            deployed = true;
+        }
+
         tipPos = bladeTip.transform.position;
         Collider[] hits = Physics.OverlapSphere(tipPos, grindRange);
         grindin = false;
@@ -33,7 +46,7 @@ public class SecondaryWeapons : PlayerEquipment
 
             if (hit.gameObject.tag != "Player"&&hit.name!="Blade")
             {
-                Debug.Log(hit.name);
+                //Debug.Log(hit.name);
                 grindin = true;
                 break;
             }
@@ -76,15 +89,46 @@ public class SecondaryWeapons : PlayerEquipment
         base.Update();
         prevHandPos = handPos;
     }
+
+    private protected override void InputActionTriggered(InputAction.CallbackContext context)
+    {
+        if (context.action.name == "Grip")
+        {
+            float gripPosition = context.ReadValue<float>(); //Get current position of trigger as a value
+            if (!gripPressed) //Trigger has not yet been pulled
+            {
+                if (gripPosition >= gripThreshold) //Trigger has just been pulled
+                {
+                    gripPressed = true; //Indicate that trigger is now pulled
+                    Deploy();
+                }
+            }
+            else //Trigger is currently pulled
+            {
+                if (gripPosition < gripThreshold) //Trigger has been released
+                {
+                    gripPressed = false; //Indicate that trigger is now released
+                    Sheethe();
+                }
+            }
+        }
+    }
     public void Deploy()
     {
-        blade.transform.position = bladeDeployed.position;
-        deployed = true;
+        Debug.Log("Deploy");
+        //blade.transform.position = bladeDeployed.position;
+        bladeRB.isKinematic = false;
+        bladeRB.useGravity = true;
+       // bladeRB.velocity += blade.transform.forward;
+      //  deployed = true;
         StartCoroutine(StartCooldown());
 
     }
     public void Sheethe()
     {
+        Debug.Log("Sheethe");
+        bladeRB.isKinematic = true;
+        bladeRB.useGravity = false;
         blade.transform.position = bladeSheethed.transform.position;
         deployed = false;
         StartCoroutine(StartCooldown());
