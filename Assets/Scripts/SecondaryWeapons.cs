@@ -61,31 +61,31 @@ public class SecondaryWeapons : PlayerEquipment
         handMotion = handPos - prevHandPos;
         float forwardAngle = Vector3.Angle(handMotion, transform.forward);
 
-        //if ((!deployed && forwardAngle < 90&&!cooldown) || (deployed && forwardAngle > 90&&!cooldown))
-        //{
-        //    handMotion = Vector3.Project(handPos - prevHandPos, hand.transform.forward);
+        if ((!deployed && forwardAngle < 90&&!cooldown) || (deployed && forwardAngle > 90&&!cooldown))
+        {
+            handMotion = Vector3.Project(handPos - prevHandPos, hand.transform.forward);
 
-        //    float punchSpeed = handMotion.magnitude / Time.deltaTime;
-        //    if ((!deployed&&punchSpeed >= activationSpeed)||(deployed&&punchSpeed>=(activationSpeed-0.035f)))
-        //    {
-        //        timeAtSpeed += Time.deltaTime;
-        //        if (timeAtSpeed >= activationTime)
-        //        {
-        //            if (!deployed)
-        //            {
-        //                Deploy();
-        //            }
-        //            else
-        //            {
-        //                Sheethe();
-        //            }
-        //        }
-        //    }
-        //}
-        //else
-        //{
-        //    timeAtSpeed = 0;
-        //}
+            float punchSpeed = handMotion.magnitude / Time.deltaTime;
+            if ((!deployed&&punchSpeed >= activationSpeed)||(deployed&&punchSpeed>=(activationSpeed-0.035f)))
+            {
+                timeAtSpeed += Time.deltaTime;
+                if (timeAtSpeed >= activationTime)
+                {
+                    if (!deployed)
+                    {
+                        Deploy();
+                    }
+                    else
+                    {
+                        Sheethe();
+                    }
+                }
+            }
+        }
+        else
+        {
+            timeAtSpeed = 0;
+        }
         base.Update();
         prevHandPos = handPos;
     }
