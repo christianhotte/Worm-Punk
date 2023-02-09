@@ -12,6 +12,7 @@ TagManager:
   - PlayerEquipment
   - PlayerHand
   - Wall
+  - Blade
   layers:
   - Default
   - TransparentFX
@@ -23,8 +24,8 @@ TagManager:
   - Bullet
   - Obstacle
   - Hitbox
-  - Grab Ignore
-  - 
+  - Blade
+  - Hook
   - 
   - 
   - 
