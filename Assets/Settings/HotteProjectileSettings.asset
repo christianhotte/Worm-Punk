@@ -14,12 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 1
   knockback: 0
-  initialVelocity: 55
-  range: 100
-  barrelGap: 0
+  initialVelocity: 120
+  range: 150
+  barrelGap: 0.7
   drop: 5
-  targetDesignationAngle: 0
+  targetDesignationAngle: 30
   LOSTargeting: 0
+  targetingIgnoreLayers:
+    serializedVersion: 2
+    m_Bits: 736
+  targetingTickRate: 30
   ignoreLayers:
     serializedVersion: 2
     m_Bits: 64
