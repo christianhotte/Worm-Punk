@@ -1539,6 +1539,7 @@ MonoBehaviour:
   blade: {fileID: 4264869579123844862}
   hand: {fileID: 8290651123066708156}
   playerRB: {fileID: 4902200939074016700}
+  bladeRB: {fileID: 0}
   headpos: {fileID: 8290651123266976368}
   attachedHand: {fileID: 0}
   bladeSheethed: {fileID: 4264869579353930742}
@@ -1550,6 +1551,7 @@ MonoBehaviour:
   timeAtSpeed: 0
   grindSpeed: 7
   grindRange: 0.1
+  deploySpeed: 5
   deployMotionCurve:
     serializedVersion: 2
     m_Curve: []
@@ -1579,6 +1581,7 @@ MonoBehaviour:
   grindin: 0
   prevHandPos: {x: 0, y: 0, z: 0}
   tipPos: {x: 0, y: 0, z: 0}
+  gripThreshold: 1
 --- !u!1 &4264869579123844862
 GameObject:
   m_ObjectHideFlags: 0
@@ -2278,6 +2281,7 @@ MonoBehaviour:
   shootinHook: 0
   hitType: 0
   Rocket: {fileID: 5772645904460756729}
+  hookScript: {fileID: 0}
   cable: {fileID: 0}
   maneuverStrength: 15
 --- !u!120 &1072501453279715259
@@ -3719,6 +3723,7 @@ GameObject:
   - component: {fileID: 8290651122862171406}
   - component: {fileID: 5645792693487314851}
   - component: {fileID: 5645792693487314850}
+  - component: {fileID: 776924858487145223}
   m_Layer: 0
   m_Name: DemoPlayer3
   m_TagString: Untagged
@@ -3855,6 +3860,18 @@ MonoBehaviour:
   healthSettings: {fileID: 0}
   debugUpdateSettings: 0
   useSpawnPoint: 1
+--- !u!114 &776924858487145223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8290651122862171407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0998e2bb479b6404dbb24b4171641e19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8290651123066708156
 GameObject:
   m_ObjectHideFlags: 0

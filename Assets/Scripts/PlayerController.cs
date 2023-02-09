@@ -61,7 +61,7 @@ public class PlayerController : MonoBehaviour, IShootable
         //Setup runtime variables:
         currentHealth = healthSettings.defaultHealth; //Set base health value
 
-        inCombat = true;
+        inCombat = false;
         UpdateWeaponry();
     }
     private void Start()
