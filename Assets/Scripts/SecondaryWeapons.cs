@@ -9,23 +9,23 @@ public class SecondaryWeapons : PlayerEquipment
 {
     public GameObject blade,hand;
     public Rigidbody playerRB,bladeRB;
-    public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,rocketTip;
-    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5;
+    public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,rocketTip,ShotgunBarrelTip,stowedTip;
+    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4;
     public AnimationCurve deployMotionCurve, deployScaleCurve, sheathMotionCurve, sheathScaleCurve;
-    public bool deployed = false,cooldown=false,grindin=false;
+    public bool deployed = false,cooldown=false,grindin=false,deflectin=false;
     public Vector3 prevHandPos,tipPos;
     [Space()]
     [SerializeField, Range(0, 1)] private float gripThreshold = 1;
-
+    public Projectile projScript;
     private bool gripPressed = false;
-
+    int num;
     // Start is called before the first frame update
     private protected override void Awake()
     {
         attachedHand = hand.transform;
         //bladeRB = this.gameObject.GetComponent<Rigidbody>();
         base.Awake();
-        StartCoroutine(StartCooldown());
+        //StartCoroutine(StartCooldown());
     }
     // Update is called once per frame
     private protected override void Update()
@@ -37,14 +37,33 @@ public class SecondaryWeapons : PlayerEquipment
             bladeRB.useGravity = false;
             deployed = true;
         }
-
+        if (deflectin)
+        {
+            Debug.Log("checkstart");
+            tipPos = bladeTip.transform.position;
+            GameObject[] bullethits = GameObject.FindGameObjectsWithTag("Bullet");
+            foreach (var hit in bullethits)
+            {
+                float bulletDistance = Vector3.Distance(stowedTip.position, stowedTip.transform.position);
+                projScript = hit.gameObject.GetComponent<Projectile>();
+                if (bulletDistance <= blockRadius)
+                {
+                    Debug.Log("Deflected");
+                    //grindin = true;
+                    bladeTip.LookAt(hit.transform);
+                    projScript.Fire(bladeTip.position, bladeTip.rotation);
+                    Deploy();
+                    break;
+                }
+            }
+        }
         tipPos = bladeTip.transform.position;
         Collider[] hits = Physics.OverlapSphere(tipPos, grindRange);
         grindin = false;
         foreach (var hit in hits)
         {
 
-            if (hit.gameObject.tag != "Player"&&hit.name!="Blade")
+            if (hit.gameObject.tag != "Player"&&hit.name!="Blade"&&hit.tag != "Bullet")
             {
                 //Debug.Log(hit.name);
                 grindin = true;
@@ -61,30 +80,30 @@ public class SecondaryWeapons : PlayerEquipment
         handMotion = handPos - prevHandPos;
         float forwardAngle = Vector3.Angle(handMotion, transform.forward);
 
-        if ((!deployed && forwardAngle < 90&&!cooldown) || (deployed && forwardAngle > 90&&!cooldown))
+        if (forwardAngle < 90&&!cooldown) //|| (deployed && forwardAngle > 90&&!cooldown))
         {
+            
             handMotion = Vector3.Project(handPos - prevHandPos, hand.transform.forward);
 
             float punchSpeed = handMotion.magnitude / Time.deltaTime;
-            if ((!deployed&&punchSpeed >= activationSpeed)||(deployed&&punchSpeed>=(activationSpeed-0.035f)))
+            
+            if ((!deployed&&punchSpeed >= activationSpeed))
             {
-                timeAtSpeed += Time.deltaTime;
-                if (timeAtSpeed >= activationTime)
-                {
-                    if (!deployed)
-                    {
-                        Deploy();
-                    }
-                    else
-                    {
-                        Sheethe();
-                    }
-                }
+                
+               
+                        // Deploy();
+                        
+                        num++;
+                        Debug.Log("Punch"+num);
+                        StartCoroutine(DeflectTime());
+                        StartCoroutine(StartCooldown());
+
+             
             }
         }
         else
         {
-            timeAtSpeed = 0;
+           // timeAtSpeed = 0;
         }
         base.Update();
         prevHandPos = handPos;
@@ -158,5 +177,13 @@ public class SecondaryWeapons : PlayerEquipment
         {
             grindin = false;
         }
+    }
+    public IEnumerator DeflectTime()
+    {
+        deflectin = true;
+        yield return new WaitForSeconds(0.3f);
+        deflectin = false;
+       // yield return new WaitForSeconds(0.2f);
+         Sheethe();
     }
 }
