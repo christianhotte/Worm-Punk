@@ -3728,6 +3728,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8290651123066708159}
     m_Modifications:
+    - target: {fileID: 6619349005550171261, guid: dc052da53b3e1e44b8e0ab06d9f57a98, type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6619349005983234530, guid: dc052da53b3e1e44b8e0ab06d9f57a98, type: 3}
       propertyPath: m_Name
       value: ChainswordA

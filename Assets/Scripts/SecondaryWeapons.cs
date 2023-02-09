@@ -164,20 +164,7 @@ public class SecondaryWeapons : PlayerEquipment
         yield return new WaitForSeconds(1.0f);
         cooldown = false;
     }
-    public void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "Ground")
-        {
-            grindin = true;
-        }
-    }
-    public void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "Ground")
-        {
-            grindin = false;
-        }
-    }
+
     public IEnumerator DeflectTime()
     {
         deflectin = true;
