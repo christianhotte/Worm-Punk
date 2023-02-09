@@ -17,8 +17,10 @@ public class ProjectileSettings : ScriptableObject
     [Min(0), Tooltip("Distance in front of barrel position at which projectile actually spawns.")] public float barrelGap = 0;
     [Min(0), Tooltip("Optional amount of bullet drop (in meters per second).")]                    public float drop = 0;
     [Header("Targeting:")]
-    [Range(0, 90), Tooltip("Max angle between projectile and target at which projectile will lock on.")] public float targetDesignationAngle;
-    [Tooltip("Require line-of-sight for active targeting.")]                                             public bool LOSTargeting;
+    [Range(0, 90), Tooltip("Max angle between projectile and target at which projectile will lock on.")]         public float targetDesignationAngle;
+    [Tooltip("Require line-of-sight for active targeting.")]                                                     public bool LOSTargeting;
+    [Tooltip("Layers to ignore when raycasting for line-of-sight targeting.")]                                   public LayerMask targetingIgnoreLayers;
+    [Tooltip("Number of times per second projectile runs targeting function during target acquisition period.")] public int targetingTickRate = 30;
     [Header("Collision:")]
     [Tooltip("Physics layers which projectile will not collide with.")] public LayerMask ignoreLayers;
     //[Min(0), Tooltip("Wideness of projectile collision zone (zero if projectile is a point).")] public float radius = 0;
