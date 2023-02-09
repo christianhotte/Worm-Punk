@@ -17,9 +17,13 @@ MonoBehaviour:
   initialVelocity: 120
   range: 150
   barrelGap: 0.7
-  drop: 5
-  targetDesignationAngle: 30
+  drop: 0
+  targetingStrength: 0.025
+  targetDesignationAngle: {x: 25, y: 90}
+  targetingDistance: 75
   LOSTargeting: 0
+  alwaysLookForTarget: 1
+  angleDistancePreference: 0.3
   targetingIgnoreLayers:
     serializedVersion: 2
     m_Bits: 736
