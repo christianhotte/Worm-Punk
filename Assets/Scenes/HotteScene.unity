@@ -592,6 +592,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &357405537 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 600184567961801274, guid: 3af7ab9f6da90a543a46e243f6a3eeb4, type: 3}
+  m_PrefabInstance: {fileID: 357405531}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &441048568
 GameObject:
   m_ObjectHideFlags: 0
@@ -1098,7 +1103,7 @@ Transform:
   m_LocalScale: {x: 400, y: 1, z: 300}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &844010017
 GameObject:
@@ -1749,7 +1754,7 @@ Transform:
   - {fileID: 308905181}
   - {fileID: 880321386}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1147990370
 MonoBehaviour:
@@ -2699,6 +2704,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 357405533}
     - target: {fileID: 1121253887837515583, guid: c093f8ad89249864ab655e5685191a20, type: 3}
+      propertyPath: playerListContent
+      value: 
+      objectReference: {fileID: 357405537}
+    - target: {fileID: 1121253887837515583, guid: c093f8ad89249864ab655e5685191a20, type: 3}
       propertyPath: roomListItemPrefab
       value: 
       objectReference: {fileID: 357405532}
@@ -2706,5 +2715,9 @@ PrefabInstance:
       propertyPath: roomNameInPutField
       value: 
       objectReference: {fileID: 357405536}
+    - target: {fileID: 1121253887837515583, guid: c093f8ad89249864ab655e5685191a20, type: 3}
+      propertyPath: playerListItemPrefab
+      value: 
+      objectReference: {fileID: 156912728811402850, guid: dfb04cb49f3294241abaf472a2f8d0e8, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c093f8ad89249864ab655e5685191a20, type: 3}

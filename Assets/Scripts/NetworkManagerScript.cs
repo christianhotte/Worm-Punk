@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using TMPro; // Can probably delete later when we switch to physical buttons instead of UI
+using TMPro;
 
 /* Code was referenced from https://www.youtube.com/watch?v=KHWuTBmT1oI
  * https://www.youtube.com/watch?v=zPZK7C5_BQo&list=PLhsVv9Uw1WzjI8fEBjBQpTyXNZ6Yp1ZLw */
@@ -19,7 +19,9 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text roomNameText;
     [SerializeField] TMP_Text errorText;
     [SerializeField] Transform roomListContent;
+    [SerializeField] Transform playerListContent;
     [SerializeField] GameObject roomListItemPrefab;
+    [SerializeField] GameObject playerListItemPrefab;
 
     // On awake function
     private void Awake()
@@ -65,6 +67,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         LobbyUIScript.instance.OpenMenu("title");
         Debug.Log("Joined a lobby.");
         base.OnJoinedLobby();
+        PhotonNetwork.NickName = "Player " + Random.Range(0, 1000).ToString("0000");
 
         // Setting up the room options
         RoomOptions roomOptions = new RoomOptions();
@@ -86,13 +89,21 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         LobbyUIScript.instance.OpenMenu("loading"); // Opens the loading screen while the room is being created on the server.
     }
 
-    // The connection of the room.
+    // The connection of the room [Also spawns a network player in NetworkPlayerSpawn]
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined A Room.");
         // Opens the room menu UI
         LobbyUIScript.instance.OpenMenu("room");
         roomNameText.text = PhotonNetwork.CurrentRoom.Name;
+
+        Player[] players = PhotonNetwork.PlayerList;
+
+        // Loops through the list of players and adds to the list of players in the room.
+        for (int i = 0; i < players.Length; i++) // The tutorial used Count(), doesn't work for me without System.Linq so I'm using .Length instead
+        {
+            Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
+        }
     }
 
     // We failed to create a room and we will display the error message to the player.
@@ -108,6 +119,8 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     {
         base.OnPlayerEnteredRoom(newPlayer);
         Debug.Log("A new player has joined the room.");
+        // Adds the player's name to the list of players in the room.
+        Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
     }
 
     // Leaves the room that a player has entered.
