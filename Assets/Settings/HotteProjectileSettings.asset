@@ -18,8 +18,12 @@ MonoBehaviour:
   range: 150
   barrelGap: 0.7
   drop: 5
-  targetDesignationAngle: 30
+  targetingStrength: 0.05
+  targetDesignationAngle: {x: 25, y: 90}
+  targetingDistance: 50
   LOSTargeting: 0
+  alwaysLookForTarget: 1
+  angleDistancePreference: 0.3
   targetingIgnoreLayers:
     serializedVersion: 2
     m_Bits: 736
