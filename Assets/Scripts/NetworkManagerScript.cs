@@ -23,6 +23,8 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     [SerializeField] GameObject roomListItemPrefab;
     [SerializeField] GameObject playerListItemPrefab;
 
+    [SerializeField] private bool joinRoomOnLoad = true;
+
     // On awake function
     private void Awake()
     {
@@ -70,11 +72,14 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         base.OnJoinedLobby();
         PhotonNetwork.NickName = "Player " + Random.Range(0, 1000).ToString("0000");
 
-        /* Setting up the room options
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.IsVisible = true; // The player is able to see the room
-        roomOptions.IsOpen = true; // The room is open.
-        PhotonNetwork.JoinOrCreateRoom("Room 1", roomOptions, TypedLobby.Default);*/
+        // Setting up the room options
+        if (joinRoomOnLoad)
+        {
+            RoomOptions roomOptions = new RoomOptions();
+            roomOptions.IsVisible = true; // The player is able to see the room
+            roomOptions.IsOpen = true; // The room is open.
+            PhotonNetwork.JoinOrCreateRoom("Room 1", roomOptions, TypedLobby.Default);
+        }
     }
 
     public void CreateRoom()
