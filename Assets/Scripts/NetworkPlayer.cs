@@ -28,18 +28,29 @@ public class NetworkPlayer : MonoBehaviour
     Player[] allPlayers;
     int myNumberInRoom;
 
+    //Player Data
+    private PlayerSetup playerSetup;    //The player's setup component
+    [SerializeField] private CharacterData charData;
+
     // Start is called before the first frame update
     void Start()
     {
         photonView = GetComponent<PhotonView>();                         //Get photonView component from NetworkPlayer object
-        if (photonView.IsMine) PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
 
         // Gets the network player to move with the player instead of just moving locally.
         XROrigin = GameObject.Find("XR Origin");
         player = XROrigin.GetComponentInParent<PlayerController>();
+        playerSetup = player.GetComponent<PlayerSetup>();
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
         rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+
+        if (photonView.IsMine)
+        {
+            PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
+            playerSetup.SetColor(PlayerSettings.Instance.charData.testColor);
+            SyncData(PlayerSettings.Instance);
+        }
 
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
@@ -70,6 +81,21 @@ public class NetworkPlayer : MonoBehaviour
             }
         }
     }
+
+    private void SyncData(PlayerSettings playerData)
+    {
+        Debug.Log("Syncing Player Data...");
+        string characterData = playerData.CharDataToString();
+        photonView.RPC("LoadPlayerSettings", RpcTarget.OthersBuffered, characterData);
+    }
+
+    public void LoadPlayerSettings(string data)
+    {
+        Debug.Log("Loading Player Settings...");
+        charData = JsonUtility.FromJson<CharacterData>(data);
+        playerSetup.SetColor(charData.testColor);
+    }
+
     private void OnDestroy()
     {
         if (photonView.IsMine) PlayerController.photonView = null; //Clear client photonView referenc
