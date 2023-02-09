@@ -70,11 +70,11 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         base.OnJoinedLobby();
         PhotonNetwork.NickName = "Player " + Random.Range(0, 1000).ToString("0000");
 
-        // Setting up the room options
+        /* Setting up the room options
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.IsVisible = true; // The player is able to see the room
         roomOptions.IsOpen = true; // The room is open.
-        PhotonNetwork.JoinOrCreateRoom("Room 1", roomOptions, TypedLobby.Default);
+        PhotonNetwork.JoinOrCreateRoom("Room 1", roomOptions, TypedLobby.Default);*/
     }
 
     public void CreateRoom()
