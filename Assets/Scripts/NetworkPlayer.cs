@@ -29,7 +29,7 @@ public class NetworkPlayer : MonoBehaviour
     int myNumberInRoom;
 
     // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         photonView = GetComponent<PhotonView>();                         //Get photonView component from NetworkPlayer object
         if (photonView.IsMine) PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
@@ -40,7 +40,9 @@ public class NetworkPlayer : MonoBehaviour
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
         rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
-
+    }
+    void Start()
+    {
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
         foreach (Player p in allPlayers)
