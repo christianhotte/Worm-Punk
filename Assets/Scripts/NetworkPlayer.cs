@@ -35,11 +35,12 @@ public class NetworkPlayer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        photonView = GetComponent<PhotonView>();                         //Get photonView component from NetworkPlayer object
+        photonView = GetComponent<PhotonView>();    //Get photonView component from NetworkPlayer object
 
         // Gets the network player to move with the player instead of just moving locally.
         XROrigin = GameObject.Find("XR Origin");
         player = XROrigin.GetComponentInParent<PlayerController>();
+        
         playerSetup = player.GetComponent<PlayerSetup>();
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");

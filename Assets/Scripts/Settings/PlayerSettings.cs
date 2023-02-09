@@ -5,16 +5,15 @@ using UnityEngine;
 public class PlayerSettings : MonoBehaviour
 {
     public static PlayerSettings Instance;
-
     public CharacterData charData;
 
     private void OnEnable()
     {
-        charData = new CharacterData();
         Instance = this;
+        charData = new CharacterData();
     }
 
-    public string CharDataToString() => JsonUtility.ToJson(Instance.charData);
+    public string CharDataToString() => JsonUtility.ToJson(charData);
 
 }
 
