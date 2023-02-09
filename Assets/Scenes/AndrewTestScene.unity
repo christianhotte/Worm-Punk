@@ -4145,9 +4145,9 @@ BoxCollider:
   m_GameObject: {fileID: 5276987456485641276}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.0000001, y: 2, z: 1}
+  m_Size: {x: 1.0000001, y: 2.27, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!33 &5276987456485641664
 MeshFilter:
@@ -4274,7 +4274,7 @@ MonoBehaviour:
   activationTime: 0.1
   activationSpeed: 0.37
   timeAtSpeed: 0
-  grindSpeed: 7
+  grindSpeed: 12
   grindRange: 0.1
   deploySpeed: 1
   deployMotionCurve:
@@ -4771,7 +4771,7 @@ MonoBehaviour:
   grappleDistance: 50
   releasePower: 5
   realDistance: 0
-  hookSpeed: 3
+  hookSpeed: 50
   Grapplin: 0
   grappleCooldown: 1
   grapplinWall: 0
