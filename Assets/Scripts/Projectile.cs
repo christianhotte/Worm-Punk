@@ -22,6 +22,40 @@ public class Projectile : MonoBehaviourPunCallbacks
 
     internal bool localOnly = false; //Indicates that this projectile does not have equivalents on the network
 
+    //Utility Variables:
+    /// <summary>
+    /// How much distance this projectile has left to cover.
+    /// </summary>
+    private float RemainingRange { get { return settings.range - totalDistance; } }
+
+    //COROUTINES:
+    /// <summary>
+    /// Performs target acquisition check on set timestep until projectile has its desired target (also resets targeting state).
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator DoTargetAcquisition()
+    {
+        //Initialization:
+        target = null;                                         //Reset current target
+        float secsPerUpdate = 1 / settings.targetingTickRate;  //Get seconds per tick
+        List<Transform> viableTargets = new List<Transform>(); //Create list for storing viable targets
+
+        //Populate targets list:
+
+
+        //Look for targets:
+        while (target == null) //Run until projectile has a target
+        {
+            //Look for viable targets:
+            
+
+            //Determine best target:
+
+
+            yield return new WaitForSeconds(secsPerUpdate); //Wait until next update
+        }
+    }
+
     //RUNTIME METHODS:
     private protected virtual void Awake()
     {
