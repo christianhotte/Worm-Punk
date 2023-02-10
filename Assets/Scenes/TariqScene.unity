@@ -218,6 +218,67 @@ Transform:
   m_Father: {fileID: 1127684311}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!1001 &326035312
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.042847633
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.028173447
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.13833904
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_Name
+      value: Rigged New Worm Avatar Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 1272584327242205301, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 06018aaa1c693a8459d620a4b8e1afe7, type: 2}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
 --- !u!1 &526844120
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,7 +459,7 @@ Transform:
   - {fileID: 1665240121}
   - {fileID: 93303804}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1665240117
 GameObject:
@@ -681,7 +742,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &2006615976
 GameObject:
