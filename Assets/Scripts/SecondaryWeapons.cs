@@ -18,11 +18,14 @@ public class SecondaryWeapons : PlayerEquipment
     [SerializeField, Range(0, 1)] private float gripThreshold = 1;
     public Projectile projScript;
     private bool gripPressed = false;
+    public AudioSource sawAud;
+    public AudioClip punchSound;
     int num;
     // Start is called before the first frame update
     private protected override void Awake()
     {
         attachedHand = hand.transform;
+        sawAud = this.GetComponent<AudioSource>();
         //bladeRB = this.gameObject.GetComponent<Rigidbody>();
         base.Awake();
         //StartCoroutine(StartCooldown());
@@ -35,7 +38,8 @@ public class SecondaryWeapons : PlayerEquipment
 
         if (deflectin)
         {
-           //Debug.Log("checkstart");
+            //Debug.Log("checkstart");
+
             tipPos = bladeTip.transform.position;
             GameObject[] bullethits = GameObject.FindGameObjectsWithTag("Bullet");
             foreach (var hit in bullethits)
@@ -108,10 +112,11 @@ public class SecondaryWeapons : PlayerEquipment
                
                         // Deploy();
                         
-                        num++;
-                       // Debug.Log("Punch"+num);
-                        StartCoroutine(DeflectTime());
-                        StartCoroutine(StartCooldown());
+                 num++;
+                // Debug.Log("Punch"+num);
+                sawAud.PlayOneShot(punchSound);
+                StartCoroutine(DeflectTime());
+                StartCoroutine(StartCooldown());
 
              
             }
