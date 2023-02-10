@@ -40,14 +40,14 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             if (checkSaw.collider == null) return;
             if (checkSaw.collider.tag == "Blade")
             {
-                Debug.Log("cut");
+               // Debug.Log("cut");
                 GrappleStop();
             }
         }
 
         if (shootinHook)
         {
-            Rocket.enabled = false;
+            //Rocket.enabled = false;
             if (HookInstance != null) //Put this here to MissingReferenceException error
             {
                 // HookInstance.transform.LookAt(rayHitPoint);
@@ -161,7 +161,7 @@ public class RocketBoost : PlayerEquipment  //renametograpple
         //Rocket.enabled = true;
         Destroy(this.gameObject.GetComponent<LineRenderer>());
         hitType = 0;
-        Rocket.enabled = true;
+      //  Rocket.enabled = true;
         Grapplin = false;
         grappleCooldown = true;
         rocketTip.LookAt(rocketTipReset);
@@ -172,7 +172,7 @@ public class RocketBoost : PlayerEquipment  //renametograpple
     public IEnumerator GrappleLaunch()
     {
         yield return new WaitForSeconds(0.35f);//delay before grapple impulse begins after detecting hit
-        Rocket.enabled = false;
+       // Rocket.enabled = false;
         grappleCooldown = false;
 
     }
