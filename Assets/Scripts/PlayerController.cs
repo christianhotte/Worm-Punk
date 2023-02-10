@@ -34,8 +34,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Tooltip("Enables usage of SpawnManager system to automatically position player upon instantiation.")] private bool useSpawnPoint = true;
 
     //Runtime Variables:
-    private float currentHealth; //How much health player currently has
-    private bool inCombat;  //Whether the player is actively in combat
+    private int currentHealth; //How much health player currently has
+    private bool inCombat;     //Whether the player is actively in combat
 
     //RUNTIME METHODS:
     private void Awake()
@@ -103,7 +103,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// Method called when this player is hit by a projectile.
     /// </summary>
-    public void IsHit(float damage)
+    public void IsHit(int damage)
     {
         //Hit effects:
         audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Default_Hurt_Sound")); //TEMP play hurt sound
