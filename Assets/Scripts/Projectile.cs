@@ -138,21 +138,21 @@ public class Projectile : MonoBehaviourPunCallbacks
             settings = (ProjectileSettings)Resources.Load("DefaultSettings/DefaultProjectileSettings"); //Load default settings from Resources folder
         }
     }
-    private protected virtual void FixedUpdate()
+    private protected virtual void Update()
     {
         if (photonView.IsMine) //Only truly compute positional updates for master projectile
         {
             //Modify velocity:
-            if (settings.drop > 0) velocity.y -= settings.drop * Time.fixedDeltaTime;  //Perform bullet drop (downward acceleration) if relevant
+            if (settings.drop > 0) velocity.y -= settings.drop * Time.deltaTime;  //Perform bullet drop (downward acceleration) if relevant
             if (target != null) //Projectile has a target
             {
-                Vector3 targetVelocity = (target.position - transform.position).normalized * velocity.magnitude;         //Get velocity which would point projectile directly at target
-                velocity = Vector3.MoveTowards(velocity, targetVelocity, settings.homingStrength * Time.fixedDeltaTime); //Incrementally adjust toward target velocity
+                Vector3 targetVelocity = (target.position - transform.position).normalized * velocity.magnitude;    //Get velocity which would point projectile directly at target
+                velocity = Vector3.MoveTowards(velocity, targetVelocity, settings.homingStrength * Time.deltaTime); //Incrementally adjust toward target velocity
             }
 
             //Get target position:
-            Vector3 targetPos = transform.position + (velocity * Time.fixedDeltaTime); //Get target projectile position
-            float travelDistance = Vector3.Distance(transform.position, targetPos);    //Get distance this projectile is moving this update
+            Vector3 targetPos = transform.position + (velocity * Time.deltaTime);   //Get target projectile position
+            float travelDistance = Vector3.Distance(transform.position, targetPos); //Get distance this projectile is moving this update
 
             //Check range:
             totalDistance += travelDistance; //Add motion to total distance traveled (NOTE: may briefly end up being greater than actual distance traveled)
@@ -174,14 +174,14 @@ public class Projectile : MonoBehaviourPunCallbacks
             }
 
             //Perform move:
-            transform.position = targetPos;                                       //Move projectile to target position
-            transform.rotation = Quaternion.LookRotation(velocity);               //Rotate projectile to align with current velocity
-            photonView.RPC("RPC_Move", RpcTarget.Others, targetPos);              //Move all projectiles on network
-            if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
+            transform.position = targetPos;                                          //Move projectile to target position
+            transform.rotation = Quaternion.LookRotation(velocity);                  //Rotate projectile to align with current velocity
+            photonView.RPC("RPC_Move", RpcTarget.Others, targetPos, Time.deltaTime); //Move all projectiles on network
+            if (settings.range > 0 && totalDistance >= settings.range) BurnOut();    //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
         }
         else
         {
-            transform.position += velocity;
+            transform.position += velocity * Time.deltaTime;
         }
     }
 
@@ -221,7 +221,7 @@ public class Projectile : MonoBehaviourPunCallbacks
 
         //Cleanup:
         transform.position = targetPosition;                                    //Move to initial position
-        photonView.RPC("RPC_Move", RpcTarget.Others, targetPosition);           //Move all networked projectiles to starting position
+        photonView.RPC("RPC_Move", RpcTarget.Others, targetPosition, 1);        //Move all networked projectiles to starting position
         if (settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
     }
 
@@ -230,11 +230,11 @@ public class Projectile : MonoBehaviourPunCallbacks
     /// Moves projectile to target position (used to move remote projectiles).
     /// </summary>
     [PunRPC]
-    public void RPC_Move(Vector3 newPosition)
+    public void RPC_Move(Vector3 newPosition, float deltaTime)
     {
-        velocity = newPosition - transform.position;            //Get current projectile velocity
-        transform.position = newPosition;                       //Move to new position
-        transform.rotation = Quaternion.LookRotation(velocity); //Rotate projectile to face direction of travel
+        velocity = (newPosition - transform.position) / deltaTime;                            //Get current projectile velocity
+        transform.position = newPosition;                                                     //Move to new position
+        if (velocity != Vector3.zero) transform.rotation = Quaternion.LookRotation(velocity); //Rotate projectile to face direction of travel
     }
 
     //FUNCTIONALITY METHODS:
