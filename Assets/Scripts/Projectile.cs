@@ -82,11 +82,7 @@ public class Projectile : MonoBehaviourPunCallbacks
                     //Check for obstructions:
                     if (settings.LOSTargeting) //System is using line-of-sight targeting
                     {
-                        if (Physics.Linecast(transform.position, potentialTarget.position, settings.targetingIgnoreLayers)) //Targetable is obstructed and is not currently valid
-                        {
-                            potentialTargets.Add(potentialTarget.transform); //Add targetable to list of potential targets
-                            continue;                                        //Skip everything else
-                        }
+                        if (Physics.Linecast(transform.position, potentialTarget.position, settings.targetingIgnoreLayers)) continue; //Do not target obstructed objects
                     }
 
                     //Check target viability:
@@ -97,6 +93,7 @@ public class Projectile : MonoBehaviourPunCallbacks
                     {
                         target = potentialTarget;           //Set as chosen target
                         targetHeuristic = currentHeuristic; //Update target heuristic
+                        print("New Target: " + target.name);
                     }
                 }
             }
@@ -105,7 +102,6 @@ public class Projectile : MonoBehaviourPunCallbacks
             if (target != null && !settings.alwaysLookForTarget) break; //Break out of loop once target is found (unless projectile is always looking for target)
             yield return new WaitForSeconds(secsPerUpdate);             //Wait until next update
         }
-        if (target != null) print("Target: " + target.name);
     }
 
     //RUNTIME METHODS:
