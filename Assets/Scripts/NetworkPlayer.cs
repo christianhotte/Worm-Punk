@@ -8,7 +8,7 @@ using Photon.Realtime;
 
 // This script was used from https://youtu.be/KHWuTBmT1oI?t=1511
 
-public class NetworkPlayer : MonoBehaviour
+public class NetworkPlayer : MonoBehaviour, IShootable
 {
     //Objects & Components:
     internal PlayerController player; //Client playerController associated with this network player
@@ -101,5 +101,9 @@ public class NetworkPlayer : MonoBehaviour
     {
         target.position = rigTransform.position;
         target.rotation = rigTransform.rotation;
+    }
+    public void IsHit(Projectile projectile)
+    {
+
     }
 }

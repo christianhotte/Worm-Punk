@@ -65,19 +65,25 @@ public class Projectile : MonoBehaviourPunCallbacks
         
 
         //Look for targets:
-        while (true) //Run forever
+        while (potentialTargets.Count > 0) //Run forever (while projectile has targets to consider
         {
-            foreach (Transform potentialTarget in potentialTargets)
+            for (int x = 0; x < potentialTargets.Count;) //Iterate through list of potential targets (allow internal functionality to manually index to next target)
             {
                 //Eliminate non-viable targets:
-                Vector3 targetSep = potentialTarget.position - transform.position; //Get distance and direction from projectile to target
-                float targetDist = targetSep.magnitude;                            //Distance from projectile to target
-                if (targetDist > RemainingRange) continue;                         //Ignore targets which are outside projectile's potential range
-                float targetAngle = Vector3.Angle(targetSep, transform.forward);   //Get angle between target direction and projectile movement direction
-                if (targetAngle > settings.targetDesignationAngle.y) continue;     //Ignore targets which are behind the projectile and will likely never be hit
+                Transform potentialTarget = potentialTargets[x];                             //Get reference to current target
+                Vector3 targetSep = potentialTarget.position - transform.position;           //Get distance and direction from projectile to target
+                float targetDist = targetSep.magnitude;                                      //Distance from projectile to target
+                if (targetDist > RemainingRange) { potentialTargets.RemoveAt(x); continue; } //Remove target from potentials list if it can never be reached by projectile
+                float targetAngle = Vector3.Angle(targetSep, transform.forward);             //Get angle between target direction and projectile movement direction
+                if (targetAngle > settings.targetDesignationAngle.y)                         //Angle to potential target is so steep that projectile will likely never hit
+                {
+                    potentialTargets.RemoveAt(x);                 //Remove this target from list of potential targets
+                    if (potentialTarget == target) target = null; //If this is the current target, clear it
+                    continue;                                     //Skip to next potential target
+                }
 
                 //Check for viable targets:
-                if (targetDist <= settings.targetingDistance) //Current targetable is within range of projectile
+                if (targetDist <= settings.targetingDistance && targetAngle <= settings.targetDesignationAngle.x) //Current targetable is within range and within acquisition angle
                 {
                     //Check for obstructions:
                     if (settings.LOSTargeting) //System is using line-of-sight targeting
@@ -96,6 +102,9 @@ public class Projectile : MonoBehaviourPunCallbacks
                         print("New Target: " + target.name);
                     }
                 }
+
+                //Cleanup:
+                x++; //Move to next potential target
             }
 
             //Cleanup:
@@ -217,8 +226,7 @@ public class Projectile : MonoBehaviourPunCallbacks
         if (shootable != null) shootable.IsHit(this);                                           //Indicate to object that it has been shot by this projectile
 
         //Cleanup:
-        print("Hit!"); //TEMP
-        Delete();      //Destroy projectile
+        Delete(); //Destroy projectile
     }
     /// <summary>
     /// Called if projectile range is exhausted and projectile hasn't hit anything.
