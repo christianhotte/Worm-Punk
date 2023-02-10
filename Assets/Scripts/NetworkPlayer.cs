@@ -100,7 +100,7 @@ public class NetworkPlayer : MonoBehaviour
     /// </summary>
     /// <param name="damage">How much damage the projectile dealt.</param>
     [PunRPC]
-    public void RPC_Hit(float damage)
+    public void RPC_Hit(int damage)
     {
         if (photonView.IsMine) player.IsHit(damage); //Inflict damage upon hit player
     }
