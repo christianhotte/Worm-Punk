@@ -8,20 +8,18 @@ using TMPro;
 
 public class RoomListItem : MonoBehaviour
 {
-    [SerializeField] TMP_Text text;
-    RoomInfo info;
+    [SerializeField] private TextMeshProUGUI text;
 
     // Sets the text to the name of the room
-    public void SetUp(RoomInfo _info)
+    public void SetUp(RoomInfo roomInfo)
     {
-        info = _info;
-        text.text = _info.Name;
+        text.text = roomInfo.Name;
     }
 
     // When the button is pressed
     public void OnClick()
     {
         // Joins the room that was selected
-        NetworkManagerScript.instance.JoinRoom(info);
+        NetworkManagerScript.instance.JoinRoom(text.text);
     }
 }

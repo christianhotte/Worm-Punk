@@ -77,7 +77,7 @@ public class PhysicalButtonController : MonoBehaviour
                     GetComponent<AudioSource>().PlayOneShot(onPressedSoundEffect, PlayerPrefs.GetFloat("SFXVolume", 0.5f));
 
                 onPressed.Invoke();
-                Debug.Log(gameObject.name + " Pressed.");
+                //Debug.Log(gameObject.name + " Pressed.");
 
                 if (lockOnPress)
                     LockButton(true);
@@ -104,14 +104,14 @@ public class PhysicalButtonController : MonoBehaviour
             //Freeze the position of the button
             joint.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionZ;
 
-            Debug.Log(gameObject.name + " Locked.");
+            //Debug.Log(gameObject.name + " Locked.");
         }
         else
         {
             //Unlock the position of the button
             joint.GetComponent<Rigidbody>().constraints = buttonConstraints;
 
-            Debug.Log(gameObject.name + " Unlocked.");
+            //Debug.Log(gameObject.name + " Unlocked.");
         }
     }
 
@@ -129,7 +129,7 @@ public class PhysicalButtonController : MonoBehaviour
                 GetComponent<AudioSource>().PlayOneShot(onReleasedSoundEffect, PlayerPrefs.GetFloat("SFXVolume", 0.5f));
 
             onReleased.Invoke();
-            Debug.Log(gameObject.name + " Released.");
+            //Debug.Log(gameObject.name + " Released.");
         }
     }
 

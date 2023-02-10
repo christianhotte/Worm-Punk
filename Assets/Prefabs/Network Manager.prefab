@@ -44,14 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4057593c6c161b4fad6eecbd31a8799, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomNameInPutField: {fileID: 0}
-  roomNameText: {fileID: 0}
-  errorText: {fileID: 0}
-  roomListContent: {fileID: 0}
-  playerListContent: {fileID: 0}
-  roomListItemPrefab: {fileID: 0}
-  playerListItemPrefab: {fileID: 0}
-  joinRoomOnLoad: 1
+  joinRoomOnLoad: 0
 --- !u!114 &1121253887837515577
 MonoBehaviour:
   m_ObjectHideFlags: 0

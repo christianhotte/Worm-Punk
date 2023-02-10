@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using TMPro;
 
 /* Code was referenced from https://www.youtube.com/watch?v=KHWuTBmT1oI
  * https://www.youtube.com/watch?v=zPZK7C5_BQo&list=PLhsVv9Uw1WzjI8fEBjBQpTyXNZ6Yp1ZLw */
@@ -14,14 +13,6 @@ being called when we are connected to the server, or someone joins the server/ro
 public class NetworkManagerScript : MonoBehaviourPunCallbacks
 {
     public static NetworkManagerScript instance;
-
-    [SerializeField] TMP_InputField roomNameInPutField;
-    [SerializeField] TMP_Text roomNameText;
-    [SerializeField] TMP_Text errorText;
-    [SerializeField] Transform roomListContent;
-    [SerializeField] Transform playerListContent;
-    [SerializeField] GameObject roomListItemPrefab;
-    [SerializeField] GameObject playerListItemPrefab;
 
     [SerializeField] private bool joinRoomOnLoad = true;
 
@@ -66,8 +57,14 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     // Once a player has connected to a lobby.
     public override void OnJoinedLobby()
     {
-        if (LobbyUIScript.instance != null)
-            LobbyUIScript.instance.OpenMenu("title");
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
+
+        //If there is a lobby in the scene, show the title screen
+        if (lobbyUI != null)
+        {
+            lobbyUI.OpenMenu("title");
+        }
+
         Debug.Log("Joined a lobby.");
         base.OnJoinedLobby();
         PhotonNetwork.NickName = "Player " + Random.Range(0, 1000).ToString("0000");
@@ -75,49 +72,60 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         // Setting up the room options
         if (joinRoomOnLoad)
         {
-            RoomOptions roomOptions = new RoomOptions();
-            roomOptions.IsVisible = true; // The player is able to see the room
-            roomOptions.IsOpen = true; // The room is open.
-            PhotonNetwork.JoinOrCreateRoom("Room 1", roomOptions, TypedLobby.Default);
+            OnCreateRoom("Room 1");
         }
     }
 
-    public void CreateRoom()
+    public void OnCreateRoom(string roomName)
     {
-        // Doesn't allow an empty room name.
-        if (string.IsNullOrEmpty(roomNameInPutField.text))
-        {
-            return;
-        }
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.IsVisible = true; // The player is able to see the room
+        roomOptions.IsOpen = true; // The room is open.
+        roomOptions.EmptyRoomTtl = 500; // Leave the room open for 500 milliseconds after the room is empty
+        PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
+    }
 
-        // Creates a room with the name of what the player has typed in.
-        PhotonNetwork.CreateRoom(roomNameInPutField.text);
-        LobbyUIScript.instance.OpenMenu("loading"); // Opens the loading screen while the room is being created on the server.
+    public override void OnCreatedRoom()
+    {
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
+
+        //If there is a lobby in the scene, display room information
+        if (lobbyUI != null)
+        {
+            lobbyUI.OpenMenu("room");
+        }
     }
 
     // The connection of the room [Also spawns a network player in NetworkPlayerSpawn]
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined A Room.");
-        // Opens the room menu UI
-        LobbyUIScript.instance.OpenMenu("room");
-        roomNameText.text = PhotonNetwork.CurrentRoom.Name;
 
-        Player[] players = PhotonNetwork.PlayerList;
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
 
-        // Loops through the list of players and adds to the list of players in the room.
-        for (int i = 0; i < players.Length; i++) // The tutorial used Count(), doesn't work for me without System.Linq so I'm using .Length instead
+        //If there is a lobby in the scene, display room information
+        if (lobbyUI != null)
         {
-            Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
+            lobbyUI.UpdateRoomList();
         }
     }
 
     // We failed to create a room and we will display the error message to the player.
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
+        Debug.LogError("Create Room Failed: " + returnCode);
+
         //base.OnCreateRoomFailed(returnCode, message);
-        errorText.text = "Room Creation Failed: " + message;
-        LobbyUIScript.instance.OpenMenu("error");
+        string errorMessage = "Room Creation Failed: " + message;
+
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
+
+        //If there is a lobby in the scene, display an error message
+        if (lobbyUI != null)
+        {
+            lobbyUI.UpdateErrorMessage(errorMessage);
+            lobbyUI.OpenMenu("error");
+        }
     }
 
     // To let us know if/when another player joins the room.
@@ -125,8 +133,14 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     {
         base.OnPlayerEnteredRoom(newPlayer);
         Debug.Log("A new player has joined the room.");
-        // Adds the player's name to the list of players in the room.
-        Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
+
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
+
+        //Update room information
+        if (lobbyUI != null)
+        {
+            lobbyUI.UpdateRoomList();
+        }
     }
 
     // Leaves the room that a player has entered.
@@ -138,15 +152,20 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     // once the player has left the room.
     public override void OnLeftRoom()
     {
-        LobbyUIScript.instance.OpenMenu("title");
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
+
+        //If there is a lobby in the scene, go to the title menu
+        if (lobbyUI != null)
+        {
+            lobbyUI.OpenMenu("title");
+        }
     }
 
     // Joins the room that a player selects 
-    public void JoinRoom(RoomInfo info)
+    public void JoinRoom(string roomName)
     {
-        // Updates the room text and opens the loading menu.
-        PhotonNetwork.JoinRoom(info.Name);
-        LobbyUIScript.instance.OpenMenu("loading");
+        // Joins the room on the network
+        PhotonNetwork.JoinRoom(roomName);
     }
 
     // Shows us the list of room info
@@ -154,17 +173,27 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     {
         //base.OnRoomListUpdate(roomList);
 
-        // We clear the list every time we update.
-        foreach (Transform trans in roomListContent)
-        {
-            Destroy(trans.gameObject);
-        }
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
 
-        // Loops through the list of rooms.
-        for (int i = 0; i < roomList.Count; i++)
+        //If there is a lobby in the scene, update the room list
+        if (lobbyUI != null)
         {
-            // Adds the rooms to the list of rooms.
-            Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(roomList[i]);
+            lobbyUI.UpdateLobbyList(roomList);
         }
     }
+
+    public List<string> GetPlayerNameList()
+    {
+        List<string> playerNameList = new List<string>();
+
+        foreach (var player in GetPlayerList())
+        {
+            playerNameList.Add(player.NickName);
+        }
+
+        return playerNameList;
+    }
+
+    public string GetCurrentRoom() => PhotonNetwork.CurrentRoom.Name;
+    public Player[] GetPlayerList() => PhotonNetwork.PlayerList;
 }
