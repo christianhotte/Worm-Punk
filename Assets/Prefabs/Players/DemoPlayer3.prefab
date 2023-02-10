@@ -3742,11 +3742,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: -0.009032488
+      value: -0.00903368
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: 1.313
+      value: 1.3129997
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105951, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_TagString
@@ -3828,6 +3828,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8290651123066708159}
     m_Modifications:
+    - target: {fileID: 3716464544192623360, guid: dc052da53b3e1e44b8e0ab06d9f57a98, type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 6619349005550171261, guid: dc052da53b3e1e44b8e0ab06d9f57a98, type: 3}
       propertyPath: m_UseGravity
       value: 0
@@ -3849,9 +3853,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4902200939074016700}
     - target: {fileID: 6619349005983234540, guid: dc052da53b3e1e44b8e0ab06d9f57a98, type: 3}
+      propertyPath: blockRadius
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6619349005983234540, guid: dc052da53b3e1e44b8e0ab06d9f57a98, type: 3}
+      propertyPath: deploySpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6619349005983234540, guid: dc052da53b3e1e44b8e0ab06d9f57a98, type: 3}
       propertyPath: rayStartPoint
       value: 
       objectReference: {fileID: 42251829116003661}
+    - target: {fileID: 6619349005983234540, guid: dc052da53b3e1e44b8e0ab06d9f57a98, type: 3}
+      propertyPath: activationSpeed
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6619349005983234541, guid: dc052da53b3e1e44b8e0ab06d9f57a98, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -3960,11 +3976,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: -0.009032488
+      value: -0.00903368
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: 1.313
+      value: 1.3129997
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105951, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_TagString
