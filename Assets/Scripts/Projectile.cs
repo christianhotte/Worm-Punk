@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon;
 using Photon.Pun;
+using System.Linq;
 
 /// <summary>
 /// Base class for any non-hitscan ballistic projectiles.
@@ -27,6 +28,10 @@ public class Projectile : MonoBehaviourPunCallbacks
     /// How much distance this projectile has left to cover.
     /// </summary>
     private float RemainingRange { get { return settings.range - totalDistance; } }
+    /// <summary>
+    /// Percentage of distance which has been traveled by this projectile so far.
+    /// </summary>
+    private float DistancePercent { get { return 1 - (RemainingRange / settings.range); } }
 
     //COROUTINES:
     /// <summary>
@@ -36,23 +41,66 @@ public class Projectile : MonoBehaviourPunCallbacks
     IEnumerator DoTargetAcquisition()
     {
         //Initialization:
-        target = null;                                         //Reset current target
-        float secsPerUpdate = 1 / settings.targetingTickRate;  //Get seconds per tick
-        List<Transform> viableTargets = new List<Transform>(); //Create list for storing viable targets
+        target = null;                                            //Reset current target
+        float secsPerUpdate = 1 / settings.targetingTickRate;     //Get seconds per tick
+        List<Transform> potentialTargets = new List<Transform>(); //Create list for storing viable targets
+        float targetHeuristic = 0;                                //Heuristic value for current target (the higher the better)
 
-        //Populate targets list:
+        //Populate potential targets list:
+        var targetables = FindObjectsOfType<MonoBehaviour>().OfType<IShootable>().OfType<MonoBehaviour>(); //Get master list of all targetable objects in scene
+        foreach (MonoBehaviour targetable in targetables) //Iterate through list of targetables
+        {
+            //Eliminate non-viable targets:
+            if (targetable == originPlayer) continue;                               //Prevent projectile from targeting origin player
+            Vector3 targetSep = targetable.transform.position - transform.position; //Get distance and direction from projectile to target
+            float targetDist = targetSep.magnitude;                                 //Distance from projectile to target
+            if (targetDist > RemainingRange) continue;                              //Ignore targets which are outside projectile's potential range
+            float targetAngle = Vector3.Angle(targetSep, transform.forward);        //Get angle between target direction and projectile movement direction
+            if (targetAngle > settings.targetDesignationAngle.y) continue;          //Ignore targets which are behind the projectile and will likely never be hit
 
+            //Cleanup:
+            potentialTargets.Add(targetable.transform); //Add valid targets to list of targets to check
+        }
+        print("Potential Targets: " + potentialTargets.Count);
+        
 
         //Look for targets:
-        while (target == null) //Run until projectile has a target
+        while (true) //Run forever
         {
-            //Look for viable targets:
-            
+            foreach (Transform potentialTarget in potentialTargets)
+            {
+                //Eliminate non-viable targets:
+                Vector3 targetSep = potentialTarget.position - transform.position; //Get distance and direction from projectile to target
+                float targetDist = targetSep.magnitude;                            //Distance from projectile to target
+                if (targetDist > RemainingRange) continue;                         //Ignore targets which are outside projectile's potential range
+                float targetAngle = Vector3.Angle(targetSep, transform.forward);   //Get angle between target direction and projectile movement direction
+                if (targetAngle > settings.targetDesignationAngle.y) continue;     //Ignore targets which are behind the projectile and will likely never be hit
 
-            //Determine best target:
+                //Check for viable targets:
+                if (targetDist <= settings.targetingDistance) //Current targetable is within range of projectile
+                {
+                    //Check for obstructions:
+                    if (settings.LOSTargeting) //System is using line-of-sight targeting
+                    {
+                        if (Physics.Linecast(transform.position, potentialTarget.position, settings.targetingIgnoreLayers)) continue; //Do not target obstructed objects
+                    }
 
+                    //Check target viability:
+                    float currentHeuristic = (1 - settings.angleDistancePreference) * Mathf.InverseLerp(settings.targetDesignationAngle.x, 0, targetAngle); //Calculate angle preference score for this target
+                    currentHeuristic += settings.angleDistancePreference * Mathf.InverseLerp(settings.targetingDistance, 0, targetDist);                    //Calculate proximity preference score for this target
+                    if (target == null && targetAngle <= settings.targetDesignationAngle.x || //No target has been chosen and target is within desired angle OR
+                    currentHeuristic > targetHeuristic)                                       //A target has been chosen but current target is more viable
+                    {
+                        target = potentialTarget;           //Set as chosen target
+                        targetHeuristic = currentHeuristic; //Update target heuristic
+                        print("New Target: " + target.name);
+                    }
+                }
+            }
 
-            yield return new WaitForSeconds(secsPerUpdate); //Wait until next update
+            //Cleanup:
+            if (target != null && !settings.alwaysLookForTarget) break; //Break out of loop once target is found (unless projectile is always looking for target)
+            yield return new WaitForSeconds(secsPerUpdate);             //Wait until next update
         }
     }
 
@@ -68,7 +116,13 @@ public class Projectile : MonoBehaviourPunCallbacks
     }
     private protected virtual void FixedUpdate()
     {
-        //Initialize variables:
+        //Modify velocity:
+        if (target != null) //Projectile has a target
+        {
+            Vector3 currentTargetDirection = (target.position - transform.position).normalized; //Current direction toward target
+            Vector3 newForward = Vector3.Lerp(velocity.normalized, currentTargetDirection, settings.targetingStrength);
+            velocity = velocity.magnitude * newForward;
+        }
         if (settings.drop > 0) velocity.y -= settings.drop * Time.fixedDeltaTime;  //Perform bullet drop (downward acceleration) if relevant
         Vector3 targetPos = transform.position + (velocity * Time.fixedDeltaTime); //Get target projectile position
         float travelDistance = Vector3.Distance(transform.position, targetPos);    //Get distance this projectile is moving this update
@@ -132,9 +186,23 @@ public class Projectile : MonoBehaviourPunCallbacks
             if (settings.range <= settings.barrelGap) { BurnOut(); return; } //Burn projectile out in the unlikely event that the barrel gap is greater than its range
             totalDistance += settings.barrelGap;                             //Include distance in total distance traveled
         }
+
+        //Cleanup:
+        totalDistance = 0;                                            //Reset traveled distance
+        if (photonView.IsMine) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition on client projectile
+    }
+
+    //REMOTE METHODS:
+    [PunRPC]
+    public void RPC_Fire(Vector3 startPosition, Quaternion startRotation)
+    {
+        Fire(startPosition, startRotation);
     }
     [PunRPC]
-    public void RPC_Fire(Vector3 startPosition, Quaternion startRotation) { Fire(startPosition, startRotation); }
+    public void RPC_AcquireTarget()
+    {
+
+    }
 
     //FUNCTIONALITY METHODS:
     /// <summary>
