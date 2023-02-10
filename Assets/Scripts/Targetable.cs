@@ -11,18 +11,25 @@ public class Targetable : MonoBehaviour
     /// <summary>
     /// Master list of all targetable objects in scene.
     /// </summary>
-    public static List<Targetable> targetableInstances = new List<Targetable>();
+    public static List<Targetable> instances = new List<Targetable>();
 
     //Settings:
     [Tooltip("The point in space which projectiles will target (leave empty to make it this object's transform.")] public Transform targetPoint;
+
+    //Runtime Variables:
 
     //RUNTIME VARIABLES:
     private void Awake()
     {
         //Initialize:
-        targetableInstances.Add(this); //Add this targetable object to master list of targetable instances
+        instances.Add(this); //Add this targetable object to master list of targetable instances
 
         //Get objects & components:
-        if (targetPoint == null) targetPoint = transform; //Set target point to self if not set in editor
+        if (targetPoint == null) targetPoint = transform;      //Set target point to self if not set in editor
+    }
+    private void OnDestroy()
+    {
+        //Final cleanup:
+        instances.Remove(this); //Remove this object from master list of targetable instances
     }
 }

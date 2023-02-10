@@ -10,7 +10,7 @@ using Photon.Realtime;
 /// <summary>
 /// Manages overall player stats and abilities.
 /// </summary>
-public class PlayerController : MonoBehaviour, IShootable
+public class PlayerController : MonoBehaviour
 {
     //Objects & Components:
     [Tooltip("Singleton instance of player controller.")]                                    public static PlayerController instance;
@@ -103,12 +103,11 @@ public class PlayerController : MonoBehaviour, IShootable
     /// <summary>
     /// Method called when this player is hit by a projectile.
     /// </summary>
-    /// <param name="projectile">The projectile which hit the player.</param>
-    public void IsHit(Projectile projectile)
+    public void IsHit(float damage)
     {
         //Hit effects:
-        audioSource.PlayOneShot((AudioClip)Resources.Load("Default_Hurt_Sound")); //TEMP play hurt sound
-        currentHealth -= projectile.settings.damage;                              //Deal projectile damage to player
+        audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Default_Hurt_Sound")); //TEMP play hurt sound
+        currentHealth -= damage;                                                         //Deal projectile damage to player
 
         //Death check:
         if (currentHealth <= 0) //Player is being killed by this projectile hit
@@ -121,7 +120,16 @@ public class PlayerController : MonoBehaviour, IShootable
     /// </summary>
     public void IsKilled()
     {
-
+        //TEMP DEATH SEQUENCE:
+        audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Default_Death_Sound"));
+        bodyRb.velocity = Vector3.zero; //Reset player velocity
+        if (SpawnManager.instance != null && useSpawnPoint) //Spawn manager is present in scene
+        {
+            Transform spawnpoint = SpawnManager.instance.GetSpawnPoint(); //Get spawnpoint from spawnpoint manager
+            xrOrigin.transform.position = spawnpoint.position;            //Move spawned player to target position
+            xrOrigin.transform.rotation = spawnpoint.rotation;            //Orient network player according to target rotation
+        }
+        currentHealth = healthSettings.defaultHealth; //Reset to max health
     }
 
     //FUNCTIONALITY METHODS:

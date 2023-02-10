@@ -8,7 +8,7 @@ using Photon.Realtime;
 
 // This script was used from https://youtu.be/KHWuTBmT1oI?t=1511
 
-public class NetworkPlayer : MonoBehaviour, IShootable
+public class NetworkPlayer : MonoBehaviour
 {
     //Objects & Components:
     internal PlayerController player; //Client playerController associated with this network player
@@ -45,12 +45,12 @@ public class NetworkPlayer : MonoBehaviour, IShootable
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
         rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
 
-        if (photonView.IsMine)
+        /*if (photonView.IsMine)
         {
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
             playerSetup.SetColor(PlayerSettings.Instance.charData.testColor);
             SyncData(PlayerSettings.Instance);
-        }
+        }*/
 
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
@@ -95,6 +95,15 @@ public class NetworkPlayer : MonoBehaviour, IShootable
         charData = JsonUtility.FromJson<CharacterData>(data);
         playerSetup.SetColor(charData.testColor);
     }
+    /// <summary>
+    /// Indicates that this player has been hit by a networked projectile.
+    /// </summary>
+    /// <param name="damage">How much damage the projectile dealt.</param>
+    [PunRPC]
+    public void RPC_Hit(float damage)
+    {
+        if (photonView.IsMine) player.IsHit(damage); //Inflict damage upon hit player
+    }
 
     private void OnDestroy()
     {
@@ -125,9 +134,5 @@ public class NetworkPlayer : MonoBehaviour, IShootable
     {
         target.position = rigTransform.position;
         target.rotation = rigTransform.rotation;
-    }
-    public void IsHit(Projectile projectile)
-    {
-
     }
 }
