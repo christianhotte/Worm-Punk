@@ -9,8 +9,8 @@ public class SecondaryWeapons : PlayerEquipment
 {
     public GameObject blade,hand;
     public Rigidbody playerRB,bladeRB;
-    public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,rocketTip,ShotgunBarrelTip,stowedTip;
-    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4;
+    public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,rocketTip,ShotgunBarrelTip,stowedTip,rayStartPoint;
+    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance;
     public AnimationCurve deployMotionCurve, deployScaleCurve, sheathMotionCurve, sheathScaleCurve;
     public bool deployed = false,cooldown=false,grindin=false,deflectin=false;
     public Vector3 prevHandPos,tipPos;
@@ -30,6 +30,7 @@ public class SecondaryWeapons : PlayerEquipment
     // Update is called once per frame
     private protected override void Update()
     {
+ 
 
 
         if (deflectin)
@@ -60,10 +61,29 @@ public class SecondaryWeapons : PlayerEquipment
 
             if (hit.gameObject.tag != "Player"&&hit.name!="Blade"&&hit.tag != "Bullet")
             {
-                Debug.Log(hit.name);
+               // Debug.Log(hit.name);
                 grindin = true;
                 break;
             }
+        }
+        if (deployed)
+        {
+            sawDistance = Vector3.Distance(rayStartPoint.position, bladeTip.position);
+            var sawRay = Physics.Raycast(rayStartPoint.position, rayStartPoint.forward, out RaycastHit checkBlade, sawDistance + 1, ~LayerMask.GetMask("PlayerWeapon", "Blade"));// ~LayerMask.GetMask("PlayerWeapon"));
+            if (checkBlade.collider == null) return;
+            rayHitDistance = 999;
+            rayHitDistance = Vector3.Distance(rayStartPoint.position, checkBlade.point);
+            if (rayHitDistance < sawDistance&&checkBlade.collider.tag!="Blade"&&checkBlade.collider.tag!="Player"&&checkBlade.collider.tag!="Barrel")
+            {
+                //Debug.Log(checkBlade.collider.name);
+                grindin = true;
+            }
+            else if (rayHitDistance > sawDistance)
+            {
+                grindin = false;
+
+            }
+
         }
         if (grindin&&deployed)
         {
@@ -130,7 +150,7 @@ public class SecondaryWeapons : PlayerEquipment
     }
     public void Deploy()
     {
-        Debug.Log("Deploy");
+       // Debug.Log("Deploy");
         //  blade.transform.LookAt(bladeTip);
         blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeDeployed.transform.position, deploySpeed);
         //  bladeRB.velocity += blade.transform.forward*-deploySpeed;
@@ -141,12 +161,12 @@ public class SecondaryWeapons : PlayerEquipment
     }
     public void Sheethe()
     {
-        Debug.Log("Sheethe");
+       // Debug.Log("Sheethe");
         blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeSheethed.transform.position, deploySpeed);
 
        // blade.transform.position = bladeSheethed.transform.position;
         deployed = false;
-        blade.transform.localRotation = bladeSheethed.transform.localRotation;
+        //blade.transform.localRotation = bladeSheethed.transform.localRotation;
         StartCoroutine(StartCooldown());
     }
     public IEnumerator StartCooldown()
