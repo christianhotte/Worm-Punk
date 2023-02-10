@@ -60,7 +60,7 @@ public class SecondaryWeapons : PlayerEquipment
 
             if (hit.gameObject.tag != "Player"&&hit.name!="Blade"&&hit.tag != "Bullet")
             {
-                Debug.Log(hit.name);
+               // Debug.Log(hit.name);
                 grindin = true;
                 break;
             }
