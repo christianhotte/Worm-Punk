@@ -130,6 +130,7 @@ public class PlayerController : MonoBehaviour
             xrOrigin.transform.rotation = spawnpoint.rotation;            //Orient network player according to target rotation
         }
         currentHealth = healthSettings.defaultHealth; //Reset to max health
+        print("Player Killed!");
     }
 
     //FUNCTIONALITY METHODS:

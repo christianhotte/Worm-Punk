@@ -84,7 +84,6 @@ public class Projectile : MonoBehaviourPunCallbacks
                     {
                         target = null;       //Clear active target
                         targetHeuristic = 0; //Clear current target heuristic
-                        print("Current target has been passed!");
                     }
                     continue; //Skip to next potential target
                 }
@@ -116,7 +115,6 @@ public class Projectile : MonoBehaviourPunCallbacks
                     {
                         target = potentialTarget;                              //Set potential target as chosen target
                         targetHeuristic = currentHeuristic;                    //Update target heuristic
-                        photonView.RPC("RPC_AcquireTarget", RpcTarget.Others); //NOTE: Add functionality here
                     }
                 }
 
@@ -181,6 +179,10 @@ public class Projectile : MonoBehaviourPunCallbacks
             photonView.RPC("RPC_Move", RpcTarget.Others, targetPos);              //Move all projectiles on network
             if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
         }
+        else
+        {
+            transform.position += velocity;
+        }
     }
 
     //INPUT METHODS:
@@ -230,9 +232,9 @@ public class Projectile : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_Move(Vector3 newPosition)
     {
-        Vector3 direction = (newPosition - transform.position).normalized; //Get direction projectile is traveling in
-        transform.position = newPosition;                                  //Move to new position
-        transform.rotation = Quaternion.LookRotation(direction);           //Rotate projectile to face direction of travel
+        velocity = newPosition - transform.position;            //Get current projectile velocity
+        transform.position = newPosition;                       //Move to new position
+        transform.rotation = Quaternion.LookRotation(velocity); //Rotate projectile to face direction of travel
     }
 
     //FUNCTIONALITY METHODS:
