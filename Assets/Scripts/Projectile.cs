@@ -50,8 +50,10 @@ public class Projectile : MonoBehaviourPunCallbacks
         var targetables = FindObjectsOfType<MonoBehaviour>().OfType<IShootable>().OfType<MonoBehaviour>(); //Get master list of all targetable objects in scene
         foreach (MonoBehaviour targetable in targetables) //Iterate through list of targetables
         {
+            //Prevent projectile from targeting owner:
+            if (targetable == originPlayer) continue; //Prevent projectile from targeting origin player (same script check method)
+
             //Eliminate non-viable targets:
-            if (targetable == originPlayer) continue;                               //Prevent projectile from targeting origin player
             Vector3 targetSep = targetable.transform.position - transform.position; //Get distance and direction from projectile to target
             float targetDist = targetSep.magnitude;                                 //Distance from projectile to target
             if (targetDist > RemainingRange) continue;                              //Ignore targets which are outside projectile's potential range
@@ -62,7 +64,6 @@ public class Projectile : MonoBehaviourPunCallbacks
             potentialTargets.Add(targetable.transform); //Add valid targets to list of targets to check
         }
         print("Potential Targets: " + potentialTargets.Count);
-        
 
         //Look for targets:
         while (potentialTargets.Count > 0) //Run forever (while projectile has targets to consider
@@ -73,13 +74,18 @@ public class Projectile : MonoBehaviourPunCallbacks
                 Transform potentialTarget = potentialTargets[x];                             //Get reference to current target
                 Vector3 targetSep = potentialTarget.position - transform.position;           //Get distance and direction from projectile to target
                 float targetDist = targetSep.magnitude;                                      //Distance from projectile to target
-                if (targetDist > RemainingRange) { potentialTargets.RemoveAt(x); continue; } //Remove target from potentials list if it can never be reached by projectile
+                if (targetDist > RemainingRange) { potentialTargets.RemoveAt(x); continue; } //Remove target from potentials list if it can never be reached by projectile (still tracks it if it's the current target and a more viable target has not yet been chosen)
                 float targetAngle = Vector3.Angle(targetSep, transform.forward);             //Get angle between target direction and projectile movement direction
                 if (targetAngle > settings.targetDesignationAngle.y)                         //Angle to potential target is so steep that projectile will likely never hit
                 {
-                    potentialTargets.RemoveAt(x);                 //Remove this target from list of potential targets
-                    if (potentialTarget == target) target = null; //If this is the current target, clear it
-                    continue;                                     //Skip to next potential target
+                    potentialTargets.RemoveAt(x); //Remove this target from list of potential targets
+                    if (potentialTarget == target) //Active target has just been passed
+                    {
+                        target = null;       //Clear active target
+                        targetHeuristic = 0; //Clear current target heuristic
+                        print("Current target has been passed!");
+                    }
+                    continue; //Skip to next potential target
                 }
 
                 //Check for viable targets:
@@ -88,18 +94,28 @@ public class Projectile : MonoBehaviourPunCallbacks
                     //Check for obstructions:
                     if (settings.LOSTargeting) //System is using line-of-sight targeting
                     {
-                        if (Physics.Linecast(transform.position, potentialTarget.position, settings.targetingIgnoreLayers)) continue; //Do not target obstructed objects
+                        if (Physics.Linecast(transform.position, potentialTarget.position, settings.targetingIgnoreLayers)) //Object is obstructed
+                        {
+                            if (potentialTarget == target) //Active target has been obstructed
+                            {
+                                target = null;       //Clear active target
+                                targetHeuristic = 0; //Clear current target heuristic
+                            }
+                            x++; continue; //Move to next potential target
+                        }
                     }
 
                     //Check target viability:
                     float currentHeuristic = (1 - settings.angleDistancePreference) * Mathf.InverseLerp(settings.targetDesignationAngle.x, 0, targetAngle); //Calculate angle preference score for this target
                     currentHeuristic += settings.angleDistancePreference * Mathf.InverseLerp(settings.targetingDistance, 0, targetDist);                    //Calculate proximity preference score for this target
-                    if (target == null && targetAngle <= settings.targetDesignationAngle.x || //No target has been chosen and target is within desired angle OR
-                    currentHeuristic > targetHeuristic)                                       //A target has been chosen but current target is more viable
+
+                    //Update current target:
+                    if (target == potentialTarget) targetHeuristic = currentHeuristic; //Update current target heuristic whenever current target is re-acquired
+                    else if (target == null || currentHeuristic > targetHeuristic) //Either projectile has no current target or potential target is more viable than current target
                     {
-                        target = potentialTarget;           //Set as chosen target
-                        targetHeuristic = currentHeuristic; //Update target heuristic
-                        print("New Target: " + target.name);
+                        target = potentialTarget;                              //Set potential target as chosen target
+                        targetHeuristic = currentHeuristic;                    //Update target heuristic
+                        photonView.RPC("RPC_AcquireTarget", RpcTarget.Others); //NOTE: Add functionality here
                     }
                 }
 
@@ -126,13 +142,14 @@ public class Projectile : MonoBehaviourPunCallbacks
     private protected virtual void FixedUpdate()
     {
         //Modify velocity:
+        if (settings.drop > 0) velocity.y -= settings.drop * Time.fixedDeltaTime;  //Perform bullet drop (downward acceleration) if relevant
         if (target != null) //Projectile has a target
         {
-            Vector3 currentTargetDirection = (target.position - transform.position).normalized; //Current direction toward target
-            Vector3 newForward = Vector3.Lerp(velocity.normalized, currentTargetDirection, settings.targetingStrength);
-            velocity = velocity.magnitude * newForward;
+            Vector3 targetVelocity = (target.position - transform.position).normalized * velocity.magnitude;         //Get velocity which would point projectile directly at target
+            velocity = Vector3.MoveTowards(velocity, targetVelocity, settings.homingStrength * Time.fixedDeltaTime); //Incrementally adjust toward target velocity
         }
-        if (settings.drop > 0) velocity.y -= settings.drop * Time.fixedDeltaTime;  //Perform bullet drop (downward acceleration) if relevant
+
+        //Get target position:
         Vector3 targetPos = transform.position + (velocity * Time.fixedDeltaTime); //Get target projectile position
         float travelDistance = Vector3.Distance(transform.position, targetPos);    //Get distance this projectile is moving this update
 
@@ -197,8 +214,8 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Cleanup:
-        totalDistance = 0;                                            //Reset traveled distance
-        if (photonView.IsMine) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition on client projectile
+        totalDistance = 0;                                                                            //Reset traveled distance
+        if (photonView.IsMine && settings.homingStrength != 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition on client projectile
     }
 
     //REMOTE METHODS:

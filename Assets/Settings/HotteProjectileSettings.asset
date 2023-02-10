@@ -14,20 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 1
   knockback: 0
-  initialVelocity: 120
+  initialVelocity: 155
   range: 150
   barrelGap: 0.7
   drop: 0
-  targetingStrength: 0.015
-  targetDesignationAngle: {x: 25, y: 90}
-  targetingDistance: 75
+  homingStrength: 20
+  targetDesignationAngle: {x: 15, y: 90}
+  targetingDistance: 85
   LOSTargeting: 0
   alwaysLookForTarget: 1
-  angleDistancePreference: 0.3
+  angleDistancePreference: 0.4
   targetingIgnoreLayers:
     serializedVersion: 2
     m_Bits: 736
-  targetingTickRate: 30
+  targetingTickRate: 25
   ignoreLayers:
     serializedVersion: 2
     m_Bits: 64
