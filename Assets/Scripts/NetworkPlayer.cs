@@ -23,26 +23,34 @@ public class NetworkPlayer : MonoBehaviour
     public Transform head;
     public Transform leftHand;
     public Transform rightHand;
-    public Transform body;
-
-    
 
     // Gets a list of all of the players on the network
     Player[] allPlayers;
     int myNumberInRoom;
 
+    //Player Data
+    private PlayerSetup playerSetup;    //The player's setup component
+    [SerializeField] private CharacterData charData;
+
     // Start is called before the first frame update
     void Start()
     {
         photonView = GetComponent<PhotonView>();                         //Get photonView component from NetworkPlayer object
-        if (photonView.IsMine) PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
 
         // Gets the network player to move with the player instead of just moving locally.
         XROrigin = GameObject.Find("XR Origin");
         player = XROrigin.GetComponentInParent<PlayerController>();
+        playerSetup = player.GetComponent<PlayerSetup>();
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
         rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+
+        if (photonView.IsMine)
+        {
+            PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
+            playerSetup.SetColor(PlayerSettings.Instance.charData.testColor);
+            SyncData(PlayerSettings.Instance);
+        }
 
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
@@ -63,7 +71,31 @@ public class NetworkPlayer : MonoBehaviour
                 Physics.IgnoreCollision(collider, otherCollider);
             }
         }
+
+        //Hide client renderers:
+        if (photonView.IsMine)
+        {
+            foreach (var item in GetComponentsInChildren<Renderer>())
+            {
+                item.enabled = false;
+            }
+        }
     }
+
+    private void SyncData(PlayerSettings playerData)
+    {
+        Debug.Log("Syncing Player Data...");
+        string characterData = playerData.CharDataToString();
+        photonView.RPC("LoadPlayerSettings", RpcTarget.OthersBuffered, characterData);
+    }
+
+    public void LoadPlayerSettings(string data)
+    {
+        Debug.Log("Loading Player Settings...");
+        charData = JsonUtility.FromJson<CharacterData>(data);
+        playerSetup.SetColor(charData.testColor);
+    }
+
     private void OnDestroy()
     {
         if (photonView.IsMine) PlayerController.photonView = null; //Clear client photonView referenc
@@ -79,15 +111,6 @@ public class NetworkPlayer : MonoBehaviour
             MapPosition(head, headRig);
             MapPosition(leftHand, leftHandRig);
             MapPosition(rightHand, rightHandRig);
-        }
-
-        // Disables all of the renderers in the Network player so that we can just render the XR Origin's.
-        if (photonView.IsMine)
-        {
-            foreach (var item in GetComponentsInChildren<Renderer>())
-            {
-                item.enabled = false;
-            }
         }
 
         // The player dies if the player falls too far below the map.

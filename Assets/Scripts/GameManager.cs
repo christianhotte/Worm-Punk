@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     /// <param name="sceneIndex"></param>
     public void LoadGame(SceneIndexes sceneIndex)
     {
+        Debug.Log("Loading Scene - " + sceneIndex.ToString());
         SceneManager.LoadScene((int)sceneIndex);
     }
 }

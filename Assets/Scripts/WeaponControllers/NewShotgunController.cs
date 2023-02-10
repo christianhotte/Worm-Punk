@@ -9,11 +9,14 @@ using UnityEngine.InputSystem;
 public class NewShotgunController : PlayerEquipment
 {
     //Objects & Components:
-    internal ConfigurableJoint breakJoint; //Joint controlling weapon's break action
+    internal ConfigurableJoint breakJoint;         //Joint controlling weapon's break action
+    internal RemoteShotgunController networkedGun; //Remote weapon script used to fire guns on the network
 
     //Settings:
     [SerializeField, Tooltip("Transforms representing position and direction of weapon barrels.")] private Transform[] barrels;
-    [SerializeField, Tooltip("Settings object which determines general weapon behavior.")]         private ShotgunSettings gunSettings;
+    [Tooltip("Settings object which determines general weapon behavior.")]                         public ShotgunSettings gunSettings;
+    [Space()]
+    [SerializeField, Tooltip("Makes it so that weapon fires from the gun itself and not on the netwrok.")] private bool debugFireLocal = false;
 
     //Runtime Variables:
     private int currentBarrelIndex = 0; //Index of barrel currently selected as next to fire
@@ -100,6 +103,15 @@ public class NewShotgunController : PlayerEquipment
         //Rigidbody effects:
         player.bodyRb.velocity = -currentBarrel.forward * gunSettings.fireVelocity;                                    //Launch player based on current barrel facing direction
         rb.AddForceAtPosition(currentBarrel.up * gunSettings.recoilTorque, currentBarrel.position, ForceMode.Impulse); //Apply upward torque to weapon at end of barrel
+
+        //Instantiate projectile(s):
+        if (networkedGun == null || debugFireLocal) //Weapon is in local fire mode
+        {
+            Projectile projectile = ((GameObject)Instantiate(Resources.Load("Projectiles/" + gunSettings.projectileResourceName))).GetComponent<Projectile>(); //Instantiate projectile
+            projectile.Fire(currentBarrel);                                                                                                                    //Initialize projectile
+            projectile.localOnly = true;                                                                                                                       //Indicate that projectile is only being fired on local game version
+        }
+        else networkedGun.LocalFire(currentBarrel); //Fire weapon on the network
 
         //Cleanup:
         if (gunSettings.fireSound != null) audioSource.PlayOneShot(gunSettings.fireSound); //Play sound effect

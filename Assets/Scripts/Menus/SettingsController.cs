@@ -45,10 +45,8 @@ public class SettingsController : MonoBehaviour
                 break;
         }
 
-        foreach(var controller in FindObjectsOfType<ActionBasedController>())
-        {
-            controller.GetComponentInChildren<MeshRenderer>().material.color = newColor;
-        }
+        PlayerSettings.Instance.charData.testColor = newColor;   //Set the player color in the player settings
+        FindObjectOfType<PlayerSetup>().SetColor(newColor);
 
         colorSettingsObject.text = "Player Color: " + newColorText;
     }

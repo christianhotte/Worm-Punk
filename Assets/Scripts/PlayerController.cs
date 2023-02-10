@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour, IShootable
     [Tooltip("Rigidbody for player's body (the part that flies around).")] internal Rigidbody bodyRb;
     [Tooltip("Controller component for player's left hand.")]              internal ActionBasedController leftHand;
     [Tooltip("Controller component for player's right hand.")]             internal ActionBasedController rightHand;
+    [Tooltip("Equipment which is currently attached to the player")]       internal List<PlayerEquipment> attachedEquipment = new List<PlayerEquipment>();
 
     private Camera cam;              //Main player camera
     internal PlayerInput input;      //Input manager component used by player to send messages to hands and such
@@ -87,7 +88,7 @@ public class PlayerController : MonoBehaviour, IShootable
     /// </summary>
     private void UpdateWeaponry()
     {
-        //Show or hide all objects under the tag "Weapon"
+        //Show or hide all objects under the tag "PlayerEquipment"
         foreach (var controller in GetComponentsInChildren<ActionBasedController>())
         {
             foreach (Transform transform in controller.transform)

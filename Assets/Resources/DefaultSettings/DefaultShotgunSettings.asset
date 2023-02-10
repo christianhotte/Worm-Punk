@@ -15,7 +15,7 @@ MonoBehaviour:
   projectileResourceName: HotteProjectile1
   maxLoadedShots: 2
   breakAngle: 32
-  cooldownTime: 0.6
+  cooldownTime: 0.1
   fireVelocity: 25
   triggerThreshold: 0.9
   recoilTorque: 100
