@@ -225,6 +225,6 @@ MonoBehaviour:
   hookrb: {fileID: 0}
   RBScript: {fileID: 0}
   hookLead: {fileID: 7508983563828799152}
-  hookSpeed: 50
+  hookSpeed: 100
   flying: 0
   cable: {fileID: 0}
