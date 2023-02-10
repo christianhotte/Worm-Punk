@@ -9,14 +9,13 @@ using TMPro;
 
 public class PlayerListItem : MonoBehaviourPunCallbacks
 {
-    [SerializeField] TMP_Text text;
+    [SerializeField] private TextMeshProUGUI text;
     Player player;
 
     // Displays the names of players in the room.
-    public void SetUp(Player _player)
+    public void SetUp(string playerName)
     {
-        player = _player;
-        text.text = _player.NickName;
+        text.text = playerName;
     }
 
     // Compares to the player that has left the room
