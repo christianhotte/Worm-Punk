@@ -1099,6 +1099,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 559789961, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: blockRadius
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 559789961, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
       propertyPath: ShotgunBarrelTip
       value: 
       objectReference: {fileID: 4345303906983923913}

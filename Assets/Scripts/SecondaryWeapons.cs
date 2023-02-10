@@ -31,26 +31,21 @@ public class SecondaryWeapons : PlayerEquipment
     private protected override void Update()
     {
 
-        if (blade.transform.localPosition.z >= 1.29)
-        {
-            bladeRB.isKinematic = true;
-            bladeRB.useGravity = false;
-            deployed = true;
-        }
+
         if (deflectin)
         {
-            Debug.Log("checkstart");
+           //Debug.Log("checkstart");
             tipPos = bladeTip.transform.position;
             GameObject[] bullethits = GameObject.FindGameObjectsWithTag("Bullet");
             foreach (var hit in bullethits)
             {
-                float bulletDistance = Vector3.Distance(stowedTip.position, stowedTip.transform.position);
+                float bulletDistance = Vector3.Distance(stowedTip.position, hit.transform.position);
                 projScript = hit.gameObject.GetComponent<Projectile>();
                 if (bulletDistance <= blockRadius)
                 {
-                    Debug.Log("Deflected");
+                    Debug.Log(bulletDistance);
                     //grindin = true;
-                    bladeTip.LookAt(hit.transform);
+                    //bladeTip.LookAt(hit.transform);
                     projScript.Fire(bladeTip.position, bladeTip.rotation);
                     Deploy();
                     break;
@@ -65,7 +60,7 @@ public class SecondaryWeapons : PlayerEquipment
 
             if (hit.gameObject.tag != "Player"&&hit.name!="Blade"&&hit.tag != "Bullet")
             {
-                //Debug.Log(hit.name);
+                Debug.Log(hit.name);
                 grindin = true;
                 break;
             }
@@ -94,7 +89,7 @@ public class SecondaryWeapons : PlayerEquipment
                         // Deploy();
                         
                         num++;
-                        Debug.Log("Punch"+num);
+                       // Debug.Log("Punch"+num);
                         StartCoroutine(DeflectTime());
                         StartCoroutine(StartCooldown());
 
@@ -116,7 +111,7 @@ public class SecondaryWeapons : PlayerEquipment
             float gripPosition = context.ReadValue<float>(); //Get current position of trigger as a value
             if (!gripPressed) //Trigger has not yet been pulled
             {
-                Debug.Log(gripPosition);
+               // Debug.Log(gripPosition);
                 if (gripPosition >= gripThreshold) //Trigger has just been pulled
                 {
                     gripPressed = true; //Indicate that trigger is now pulled
@@ -136,14 +131,11 @@ public class SecondaryWeapons : PlayerEquipment
     public void Deploy()
     {
         Debug.Log("Deploy");
-        //blade.transform.position = bladeDeployed.position;
-        bladeRB.isKinematic = false;
-        bladeRB.useGravity = true;
         //  blade.transform.LookAt(bladeTip);
         blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeDeployed.transform.position, deploySpeed);
         //  bladeRB.velocity += blade.transform.forward*-deploySpeed;
         blade.transform.localRotation = bladeDeployed.transform.localRotation;
-      //  deployed = true;
+        deployed = true;
         StartCoroutine(StartCooldown());
 
     }
@@ -151,8 +143,7 @@ public class SecondaryWeapons : PlayerEquipment
     {
         Debug.Log("Sheethe");
         blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeSheethed.transform.position, deploySpeed);
-        bladeRB.isKinematic = true;
-        bladeRB.useGravity = false;
+
        // blade.transform.position = bladeSheethed.transform.position;
         deployed = false;
         blade.transform.localRotation = bladeSheethed.transform.localRotation;

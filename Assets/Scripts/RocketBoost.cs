@@ -40,7 +40,7 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             if (checkSaw.collider == null) return;
             if (checkSaw.collider.tag == "Blade")
             {
-                Debug.Log("cut");
+               // Debug.Log("cut");
                 GrappleStop();
             }
         }
