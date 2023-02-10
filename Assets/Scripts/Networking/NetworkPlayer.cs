@@ -30,7 +30,6 @@ public class NetworkPlayer : MonoBehaviour
 
     //Player Data
     private PlayerSetup playerSetup;    //The player's setup component
-    [SerializeField] private CharacterData charData;
 
     // Start is called before the first frame update
     void Start()
@@ -46,12 +45,12 @@ public class NetworkPlayer : MonoBehaviour
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
         rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
 
-        /*if (photonView.IsMine)
+        if (photonView.IsMine)
         {
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
-            playerSetup.SetColor(PlayerSettings.Instance.charData.testColor);
+            LocalPlayerSettings(PlayerSettings.Instance.charData, false);
             SyncData(PlayerSettings.Instance);
-        }*/
+        }
 
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
@@ -93,9 +92,17 @@ public class NetworkPlayer : MonoBehaviour
     public void LoadPlayerSettings(string data)
     {
         Debug.Log("Loading Player Settings...");
-        charData = JsonUtility.FromJson<CharacterData>(data);
+        LocalPlayerSettings(JsonUtility.FromJson<CharacterData>(data), true);
+    }
+
+    private void LocalPlayerSettings(CharacterData charData, bool isOnNetwork)
+    {
+        Debug.Log("Is On Network: " + isOnNetwork);
+
+        Debug.Log("Changing " + charData.playerName + " to " + charData.testColor);
         playerSetup.SetColor(charData.testColor);
     }
+
     /// <summary>
     /// Indicates that this player has been hit by a networked projectile.
     /// </summary>

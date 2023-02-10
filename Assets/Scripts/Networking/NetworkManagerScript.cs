@@ -68,6 +68,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         Debug.Log("Joined a lobby.");
         base.OnJoinedLobby();
         PhotonNetwork.NickName = "Player " + Random.Range(0, 1000).ToString("0000");
+        PlayerSettings.Instance.charData.playerName = PhotonNetwork.NickName;
 
         // Setting up the room options
         if (joinRoomOnLoad)
@@ -81,7 +82,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.IsVisible = true; // The player is able to see the room
         roomOptions.IsOpen = true; // The room is open.
-        roomOptions.EmptyRoomTtl = 500; // Leave the room open for 500 milliseconds after the room is empty
+        roomOptions.EmptyRoomTtl = 0; // Leave the room open for 0 milliseconds after the room is empty
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
     }
 
@@ -173,6 +174,8 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     {
         //base.OnRoomListUpdate(roomList);
 
+        Debug.Log("Updating Lobby List...");
+
         LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
 
         //If there is a lobby in the scene, update the room list
@@ -196,4 +199,6 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
 
     public string GetCurrentRoom() => PhotonNetwork.CurrentRoom.Name;
     public Player[] GetPlayerList() => PhotonNetwork.PlayerList;
+    public string GetLocalPlayerName() => PhotonNetwork.LocalPlayer.NickName;
+    public bool IsLocalPlayerInRoom() => PhotonNetwork.InRoom;
 }
