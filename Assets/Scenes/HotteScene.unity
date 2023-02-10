@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.24647538, g: 0.28234535, b: 0.3457032, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -243,6 +243,7 @@ GameObject:
   - component: {fileID: 82394753}
   - component: {fileID: 82394752}
   - component: {fileID: 82394751}
+  - component: {fileID: 82394757}
   m_Layer: 0
   m_Name: Dummy Target Tan
   m_TagString: Untagged
@@ -428,12 +429,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 82394750}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 6.21, z: 29.2}
-  m_LocalScale: {x: 3.9662, y: 3.9662, z: 3.9662}
+  m_LocalPosition: {x: -10.67, y: 19.6, z: 39.12}
+  m_LocalScale: {x: 1.5158024, y: 1.5158024, z: 1.5158024}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 25
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &82394757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82394750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba8fd80747fad44dbc7560a3fe28b09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPoint: {fileID: 0}
 --- !u!1001 &133491335
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -505,6 +519,7 @@ GameObject:
   - component: {fileID: 147284823}
   - component: {fileID: 147284822}
   - component: {fileID: 147284821}
+  - component: {fileID: 147284827}
   m_Layer: 0
   m_Name: Dummy Target Yellow
   m_TagString: Untagged
@@ -690,12 +705,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 147284820}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.81, y: 6.21, z: 14.96}
-  m_LocalScale: {x: 3.9662, y: 3.9662, z: 3.9662}
+  m_LocalPosition: {x: 28.29, y: 6.21, z: 27.97}
+  m_LocalScale: {x: 2.370201, y: 2.370201, z: 2.370201}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 27
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &147284827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147284820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba8fd80747fad44dbc7560a3fe28b09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPoint: {fileID: 0}
 --- !u!1001 &167994124
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -856,6 +884,7 @@ GameObject:
   - component: {fileID: 336999220}
   - component: {fileID: 336999219}
   - component: {fileID: 336999218}
+  - component: {fileID: 336999224}
   m_Layer: 0
   m_Name: Dummy Target BrightYellow
   m_TagString: Untagged
@@ -1041,12 +1070,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 336999217}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.94, y: 6.21, z: -27.84}
-  m_LocalScale: {x: 3.9662, y: 3.9662, z: 3.9662}
+  m_LocalPosition: {x: -1.94, y: 18, z: -47.9}
+  m_LocalScale: {x: 2.5952039, y: 2.5952039, z: 2.5952039}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 31
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &336999224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 336999217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba8fd80747fad44dbc7560a3fe28b09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPoint: {fileID: 0}
 --- !u!1001 &357405531
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1343,6 +1385,7 @@ GameObject:
   - component: {fileID: 683323764}
   - component: {fileID: 683323763}
   - component: {fileID: 683323762}
+  - component: {fileID: 683323768}
   m_Layer: 0
   m_Name: Dummy Target Red
   m_TagString: Untagged
@@ -1528,12 +1571,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 683323761}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.5, y: 6.21, z: 24.3}
-  m_LocalScale: {x: 3.9662, y: 3.9662, z: 3.9662}
+  m_LocalPosition: {x: -26.9, y: 6.21, z: 28}
+  m_LocalScale: {x: 1.626737, y: 1.626737, z: 1.626737}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &683323768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 683323761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba8fd80747fad44dbc7560a3fe28b09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPoint: {fileID: 0}
 --- !u!1 &714851402
 GameObject:
   m_ObjectHideFlags: 0
@@ -1608,6 +1664,7 @@ GameObject:
   - component: {fileID: 784018828}
   - component: {fileID: 784018827}
   - component: {fileID: 784018832}
+  - component: {fileID: 784018833}
   m_Layer: 0
   m_Name: Dummy Target Black
   m_TagString: Untagged
@@ -1697,8 +1754,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 784018826}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -27.5, y: 6.21, z: -3.7}
-  m_LocalScale: {x: 3.9662, y: 3.9662, z: 3.9662}
+  m_LocalPosition: {x: -53.4, y: 14.7, z: -19}
+  m_LocalScale: {x: 2.0985563, y: 2.0985563, z: 2.0985563}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 22
@@ -1799,6 +1856,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &784018833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784018826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba8fd80747fad44dbc7560a3fe28b09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPoint: {fileID: 0}
 --- !u!1 &805750517
 GameObject:
   m_ObjectHideFlags: 0
@@ -2413,6 +2483,7 @@ GameObject:
   - component: {fileID: 944079237}
   - component: {fileID: 944079236}
   - component: {fileID: 944079235}
+  - component: {fileID: 944079241}
   m_Layer: 0
   m_Name: Dummy Target White
   m_TagString: Untagged
@@ -2598,12 +2669,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 944079234}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13, y: 6.21, z: 26.9}
-  m_LocalScale: {x: 3.9662, y: 3.9662, z: 3.9662}
+  m_LocalPosition: {x: 11.88, y: 6.21, z: 40.45}
+  m_LocalScale: {x: 1.7162541, y: 1.7162541, z: 1.7162541}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 26
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &944079241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 944079234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba8fd80747fad44dbc7560a3fe28b09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPoint: {fileID: 0}
 --- !u!1001 &972593511
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2850,6 +2934,7 @@ GameObject:
   - component: {fileID: 1193619468}
   - component: {fileID: 1193619467}
   - component: {fileID: 1193619466}
+  - component: {fileID: 1193619472}
   m_Layer: 0
   m_Name: Dummy Target Gunmetal
   m_TagString: Untagged
@@ -3035,12 +3120,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1193619465}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.95, y: 6.21, z: -24.05}
-  m_LocalScale: {x: 3.9662, y: 3.9662, z: 3.9662}
+  m_LocalPosition: {x: 25.4, y: 6.21, z: -39.8}
+  m_LocalScale: {x: 2.5202425, y: 2.5202425, z: 2.5202425}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 30
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1193619472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193619465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba8fd80747fad44dbc7560a3fe28b09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPoint: {fileID: 0}
 --- !u!1 &1215417985
 GameObject:
   m_ObjectHideFlags: 0
@@ -3117,6 +3215,7 @@ GameObject:
   - component: {fileID: 1458086872}
   - component: {fileID: 1458086871}
   - component: {fileID: 1458086870}
+  - component: {fileID: 1458086876}
   m_Layer: 0
   m_Name: Dummy Target Green
   m_TagString: Untagged
@@ -3302,12 +3401,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1458086869}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 22.04, y: 6.21, z: -13.22}
-  m_LocalScale: {x: 3.9662, y: 3.9662, z: 3.9662}
+  m_LocalPosition: {x: 39.88, y: 28.34, z: -13.53}
+  m_LocalScale: {x: 2.4913685, y: 2.4913685, z: 2.4913685}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 29
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1458086876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1458086869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba8fd80747fad44dbc7560a3fe28b09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPoint: {fileID: 0}
 --- !u!1 &1474288892
 GameObject:
   m_ObjectHideFlags: 0
@@ -3616,6 +3728,7 @@ GameObject:
   - component: {fileID: 1790781824}
   - component: {fileID: 1790781823}
   - component: {fileID: 1790781822}
+  - component: {fileID: 1790781828}
   m_Layer: 0
   m_Name: Dummy Target Pink
   m_TagString: Untagged
@@ -3801,12 +3914,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790781821}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -19.75, y: 6.21, z: -21.15}
-  m_LocalScale: {x: 3.9662, y: 3.9662, z: 3.9662}
+  m_LocalPosition: {x: -37, y: 20.8, z: -42.3}
+  m_LocalScale: {x: 2.1788716, y: 2.1788716, z: 2.1788716}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 32
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1790781828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1790781821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba8fd80747fad44dbc7560a3fe28b09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPoint: {fileID: 0}
 --- !u!1001 &1799042300
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3905,6 +4031,7 @@ GameObject:
   - component: {fileID: 1800715636}
   - component: {fileID: 1800715635}
   - component: {fileID: 1800715634}
+  - component: {fileID: 1800715640}
   m_Layer: 0
   m_Name: Dummy Target Grey
   m_TagString: Untagged
@@ -4090,12 +4217,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1800715633}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -22.2, y: 6.21, z: 12.8}
-  m_LocalScale: {x: 3.9662, y: 3.9662, z: 3.9662}
+  m_LocalPosition: {x: -36.5, y: 16, z: 11.2}
+  m_LocalScale: {x: 1.858958, y: 1.858958, z: 1.858958}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1800715640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1800715633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba8fd80747fad44dbc7560a3fe28b09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPoint: {fileID: 0}
 --- !u!1 &1816235529
 GameObject:
   m_ObjectHideFlags: 0
@@ -4339,6 +4479,7 @@ GameObject:
   - component: {fileID: 2093889764}
   - component: {fileID: 2093889763}
   - component: {fileID: 2093889762}
+  - component: {fileID: 2093889768}
   m_Layer: 0
   m_Name: Dummy Target Brown
   m_TagString: Untagged
@@ -4524,12 +4665,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2093889761}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 26.06, y: 6.21, z: 2.09}
-  m_LocalScale: {x: 3.9662, y: 3.9662, z: 3.9662}
+  m_LocalPosition: {x: 38.49, y: 6.21, z: 10.76}
+  m_LocalScale: {x: 2.5342035, y: 2.5342035, z: 2.5342035}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 28
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2093889768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2093889761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba8fd80747fad44dbc7560a3fe28b09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPoint: {fileID: 0}
 --- !u!1001 &2118455287
 PrefabInstance:
   m_ObjectHideFlags: 0

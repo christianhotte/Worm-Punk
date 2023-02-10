@@ -45,12 +45,12 @@ public class NetworkPlayer : MonoBehaviour
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
         rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
 
-        if (photonView.IsMine)
+        /*if (photonView.IsMine)
         {
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
             playerSetup.SetColor(PlayerSettings.Instance.charData.testColor);
             SyncData(PlayerSettings.Instance);
-        }
+        }*/
 
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
@@ -94,6 +94,15 @@ public class NetworkPlayer : MonoBehaviour
         Debug.Log("Loading Player Settings...");
         charData = JsonUtility.FromJson<CharacterData>(data);
         playerSetup.SetColor(charData.testColor);
+    }
+    /// <summary>
+    /// Indicates that this player has been hit by a networked projectile.
+    /// </summary>
+    /// <param name="damage">How much damage the projectile dealt.</param>
+    [PunRPC]
+    public void RPC_Hit(float damage)
+    {
+        if (photonView.IsMine) player.IsHit(damage); //Inflict damage upon hit player
     }
 
     private void OnDestroy()

@@ -17,7 +17,7 @@ public class ProjectileSettings : ScriptableObject
     [Min(0), Tooltip("Distance in front of barrel position at which projectile actually spawns.")] public float barrelGap = 0;
     [Min(0), Tooltip("Optional amount of bullet drop (in meters per second).")]                    public float drop = 0;
     [Header("Targeting:")]
-    [Range(0, 1), Tooltip("How intensely projectiles home in toward targets")] public float targetingStrength;
+    [Min(0), Tooltip("How intensely projectiles home in toward targets (set to zero to disable homing).")] public float homingStrength;
     [MinMaxSlider(0, 180), Tooltip("Max angle between projectile and target at which projectile will lock on (second part is angle at which projectile will disregard targets entirely).")] public Vector2 targetDesignationAngle;
     [Min(0), Tooltip("Maximum distance at which projectile can acquire a target.")]                                                   public float targetingDistance;
     [Tooltip("Require line-of-sight for active targeting.")]                                                                          public bool LOSTargeting;
