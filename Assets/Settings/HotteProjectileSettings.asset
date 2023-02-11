@@ -23,6 +23,7 @@ MonoBehaviour:
   targetingDistance: 59.11
   LOSTargeting: 0
   alwaysLookForTarget: 1
+  velocityPrediction: 1
   angleDistancePreference: 0.4
   targetingIgnoreLayers:
     serializedVersion: 2

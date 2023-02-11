@@ -22,6 +22,7 @@ public class ProjectileSettings : ScriptableObject
     [Min(0), Tooltip("Maximum distance at which projectile can acquire a target.")]                                                   public float targetingDistance;
     [Tooltip("Require line-of-sight for active targeting.")]                                                                          public bool LOSTargeting;
     [Tooltip("Sets projectile target acquisition to always run, even when a target has already been found.")]                         public bool alwaysLookForTarget;
+    [Tooltip("Projectile will use target velocity to predict movement and attempt interception.")]                                    public bool velocityPrediction;
     [Range(0, 1), Tooltip("Slide to the left to prioritize easier-to-hit targets, slide to the right to prioritize closer targets.")] public float angleDistancePreference;
     [Tooltip("Layers to ignore when raycasting for line-of-sight targeting.")]                                                        public LayerMask targetingIgnoreLayers;
     [Min(1), Tooltip("Number of times per second projectile runs targeting function during target acquisition period.")]              public int targetingTickRate = 30;
