@@ -17,7 +17,6 @@ public class Projectile : MonoBehaviourPunCallbacks
 
     //Runtime Variables:
     private Vector3 velocity;              //Speed and direction at which projectile is traveling
-    private PlayerController originPlayer; //The player which shot this projectile
     private Transform target;              //Transform which projectile is currently homing toward
     private float totalDistance;           //Total travel distance covered by this projectile
 
@@ -140,7 +139,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     }
     private protected virtual void Update()
     {
-        if (photonView.IsMine) //Only truly compute positional updates for master projectile
+        if (photonView.IsMine || localOnly) //Only truly compute positional updates for master projectile
         {
             //Modify velocity:
             if (settings.drop > 0) velocity.y -= settings.drop * Time.deltaTime;  //Perform bullet drop (downward acceleration) if relevant
@@ -174,10 +173,10 @@ public class Projectile : MonoBehaviourPunCallbacks
             }
 
             //Perform move:
-            transform.position = targetPos;                                          //Move projectile to target position
-            transform.rotation = Quaternion.LookRotation(velocity);                  //Rotate projectile to align with current velocity
-            photonView.RPC("RPC_Move", RpcTarget.Others, targetPos, Time.deltaTime); //Move all projectiles on network
-            if (settings.range > 0 && totalDistance >= settings.range) BurnOut();    //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
+            transform.position = targetPos;                                                          //Move projectile to target position
+            transform.rotation = Quaternion.LookRotation(velocity);                                  //Rotate projectile to align with current velocity
+            if (!localOnly) photonView.RPC("RPC_Move", RpcTarget.Others, targetPos, Time.deltaTime); //Move all projectiles on network (unless projectile is local only)
+            if (settings.range > 0 && totalDistance >= settings.range) BurnOut();                    //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
         }
         else
         {
@@ -192,12 +191,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     /// <param name="barrel">Determines starting position, orientation and velocity of projectile.</param>
     public void Fire(Transform barrel)
     {
-        //Initialization:
-        Fire(barrel.position, barrel.rotation); //Perform normal firing initialization
-
-        //Check for origin player:
-        originPlayer = barrel.GetComponentInParent<PlayerController>();                               //Try to get playercontroller from barrel
-        if (originPlayer == null) originPlayer = barrel.GetComponentInParent<NetworkPlayer>().player; //Get player script from network player if necessary
+        Fire(barrel.position, barrel.rotation); //Break transform apart and perform normal firing operation
     }
     /// <summary>
     /// Call this method if projectile needs to be fired without an object reference (safe for remote projectiles).
@@ -220,9 +214,9 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Cleanup:
-        transform.position = targetPosition;                                    //Move to initial position
-        photonView.RPC("RPC_Move", RpcTarget.Others, targetPosition, 1);        //Move all networked projectiles to starting position
-        if (settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
+        transform.position = targetPosition;                                             //Move to initial position
+        if (!localOnly) photonView.RPC("RPC_Move", RpcTarget.Others, targetPosition, 1); //Move all networked projectiles to starting position
+        if (settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition());          //Begin doing target acquisition
     }
 
     //REMOTE METHODS:
@@ -244,9 +238,14 @@ public class Projectile : MonoBehaviourPunCallbacks
     /// <param name="hitInfo">Data about object struck.</param>
     private protected virtual void HitObject(RaycastHit hitInfo)
     {
-        //Look for player script:
+        //Look for strikeable scripts:
         NetworkPlayer targetPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>();              //Try to get network player from hit collider
         if (targetPlayer != null) targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage); //Indicate to player that it has been hit
+        else //Hit object is not a player
+        {
+            Targetable targetObject = hitInfo.collider.GetComponent<Targetable>(); //Try to get targetable script from target
+            if (targetObject != null) targetObject.IsHit(settings.damage);         //Indicate to targetable that it has been hit
+        }
 
         //Cleanup:
         Delete(); //Destroy projectile

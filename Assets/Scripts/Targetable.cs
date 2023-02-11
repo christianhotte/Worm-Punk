@@ -19,7 +19,7 @@ public class Targetable : MonoBehaviour
     //Runtime Variables:
 
     //RUNTIME VARIABLES:
-    private void Awake()
+    private protected virtual void Awake()
     {
         //Initialize:
         instances.Add(this); //Add this targetable object to master list of targetable instances
@@ -27,9 +27,15 @@ public class Targetable : MonoBehaviour
         //Get objects & components:
         if (targetPoint == null) targetPoint = transform;      //Set target point to self if not set in editor
     }
-    private void OnDestroy()
+    private protected virtual void OnDestroy()
     {
         //Final cleanup:
         instances.Remove(this); //Remove this object from master list of targetable instances
     }
+
+    //FUNCTIONALITY METHODS:
+    /// <summary>
+    /// Called on targetable whenever it is hit.
+    /// </summary>
+    public virtual void IsHit(int damage) { }
 }
