@@ -109,6 +109,14 @@ public class Projectile : MonoBehaviourPunCallbacks
                         target = potentialTarget;           //Set potential target as chosen target
                         prevTargetPos = target.position;    //Initialize target position tracker
                         targetHeuristic = currentHeuristic; //Update target heuristic
+
+                        //Have other projectiles acquire target:
+                        if (!target.TryGetComponent(out PhotonView targetView)) targetView = target.GetComponentInParent<PhotonView>(); //Try to get photonView from target
+                        if (targetView != null) //Target has a photon view component
+                        {
+                            photonView.RPC("RPC_AcquireTarget", RpcTarget.Others, targetView.ViewID);   //Use view ID to lock other projectiles onto this component
+                            photonView.RPC("RPC_Move", RpcTarget.Others, transform.position, velocity); //Sync up position and velocity between all versions of networked projectile
+                        }
                     }
                 }
 
@@ -134,57 +142,57 @@ public class Projectile : MonoBehaviourPunCallbacks
     }
     private protected virtual void Update()
     {
-        if (photonView.IsMine || localOnly) //Only truly compute positional updates for master projectile
+        //Modify velocity:
+        if (settings.drop > 0) velocity.y -= settings.drop * Time.deltaTime; //Perform bullet drop (downward acceleration) if relevant
+        if (target != null) //Projectile has a target
         {
-            //Modify velocity:
-            if (settings.drop > 0) velocity.y -= settings.drop * Time.deltaTime;  //Perform bullet drop (downward acceleration) if relevant
-            if (target != null) //Projectile has a target
+            //Get effective target position:
+            Vector3 targetPos = target.position; //Initialize target position marker
+            if (settings.predictionStrength > 0) //Projectile is using velocity prediction
             {
-                //Get effective target position:
-                Vector3 targetPos = target.position; //Initialize target position marker
-                if (settings.predictionStrength > 0) //Projectile is using velocity prediction
-                {
-                    Vector3 targetVelocity = (targetPos - prevTargetPos) / Time.deltaTime;                         //Approximate velocity of target object
-                    float currentSpeed = velocity.magnitude;                                                       //Get current speed here so it only has to be calculated once
-                    float distanceToTarget = Vector3.Distance(transform.position, targetPos);                      //Get distance between projectile and target
-                    float timeToTarget = distanceToTarget / currentSpeed;                                          //Approximate time it would take to reach target
-                    targetPos = target.position + ((targetVelocity * timeToTarget) * settings.predictionStrength); //Adjust effective target position to where target will be when reached (dampening with prediction strength)
-                    prevTargetPos = target.position;                                                               //Update target position tracker
-                }
-
-                //Curve to meet target:
-                Vector3 newVelocity = (targetPos - transform.position).normalized * velocity.magnitude;          //Get velocity which would point projectile directly at target
-                velocity = Vector3.MoveTowards(velocity, newVelocity, settings.homingStrength * Time.deltaTime); //Incrementally adjust toward target velocity
+                Vector3 targetVelocity = (targetPos - prevTargetPos) / Time.deltaTime;                         //Approximate velocity of target object
+                float currentSpeed = velocity.magnitude;                                                       //Get current speed here so it only has to be calculated once
+                float distanceToTarget = Vector3.Distance(transform.position, targetPos);                      //Get distance between projectile and target
+                float timeToTarget = distanceToTarget / currentSpeed;                                          //Approximate time it would take to reach target
+                targetPos = target.position + ((targetVelocity * timeToTarget) * settings.predictionStrength); //Adjust effective target position to where target will be when reached (dampening with prediction strength)
+                prevTargetPos = target.position;                                                               //Update target position tracker
             }
 
-            //Get target position:
-            Vector3 newPosition = transform.position + (velocity * Time.deltaTime);   //Get target projectile position
-            float travelDistance = Vector3.Distance(transform.position, newPosition); //Get distance this projectile is moving this update
+            //Curve to meet target:
+            Vector3 newVelocity = (targetPos - transform.position).normalized * velocity.magnitude;          //Get velocity which would point projectile directly at target
+            velocity = Vector3.MoveTowards(velocity, newVelocity, settings.homingStrength * Time.deltaTime); //Incrementally adjust toward target velocity
+        }
 
-            //Check range:
-            totalDistance += travelDistance; //Add motion to total distance traveled (NOTE: may briefly end up being greater than actual distance traveled)
-            if (settings.range > 0 && totalDistance > settings.range) //Distance about to be traveled exceeds range
-            {
-                //Backtrack target:
-                float backtrackAmt = totalDistance - settings.range;                              //Determine length by which to backtrack projectile
-                travelDistance -= backtrackAmt;                                                   //Adjust travel distance to account for limited range
-                newPosition = Vector3.MoveTowards(newPosition, transform.position, backtrackAmt); //Backtrack target position by given amount (ensuring projectile travels exact range)
-                totalDistance = settings.range;                                                   //Indicate that projectile has now traveled exactly its full range
-            }
+        //Get target position:
+        Vector3 newPosition = transform.position + (velocity * Time.deltaTime);   //Get target projectile position
+        float travelDistance = Vector3.Distance(transform.position, newPosition); //Get distance this projectile is moving this update
 
-            //Check for hit:
+        //Check range:
+        totalDistance += travelDistance; //Add motion to total distance traveled (NOTE: may briefly end up being greater than actual distance traveled)
+        if (settings.range > 0 && totalDistance > settings.range) //Distance about to be traveled exceeds range
+        {
+            //Backtrack target:
+            float backtrackAmt = totalDistance - settings.range;                              //Determine length by which to backtrack projectile
+            travelDistance -= backtrackAmt;                                                   //Adjust travel distance to account for limited range
+            newPosition = Vector3.MoveTowards(newPosition, transform.position, backtrackAmt); //Backtrack target position by given amount (ensuring projectile travels exact range)
+            totalDistance = settings.range;                                                   //Indicate that projectile has now traveled exactly its full range
+        }
+
+        //Check for hit:
+        if (photonView.IsMine || localOnly) //Only check for hits on local projectile
+        {
             if (Physics.Linecast(transform.position, newPosition, out RaycastHit hitInfo, ~settings.ignoreLayers)) //Do a simple linecast, only ignoring designated layers
             {
                 totalDistance -= velocity.magnitude - hitInfo.distance; //Update totalDistance to reflect actual distance traveled at exact point of contact
                 HitObject(hitInfo);                                     //Trigger hit procedure
                 return;                                                 //Do nothing else
             }
-
-            //Perform move:
-            transform.position = newPosition;                                     //Move projectile to target position
-            transform.rotation = Quaternion.LookRotation(velocity);               //Rotate projectile to align with current velocity
-            if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
         }
+
+        //Perform move:
+        transform.position = newPosition;                                                                             //Move projectile to target position
+        transform.rotation = Quaternion.LookRotation(velocity);                                                       //Rotate projectile to align with current velocity
+        if (photonView.IsMine || localOnly) { if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); } //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
     }
 
     //INPUT METHODS:
@@ -205,20 +213,21 @@ public class Projectile : MonoBehaviourPunCallbacks
         Vector3 targetPosition = startPosition;                  //Initialize value for ideal starting position
         transform.rotation = startRotation;                      //Rotate to initial orientation
         velocity = transform.forward * settings.initialVelocity; //Give projectile initial velocity (aligned with forward direction of barrel)
+        bool doLocalStuff = photonView.IsMine || localOnly;      //Figure out whether or not this projectile is doing extra local work
 
         //Check barrel gap:
         if (settings.barrelGap > 0) //Projectile is spawning slightly ahead of barrel
         {
             //Perform a mini position update:
-            targetPosition += transform.forward * settings.barrelGap;                                                                            //Get target starting position (with barrel gap)
-            if (Physics.Linecast(startPosition, targetPosition, out RaycastHit hitInfo, ~settings.ignoreLayers)) { HitObject(hitInfo); return; } //Check for collisions (just in case)
-            if (settings.range <= settings.barrelGap) { BurnOut(); return; } //Burn projectile out in the unlikely event that the barrel gap is greater than its range
-            totalDistance += settings.barrelGap;                             //Include distance in total distance traveled
+            targetPosition += transform.forward * settings.barrelGap;                                                                                            //Get target starting position (with barrel gap)
+            if (doLocalStuff && Physics.Linecast(startPosition, targetPosition, out RaycastHit hitInfo, ~settings.ignoreLayers)) { HitObject(hitInfo); return; } //Check for collisions (just in case)
+            if (settings.range <= settings.barrelGap) { BurnOut(); return; }                                                                                     //Burn projectile out in the unlikely event that the barrel gap is greater than its range
+            totalDistance += settings.barrelGap;                                                                                                                 //Include distance in total distance traveled
         }
 
         //Cleanup:
-        transform.position = targetPosition;                                    //Move to initial position
-        if (settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
+        transform.position = targetPosition;                                                    //Move to initial position
+        if (doLocalStuff && settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
     }
 
     //REMOTE METHODS:
@@ -226,11 +235,27 @@ public class Projectile : MonoBehaviourPunCallbacks
     /// Moves projectile to target position (used to move remote projectiles).
     /// </summary>
     [PunRPC]
-    public void RPC_Move(Vector3 newPosition, float deltaTime)
+    public void RPC_Move(Vector3 newPosition, Vector3 newVelocity)
     {
-        velocity = (newPosition - transform.position) / deltaTime;                            //Get current projectile velocity
-        transform.position = newPosition;                                                     //Move to new position
-        if (velocity != Vector3.zero) transform.rotation = Quaternion.LookRotation(velocity); //Rotate projectile to face direction of travel
+        transform.position = newPosition;                       //Move to new position
+        velocity = newVelocity;                                 //Record new velocity
+        transform.rotation = Quaternion.LookRotation(velocity); //Rotate projectile to face direction of new velocity
+    }
+    [PunRPC]
+    public void RPC_Fire(Vector3 barrelPos, Quaternion barrelRot)
+    {
+        Fire(barrelPos, barrelRot);
+    }
+    /// <summary>
+    /// Locks remote projectile onto target identified by its PhotonView ID.
+    /// </summary>
+    /// <param name="targetViewID"></param>
+    [PunRPC]
+    public void RPC_AcquireTarget(int targetViewID)
+    {
+        PhotonView targetView = PhotonNetwork.GetPhotonView(targetViewID);                                                        //Get photonView from ID
+        if (!targetView.TryGetComponent(out Targetable targetable)) targetable = targetView.GetComponentInChildren<Targetable>(); //Get targetable script from photonView
+        if (targetable != null) target = targetable.targetPoint;                                                                  //Get target from script
     }
 
     //FUNCTIONALITY METHODS:

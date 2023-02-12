@@ -57,7 +57,7 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
 
         //Launch projectile:
         Projectile projectile = PhotonNetwork.Instantiate(projectileResourceName, barrel.position, barrel.rotation).GetComponent<Projectile>(); //Instantiate projectile across network
-        projectile.Fire(barrel);                                                                                                                //Initialize master projectile
+        projectile.photonView.RPC("RPC_Fire", RpcTarget.All, barrel.position, barrel.rotation);                                                 //Initialize all projectiles simultaneously
     }
 
     //REMOTE METHODS:
