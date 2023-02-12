@@ -143,17 +143,14 @@ public class Projectile : MonoBehaviourPunCallbacks
             {
                 //Get effective target position:
                 Vector3 targetPos = target.position; //Initialize target position marker
-                if (settings.predictionIterations > 0) //Projectile is using velocity prediction
+                if (settings.predictionStrength > 0) //Projectile is using velocity prediction
                 {
-                    Vector3 targetVelocity = (targetPos - prevTargetPos) / Time.deltaTime; //Approximate velocity of target object
-                    float currentSpeed = velocity.magnitude;                               //Get current speed here so it only has to be calculated once
-                    for (int x = 0; x < settings.predictionIterations; x++) //Repeat for set number of iterations
-                    {
-                        float distanceToTarget = Vector3.Distance(transform.position, targetPos); //Get distance between projectile and target
-                        float timeToTarget = distanceToTarget / currentSpeed;                     //Approximate time it would take to reach target
-                        targetPos = target.position + (targetVelocity * timeToTarget);            //Adjust effective target position to where target will be when reached
-                    }
-                    prevTargetPos = target.position; //Update target position tracker
+                    Vector3 targetVelocity = (targetPos - prevTargetPos) / Time.deltaTime;                         //Approximate velocity of target object
+                    float currentSpeed = velocity.magnitude;                                                       //Get current speed here so it only has to be calculated once
+                    float distanceToTarget = Vector3.Distance(transform.position, targetPos);                      //Get distance between projectile and target
+                    float timeToTarget = distanceToTarget / currentSpeed;                                          //Approximate time it would take to reach target
+                    targetPos = target.position + ((targetVelocity * timeToTarget) * settings.predictionStrength); //Adjust effective target position to where target will be when reached (dampening with prediction strength)
+                    prevTargetPos = target.position;                                                               //Update target position tracker
                 }
 
                 //Curve to meet target:

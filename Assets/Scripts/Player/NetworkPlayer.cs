@@ -5,6 +5,7 @@ using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using Photon.Pun;
 using Photon.Realtime;
+using RootMotion.FinalIK;
 
 // This script was used from https://youtu.be/KHWuTBmT1oI?t=1511
 
@@ -18,15 +19,21 @@ public class NetworkPlayer : MonoBehaviour
     private Transform headRig;
     private Transform leftHandRig;
     private Transform rightHandRig;
+    private Transform modelBaseRig;
 
     // Declaring the player's VR movements
     public Transform head;
     public Transform leftHand;
     public Transform rightHand;
+    public Transform modelBase;
 
     // Gets a list of all of the players on the network
     Player[] allPlayers;
     int myNumberInRoom;
+
+    //Settings:
+    [Header("Debug Settings:")]
+    [SerializeField, Tooltip("Prevents local networkPlayer instance from being hidden on client.")] private bool debugShowLocal;
 
     //Player Data
     private PlayerSetup playerSetup;    //The player's setup component
@@ -46,6 +53,7 @@ public class NetworkPlayer : MonoBehaviour
             headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
             leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
             rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+            modelBaseRig = XROrigin.transform.Find("PlayerModel");
         }
         
 
@@ -67,21 +75,24 @@ public class NetworkPlayer : MonoBehaviour
             }
         }
 
-        //Ignore collisions:
-        foreach (Collider collider in GetComponentsInChildren<Collider>())
-        {
-            foreach (Collider otherCollider in XROrigin.transform.parent.GetComponentsInChildren<Collider>())
-            {
-                Physics.IgnoreCollision(collider, otherCollider);
-            }
-        }
-
-        //Hide client renderers:
         if (photonView.IsMine)
         {
-            foreach (var item in GetComponentsInChildren<Renderer>())
+            //Ignore collisions:
+            foreach (Collider collider in GetComponentsInChildren<Collider>())
             {
-                item.enabled = false;
+                foreach (Collider otherCollider in XROrigin.transform.parent.GetComponentsInChildren<Collider>())
+                {
+                    Physics.IgnoreCollision(collider, otherCollider);
+                }
+            }
+
+            //Hide client renderers:
+            if (!debugShowLocal)
+            {
+                foreach (var item in GetComponentsInChildren<Renderer>())
+                {
+                    item.enabled = false;
+                }
             }
         }
     }
