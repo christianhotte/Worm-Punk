@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon;
 using Photon.Pun;
-using System.Linq;
 
 /// <summary>
 /// Base class for any non-hitscan ballistic projectiles.
@@ -114,9 +113,21 @@ public class Projectile : MonoBehaviourPunCallbacks
                         if (!target.TryGetComponent(out PhotonView targetView)) targetView = target.GetComponentInParent<PhotonView>(); //Try to get photonView from target
                         if (targetView != null) //Target has a photon view component
                         {
-                            photonView.RPC("RPC_AcquireTarget", RpcTarget.Others, targetView.ViewID);   //Use view ID to lock other projectiles onto this component
-                            photonView.RPC("RPC_Move", RpcTarget.Others, transform.position, velocity); //Sync up position and velocity between all versions of networked projectile
+                            photonView.RPC("RPC_AcquireTarget", RpcTarget.Others, targetView.ViewID); //Use view ID to lock other projectiles onto this component
                         }
+                        else //Targeted object is not on network (in this case it should ideally be stationary)
+                        {
+                            Collider[] checkColliders = Physics.OverlapSphere(target.position, settings.dumbTargetAquisitionRadius); //Get list of colliders currently overlapping target position (hopefully just target)
+                            foreach (Collider collider in checkColliders) //Iterate through identified colliders within target area
+                            {
+                                if (collider.transform == target) //Target can be acquired with this solution
+                                {
+                                    photonView.RPC("RPC_AcquireTargetDumb", RpcTarget.Others, target.position); //Send position of target as identifying acquisition data
+                                    break;                                                                      //Ignore all other checks
+                                }
+                            }
+                        }
+                        photonView.RPC("RPC_Move", RpcTarget.Others, transform.position, velocity); //Sync up position and velocity between all versions of networked projectile
                     }
                 }
 
@@ -249,13 +260,26 @@ public class Projectile : MonoBehaviourPunCallbacks
     /// <summary>
     /// Locks remote projectile onto target identified by its PhotonView ID.
     /// </summary>
-    /// <param name="targetViewID"></param>
     [PunRPC]
     public void RPC_AcquireTarget(int targetViewID)
     {
         PhotonView targetView = PhotonNetwork.GetPhotonView(targetViewID);                                                        //Get photonView from ID
         if (!targetView.TryGetComponent(out Targetable targetable)) targetable = targetView.GetComponentInChildren<Targetable>(); //Get targetable script from photonView
         if (targetable != null) target = targetable.targetPoint;                                                                  //Get target from script
+    }
+    /// <summary>
+    /// Attempts to acquire stationary, non-networked target based on position.
+    /// </summary>
+    [PunRPC]
+    public void RPC_AcquireTargetDumb(Vector3 targetPos)
+    {
+        Collider[] checkColliders = Physics.OverlapSphere(targetPos, settings.dumbTargetAquisitionRadius); //Get list of colliders currently overlapping target position (hopefully just target)
+        foreach (Collider collider in checkColliders) //Iterate through colliders found by targeting solution
+        {
+            if (!collider.TryGetComponent(out Targetable targetable)) targetable = collider.GetComponentInParent<Targetable>(); //Try very hard to get targetable controller from collider
+            if (targetable != null) { target = targetable.targetPoint; break; }                                                 //Get target if search was a success
+        }
+        if (target != null) print("Dumb target acquisition successful!");
     }
 
     //FUNCTIONALITY METHODS:
