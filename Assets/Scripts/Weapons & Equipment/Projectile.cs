@@ -16,9 +16,9 @@ public class Projectile : MonoBehaviourPunCallbacks
     [Tooltip("Settings object determining base properties of projectile.")] public ProjectileSettings settings;
 
     //Runtime Variables:
-    private Vector3 velocity;              //Speed and direction at which projectile is traveling
-    private Transform target;              //Transform which projectile is currently homing toward
-    private float totalDistance;           //Total travel distance covered by this projectile
+    private Vector3 velocity;    //Speed and direction at which projectile is traveling
+    private Transform target;    //Transform which projectile is currently homing toward
+    private float totalDistance; //Total travel distance covered by this projectile
 
     internal bool localOnly = false; //Indicates that this projectile does not have equivalents on the network
     private Vector3 prevTargetPos;   //Previous position of target, used for velocity prediction
@@ -66,12 +66,11 @@ public class Projectile : MonoBehaviourPunCallbacks
             for (int x = 0; x < potentialTargets.Count;) //Iterate through list of potential targets (allow internal functionality to manually index to next target)
             {
                 //Eliminate non-viable targets:
-                Transform potentialTarget = potentialTargets[x];                             //Get reference to current target
-                Vector3 targetSep = potentialTarget.position - transform.position;           //Get distance and direction from projectile to target
-                float targetDist = targetSep.magnitude;                                      //Distance from projectile to target
-                //if (targetDist > RemainingRange) { potentialTargets.RemoveAt(x); continue; } //Remove target from potentials list if it can never be reached by projectile (still tracks it if it's the current target and a more viable target has not yet been chosen)
-                float targetAngle = Vector3.Angle(targetSep, transform.forward);             //Get angle between target direction and projectile movement direction
-                if (targetAngle > settings.targetDesignationAngle.y)                         //Angle to potential target is so steep that projectile will likely never hit
+                Transform potentialTarget = potentialTargets[x];                   //Get reference to current target
+                Vector3 targetSep = potentialTarget.position - transform.position; //Get distance and direction from projectile to target
+                float targetDist = targetSep.magnitude;                            //Distance from projectile to target
+                float targetAngle = Vector3.Angle(targetSep, transform.forward);   //Get angle between target direction and projectile movement direction
+                if (targetAngle > settings.targetDesignationAngle.y)               //Angle to potential target is so steep that projectile will likely never hit
                 {
                     potentialTargets.RemoveAt(x); //Remove this target from list of potential targets
                     if (potentialTarget == target) //Active target has just been passed
@@ -182,14 +181,9 @@ public class Projectile : MonoBehaviourPunCallbacks
             }
 
             //Perform move:
-            transform.position = newPosition;                                                          //Move projectile to target position
-            transform.rotation = Quaternion.LookRotation(velocity);                                    //Rotate projectile to align with current velocity
-            //if (!localOnly) photonView.RPC("RPC_Move", RpcTarget.Others, newPosition, Time.deltaTime); //Move all projectiles on network (unless projectile is local only)
-            if (settings.range > 0 && totalDistance >= settings.range) BurnOut();                      //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
-        }
-        else
-        {
-            transform.position += velocity * Time.deltaTime;
+            transform.position = newPosition;                                     //Move projectile to target position
+            transform.rotation = Quaternion.LookRotation(velocity);               //Rotate projectile to align with current velocity
+            if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
         }
     }
 
@@ -223,9 +217,8 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Cleanup:
-        transform.position = targetPosition;                                             //Move to initial position
-        //if (!localOnly) photonView.RPC("RPC_Move", RpcTarget.Others, targetPosition, 1); //Move all networked projectiles to starting position
-        if (settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition());          //Begin doing target acquisition
+        transform.position = targetPosition;                                    //Move to initial position
+        if (settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
     }
 
     //REMOTE METHODS:
