@@ -49,12 +49,6 @@ public class Projectile : MonoBehaviourPunCallbacks
         //Populate potential targets list:
         foreach (Targetable targetable in Targetable.instances) //Iterate through list of targetables
         {
-            //Prevent projectile from targeting owner:
-            if (targetable.TryGetComponent(out NetworkPlayer targetNetworkPlayer)) //Target is a network player
-            {
-                if (targetNetworkPlayer.photonView.IsMine) continue; //Do not target self (NOTE: change so that deflected bullets can target owner)
-            }
-
             //Eliminate non-viable targets:
             Vector3 targetSep = targetable.targetPoint.position - transform.position; //Get distance and direction from projectile to target
             float targetDist = targetSep.magnitude;                                   //Distance from projectile to target
@@ -193,7 +187,7 @@ public class Projectile : MonoBehaviourPunCallbacks
             //Perform move:
             transform.position = newPosition;                                                          //Move projectile to target position
             transform.rotation = Quaternion.LookRotation(velocity);                                    //Rotate projectile to align with current velocity
-            if (!localOnly) photonView.RPC("RPC_Move", RpcTarget.Others, newPosition, Time.deltaTime); //Move all projectiles on network (unless projectile is local only)
+            //if (!localOnly) photonView.RPC("RPC_Move", RpcTarget.Others, newPosition, Time.deltaTime); //Move all projectiles on network (unless projectile is local only)
             if (settings.range > 0 && totalDistance >= settings.range) BurnOut();                      //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
         }
         else
@@ -233,7 +227,7 @@ public class Projectile : MonoBehaviourPunCallbacks
 
         //Cleanup:
         transform.position = targetPosition;                                             //Move to initial position
-        if (!localOnly) photonView.RPC("RPC_Move", RpcTarget.Others, targetPosition, 1); //Move all networked projectiles to starting position
+        //if (!localOnly) photonView.RPC("RPC_Move", RpcTarget.Others, targetPosition, 1); //Move all networked projectiles to starting position
         if (settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition());          //Begin doing target acquisition
     }
 

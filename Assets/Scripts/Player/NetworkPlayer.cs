@@ -35,15 +35,19 @@ public class NetworkPlayer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        photonView = GetComponent<PhotonView>();                         //Get photonView component from NetworkPlayer object
+        photonView = GetComponent<PhotonView>(); //Get photonView component from NetworkPlayer object
 
         // Gets the network player to move with the player instead of just moving locally.
-        XROrigin = GameObject.Find("XR Origin");
-        player = XROrigin.GetComponentInParent<PlayerController>();
-        playerSetup = player.GetComponent<PlayerSetup>();
-        headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
-        leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
-        rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+        if (photonView.IsMine)
+        {
+            XROrigin = GameObject.Find("XR Origin");
+            player = XROrigin.GetComponentInParent<PlayerController>();
+            playerSetup = player.GetComponent<PlayerSetup>();
+            headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
+            leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
+            rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+        }
+        
 
         /*if (photonView.IsMine)
         {
@@ -120,6 +124,7 @@ public class NetworkPlayer : MonoBehaviour
             MapPosition(head, headRig);
             MapPosition(leftHand, leftHandRig);
             MapPosition(rightHand, rightHandRig);
+            MapPosition(transform, XROrigin.transform);
         }
 
         // The player dies if the player falls too far below the map.

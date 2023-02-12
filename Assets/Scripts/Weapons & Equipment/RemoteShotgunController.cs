@@ -58,8 +58,6 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
         //Launch projectile:
         Projectile projectile = PhotonNetwork.Instantiate(projectileResourceName, barrel.position, barrel.rotation).GetComponent<Projectile>(); //Instantiate projectile across network
         projectile.Fire(barrel);                                                                                                                //Initialize master projectile
-        //projectile.photonView.RPC("RPC_Fire", RpcTarget.All, barrel.position, barrel.rotation);                                                 //Initialize networked projectiles
-        
     }
 
     //REMOTE METHODS:
@@ -71,14 +69,5 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
     public void RPC_Initialize(string projPrefabPath)
     {
         projectileResourceName = projPrefabPath;
-    }
-    /// <summary>
-    /// Fires this weapon on matching networked weapons.
-    /// </summary>
-    [PunRPC]
-    public void RPC_Fire(Vector3 barrelPos, Quaternion barrelRot)
-    {
-        Projectile projectile = PhotonNetwork.Instantiate(projectileResourceName, barrelPos, barrelRot).GetComponent<Projectile>(); //Instantiate projectile on remote client
-        projectile.Fire(barrelPos, barrelRot);                                                                                      //Initialize projectile (using remote-safe method)
     }
 }

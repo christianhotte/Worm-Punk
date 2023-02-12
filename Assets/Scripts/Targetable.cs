@@ -23,9 +23,10 @@ public class Targetable : MonoBehaviour
     {
         //Initialize:
         instances.Add(this); //Add this targetable object to master list of targetable instances
+        print("Targetable added: " + name);
 
         //Get objects & components:
-        if (targetPoint == null) targetPoint = transform;      //Set target point to self if not set in editor
+        if (targetPoint == null) targetPoint = transform; //Set target point to self if not set in editor
     }
     private protected virtual void OnDestroy()
     {
