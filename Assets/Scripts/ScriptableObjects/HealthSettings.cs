@@ -9,7 +9,7 @@ using UnityEngine;
 public class HealthSettings : ScriptableObject
 {
     [Header("General Health Settings:")]
-    [Min(1), Tooltip("Base starting health value.")] public int defaultHealth = 1;
+    [Min(1), Tooltip("Base starting health value.")] public int defaultHealth = 3;
 
     [Header("Regeneration:")]
     [Min(0), Tooltip("Rate (in units per second) that health regenerates (set to zero to disable regeneration).")]                    public float regenSpeed = 0;

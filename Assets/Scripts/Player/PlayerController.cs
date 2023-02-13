@@ -56,8 +56,8 @@ public class PlayerController : MonoBehaviour
         //Check settings:
         if (healthSettings == null) //No health settings were provided
         {
-            Debug.Log("PlayerController is missing HealthSettings, using system defaults."); //Log warning in case someone forgot
-            healthSettings = (HealthSettings)Resources.Load("DefaultHealthSettings");        //Load default settings from Resources folder
+            Debug.Log("PlayerController is missing HealthSettings, using system defaults.");          //Log warning in case someone forgot
+            healthSettings = (HealthSettings)Resources.Load("DefaultSettings/DefaultHealthSettings"); //Load default settings from Resources folder
         }
 
         //Setup runtime variables:
@@ -73,7 +73,6 @@ public class PlayerController : MonoBehaviour
         {
             Transform spawnpoint = SpawnManager.instance.GetSpawnPoint(); //Get spawnpoint from spawnpoint manager
             xrOrigin.transform.position = spawnpoint.position;            //Move spawned player to target position
-            //xrOrigin.transform.rotation = spawnpoint.rotation;            //Orient network player according to target rotation
         }
     }
     private void Update()
@@ -117,7 +116,8 @@ public class PlayerController : MonoBehaviour
     public void IsHit(int damage)
     {
         //Hit effects:
-        currentHealth = Mathf.Max(currentHealth - damage, 0); //Deal projectile damage, floor at 0
+        currentHealth -= damage; //Deal projectile damage, floor at 0
+        print(damage + " damage dealt");
 
         //Death check:
         if (currentHealth <= 0) //Player is being killed by this projectile hit
@@ -142,7 +142,6 @@ public class PlayerController : MonoBehaviour
         {
             Transform spawnpoint = SpawnManager.instance.GetSpawnPoint(); //Get spawnpoint from spawnpoint manager
             xrOrigin.transform.position = spawnpoint.position;            //Move spawned player to target position
-            xrOrigin.transform.rotation = spawnpoint.rotation;            //Orient network player according to target rotation
         }
         currentHealth = healthSettings.defaultHealth; //Reset to max health
         print("Player Killed!");
