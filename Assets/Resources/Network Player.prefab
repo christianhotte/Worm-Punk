@@ -158,7 +158,6 @@ MonoBehaviour:
   head: {fileID: 2045331856573916999}
   leftHand: {fileID: 6838640129832064427}
   rightHand: {fileID: 526713800682842818}
-  body: {fileID: 6540933588347905299}
 --- !u!1 &1567290597981618062
 GameObject:
   m_ObjectHideFlags: 0

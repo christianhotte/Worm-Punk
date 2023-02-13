@@ -10,7 +10,7 @@ using Photon.Realtime;
 /// <summary>
 /// Manages overall player stats and abilities.
 /// </summary>
-public class PlayerController : MonoBehaviour, IShootable
+public class PlayerController : MonoBehaviour
 {
     //Objects & Components:
     [Tooltip("Singleton instance of player controller.")]                                    public static PlayerController instance;
@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour, IShootable
     [Tooltip("Rigidbody for player's body (the part that flies around).")] internal Rigidbody bodyRb;
     [Tooltip("Controller component for player's left hand.")]              internal ActionBasedController leftHand;
     [Tooltip("Controller component for player's right hand.")]             internal ActionBasedController rightHand;
+    [Tooltip("Equipment which is currently attached to the player")]       internal List<PlayerEquipment> attachedEquipment = new List<PlayerEquipment>();
 
     private Camera cam;              //Main player camera
     internal PlayerInput input;      //Input manager component used by player to send messages to hands and such
@@ -33,8 +34,9 @@ public class PlayerController : MonoBehaviour, IShootable
     [SerializeField, Tooltip("Enables usage of SpawnManager system to automatically position player upon instantiation.")] private bool useSpawnPoint = true;
 
     //Runtime Variables:
-    private float currentHealth; //How much health player currently has
-    private bool inCombat;  //Whether the player is actively in combat
+    private float currentHealth;  //How much health player currently has
+    private bool inCombat;        //Whether the player is actively in combat
+    private float timeUntilRegen; //Time (in seconds) until health regeneration can begin
 
     //RUNTIME METHODS:
     private void Awake()
@@ -80,6 +82,16 @@ public class PlayerController : MonoBehaviour, IShootable
         {
 
         }
+
+        //Update health:
+        if (healthSettings.regenSpeed > 0) //Only do health regeneration if setting is on
+        {
+            if (timeUntilRegen > 0) { timeUntilRegen = Mathf.Max(timeUntilRegen - Time.deltaTime, 0); } //Update health regen countdown whenever relevant
+            else if (currentHealth < healthSettings.defaultHealth) //Regen wait time is zero and player has lost health
+            {
+                currentHealth = Mathf.Min(currentHealth + (healthSettings.regenSpeed * Time.deltaTime), healthSettings.defaultHealth); //Regenerate until player is back to default health
+            }
+        }
     }
 
     /// <summary>
@@ -87,7 +99,7 @@ public class PlayerController : MonoBehaviour, IShootable
     /// </summary>
     private void UpdateWeaponry()
     {
-        //Show or hide all objects under the tag "Weapon"
+        //Show or hide all objects under the tag "PlayerEquipment"
         foreach (var controller in GetComponentsInChildren<ActionBasedController>())
         {
             foreach (Transform transform in controller.transform)
@@ -102,17 +114,20 @@ public class PlayerController : MonoBehaviour, IShootable
     /// <summary>
     /// Method called when this player is hit by a projectile.
     /// </summary>
-    /// <param name="projectile">The projectile which hit the player.</param>
-    public void IsHit(Projectile projectile)
+    public void IsHit(int damage)
     {
         //Hit effects:
-        audioSource.PlayOneShot((AudioClip)Resources.Load("Default_Hurt_Sound")); //TEMP play hurt sound
-        currentHealth -= projectile.settings.damage;                              //Deal projectile damage to player
+        currentHealth = Mathf.Max(currentHealth - damage, 0); //Deal projectile damage, floor at 0
 
         //Death check:
         if (currentHealth <= 0) //Player is being killed by this projectile hit
         {
             IsKilled(); //Indicate that player has been killed
+        }
+        else //Player is being hurt by this projectile hit
+        {
+            audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Default_Hurt_Sound"));   //TEMP play hurt sound
+            if (healthSettings.regenSpeed > 0) timeUntilRegen = healthSettings.regenPauseTime; //Begin regeneration sequence (of set)
         }
     }
     /// <summary>
@@ -120,7 +135,17 @@ public class PlayerController : MonoBehaviour, IShootable
     /// </summary>
     public void IsKilled()
     {
-
+        //TEMP DEATH SEQUENCE:
+        audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Default_Death_Sound"));
+        bodyRb.velocity = Vector3.zero; //Reset player velocity
+        if (SpawnManager.instance != null && useSpawnPoint) //Spawn manager is present in scene
+        {
+            Transform spawnpoint = SpawnManager.instance.GetSpawnPoint(); //Get spawnpoint from spawnpoint manager
+            xrOrigin.transform.position = spawnpoint.position;            //Move spawned player to target position
+            xrOrigin.transform.rotation = spawnpoint.rotation;            //Orient network player according to target rotation
+        }
+        currentHealth = healthSettings.defaultHealth; //Reset to max health
+        print("Player Killed!");
     }
 
     //FUNCTIONALITY METHODS:
