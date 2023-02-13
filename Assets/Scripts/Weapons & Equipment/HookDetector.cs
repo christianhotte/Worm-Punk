@@ -49,7 +49,7 @@ public class HookDetector : MonoBehaviour
     {
         hookrb.isKinematic = true;
         flying = false;
-      //  Debug.Log("hit object " + collision.collider.name + " on Layer " + collision.collider.gameObject.layer);
+        Debug.Log("hit object " + collision.collider.name + " on Layer " + collision.collider.gameObject.layer);
         RBScript.grappleCooldown = false;
         RBScript.HookHit();
     }
