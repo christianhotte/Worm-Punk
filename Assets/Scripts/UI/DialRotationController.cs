@@ -210,6 +210,10 @@ public class DialRotationController : MonoBehaviour
     /// </summary>
     private void RotateDialClockwise()
     {
+        //If there is an active level transition, don't do anything
+        if (GameManager.Instance.levelTransitionActive)
+            return;
+
         //Snap rotation of dial
         dialTransform.localEulerAngles = new Vector3(dialTransform.localEulerAngles.x, dialTransform.localEulerAngles.y + snapRotationAmount, dialTransform.localEulerAngles.z);
 
@@ -222,6 +226,10 @@ public class DialRotationController : MonoBehaviour
     /// </summary>
     private void RotateDialCounterClockwise()
     {
+        //If there is an active level transition, don't do anything
+        if (GameManager.Instance.levelTransitionActive)
+            return;
+
         //Snap rotation of dial
         dialTransform.localEulerAngles = new Vector3(dialTransform.localEulerAngles.x, dialTransform.localEulerAngles.y - snapRotationAmount, dialTransform.localEulerAngles.z);
 
