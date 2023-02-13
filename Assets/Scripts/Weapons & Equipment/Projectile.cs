@@ -129,7 +129,7 @@ public class Projectile : MonoBehaviourPunCallbacks
                                     }
                                 }
                             }
-                            photonView.RPC("RPC_Move", RpcTarget.Others, transform.position, velocity); //Sync up position and velocity between all versions of networked projectile
+                            photonView.RPC("RPC_Move", RpcTarget.Others, transform.position); //Sync up position and velocity between all versions of networked projectile
                         }
                     }
                 }
@@ -258,11 +258,11 @@ public class Projectile : MonoBehaviourPunCallbacks
     /// Moves projectile to target position (used to move remote projectiles).
     /// </summary>
     [PunRPC]
-    public void RPC_Move(Vector3 newPosition, Vector3 newVelocity)
+    public void RPC_Move(Vector3 newPosition)
     {
         transform.position = newPosition;                       //Move to new position
-        velocity = newVelocity;                                 //Record new velocity
-        transform.rotation = Quaternion.LookRotation(velocity); //Rotate projectile to face direction of new velocity
+        //velocity = newVelocity;                                 //Record new velocity
+        //transform.rotation = Quaternion.LookRotation(velocity); //Rotate projectile to face direction of new velocity
     }
     [PunRPC]
     public void RPC_Fire(Vector3 barrelPos, Quaternion barrelRot)
