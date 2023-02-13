@@ -32,7 +32,10 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
 
     public void ConnectAndGiveDavidYourIPAddress()
     {
-        ConnectToServer();
+        if (!PhotonNetwork.IsConnected)
+        {
+            ConnectToServer();
+        }
     }
 
     // This function connects us to the server.
@@ -71,9 +74,9 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         PlayerSettings.Instance.charData.playerName = PhotonNetwork.NickName;
 
         // Setting up the room options
-        if (joinRoomOnLoad)
+        if (joinRoomOnLoad && !PhotonNetwork.InRoom)
         {
-            OnCreateRoom("Room 1");
+            OnCreateRoom("Dev. Test Room");
         }
     }
 
@@ -83,6 +86,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         roomOptions.IsVisible = true; // The player is able to see the room
         roomOptions.IsOpen = true; // The room is open.
         roomOptions.EmptyRoomTtl = 0; // Leave the room open for 0 milliseconds after the room is empty
+        roomOptions.MaxPlayers = 10;
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
     }
 
@@ -108,6 +112,8 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         if (lobbyUI != null)
         {
             lobbyUI.UpdateRoomList();
+            lobbyUI.OpenMenu("room");
+            lobbyUI.ShowLaunchButton(true);
         }
     }
 
@@ -147,6 +153,14 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     // Leaves the room that a player has entered.
     public void LeaveRoom()
     {
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
+        //Update room information
+        if (lobbyUI != null)
+        {
+            lobbyUI.UpdateRoomList();
+            lobbyUI.ShowLaunchButton(false);
+        }
+
         PhotonNetwork.LeaveRoom();
     }
 
@@ -167,6 +181,11 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     {
         // Joins the room on the network
         PhotonNetwork.JoinRoom(roomName);
+
+        if (PhotonNetwork.InRoom)
+        {
+            Debug.Log("Successfully Connected To " + roomName);
+        }
     }
 
     // Shows us the list of room info
@@ -195,6 +214,11 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         }
 
         return playerNameList;
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.Log("Disconnected from server for reason " + cause.ToString());
     }
 
     public string GetCurrentRoom() => PhotonNetwork.CurrentRoom.Name;

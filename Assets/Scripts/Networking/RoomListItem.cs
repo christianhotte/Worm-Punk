@@ -9,10 +9,12 @@ using TMPro;
 public class RoomListItem : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI text;
+    private RoomInfo currentRoomInfo;
 
     // Sets the text to the name of the room
     public void SetUp(RoomInfo roomInfo)
     {
+        currentRoomInfo = roomInfo;
         text.text = roomInfo.Name;
     }
 
@@ -20,6 +22,9 @@ public class RoomListItem : MonoBehaviour
     public void OnClick()
     {
         // Joins the room that was selected
+        Debug.Log("Joining " + text.text + "...");
         NetworkManagerScript.instance.JoinRoom(text.text);
     }
+
+    public RoomInfo GetRoomListInfo() => currentRoomInfo;
 }

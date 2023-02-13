@@ -56,12 +56,13 @@ public class FindRoomController : MonoBehaviour
     /// </summary>
     private void UpdateMenu()
     {
-        //Debug.Log("Arrow: " + arrowObject.transform.position.y);
+        Debug.Log("Arrow: " + arrowObject.transform.position.y);
 
         float arrowYPos = arrowObject.transform.position.y;
 
         foreach (var rooms in listedRooms)
         {
+            Debug.Log(rooms.GetRoomListInfo().Name + " Room Menu Position: " + rooms.GetComponent<RectTransform>().transform.position.y);
             if (Mathf.Abs(arrowYPos - rooms.GetComponent<RectTransform>().transform.position.y) < menuItemHeight / 2f)
             {
                 rooms.GetComponent<Image>().color = selectedRoomColor;

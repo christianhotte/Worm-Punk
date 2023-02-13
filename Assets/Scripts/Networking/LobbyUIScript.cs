@@ -12,6 +12,11 @@ public class LobbyUIScript : MonoBehaviour
     [SerializeField] TMP_Text roomNameText;
     [SerializeField] TMP_Text playerNameText;
     [SerializeField] TMP_Text errorText;
+
+    [SerializeField] private int roomNameLength = 5;
+
+    [SerializeField] private GameObject goToLevelButton;
+
     [SerializeField] Transform roomListContent;
     [SerializeField] Transform playerListContent;
     [SerializeField] GameObject roomListItemPrefab;
@@ -40,7 +45,7 @@ public class LobbyUIScript : MonoBehaviour
                 OpenMenu(menus[i]);
 
                 // Clear the input box if going to create room menu
-                if (menuName == "create room")
+                if (menus[i].menuName == "create room")
                     ClearNameBox();
             }
 
@@ -58,7 +63,10 @@ public class LobbyUIScript : MonoBehaviour
     /// <param name="segment">The segment of letter(s) to add.</param>
     public void AddLetterToNameBox(string segment)
     {
-        roomNameInPutField.text += segment;
+        if (roomNameInPutField.text.Length < roomNameLength)
+            roomNameInPutField.text += segment;
+        else
+            Debug.Log("Room Name Too Long.");
     }
 
     /// <summary>
@@ -128,7 +136,7 @@ public class LobbyUIScript : MonoBehaviour
         // Loops through the list of rooms.
         for (int i = 0; i < roomListInfo.Count; i++)
         {
-            if(roomListInfo[i].PlayerCount > 0)
+            if (roomListInfo[i].PlayerCount > 0 || roomListInfo[i].PlayerCount < roomListInfo[i].MaxPlayers || roomListInfo[i].IsOpen)
             {
                 // Adds the rooms to the list of rooms.
                 Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(roomListInfo[i]);
@@ -146,6 +154,11 @@ public class LobbyUIScript : MonoBehaviour
     {
         UpdateRoomList();
         OpenMenu("room");
+    }
+
+    public void ShowLaunchButton(bool showButton)
+    {
+        goToLevelButton.SetActive(showButton);
     }
 
     public void UpdateRoomList()
