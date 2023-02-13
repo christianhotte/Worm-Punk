@@ -42,11 +42,12 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             rayToHitDistance = 999;
 
             if (checkSaw.collider == null) return;
+            rayToHitDistance = Vector3.Distance(rocketTip.position, checkSaw.transform.position);
             if (checkSaw.collider.tag == "Blade")
             {
                 SawScript = checkSaw.collider.GetComponentInParent<SecondaryWeapons>();
 
-                rayToHitDistance = Vector3.Distance(rocketTip.position, checkSaw.transform.position);
+
                 if (SawScript.deployed)
                 {
                     Debug.Log("cut");
