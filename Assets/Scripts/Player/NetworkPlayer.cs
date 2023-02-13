@@ -137,12 +137,6 @@ public class NetworkPlayer : MonoBehaviour
             MapPosition(rightHand, rightHandRig);
             MapPosition(transform, XROrigin.transform);
         }
-
-        // The player dies if the player falls too far below the map.
-        if (transform.position.y < -15f)
-        {
-            // You die/lose ();
-        }
     }
 
     // This synchronizes the positions of the headset & the hand controllers 

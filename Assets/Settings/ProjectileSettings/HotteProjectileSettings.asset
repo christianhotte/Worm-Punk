@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 1
   knockback: 0
-  initialVelocity: 155
-  range: 150
+  initialVelocity: 170
+  range: 100
   barrelGap: 0.7
-  drop: 10
-  homingStrength: 70
-  targetDesignationAngle: {x: 15, y: 90}
-  targetingDistance: 60
+  drop: 0
+  homingStrength: 55
+  targetDesignationAngle: {x: 17, y: 90}
+  targetingDistance: 50
   LOSTargeting: 0
   alwaysLookForTarget: 1
   predictionStrength: 0.65
