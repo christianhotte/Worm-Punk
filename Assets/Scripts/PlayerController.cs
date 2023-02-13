@@ -34,8 +34,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Tooltip("Enables usage of SpawnManager system to automatically position player upon instantiation.")] private bool useSpawnPoint = true;
 
     //Runtime Variables:
-    private int currentHealth; //How much health player currently has
-    private bool inCombat;     //Whether the player is actively in combat
+    private float currentHealth;  //How much health player currently has
+    private bool inCombat;        //Whether the player is actively in combat
+    private float timeUntilRegen; //Time (in seconds) until health regeneration can begin
 
     //RUNTIME METHODS:
     private void Awake()
@@ -81,6 +82,16 @@ public class PlayerController : MonoBehaviour
         {
 
         }
+
+        //Update health:
+        if (healthSettings.regenSpeed > 0) //Only do health regeneration if setting is on
+        {
+            if (timeUntilRegen > 0) { timeUntilRegen = Mathf.Max(timeUntilRegen - Time.deltaTime, 0); } //Update health regen countdown whenever relevant
+            else if (currentHealth < healthSettings.defaultHealth) //Regen wait time is zero and player has lost health
+            {
+                currentHealth = Mathf.Min(currentHealth + (healthSettings.regenSpeed * Time.deltaTime), healthSettings.defaultHealth); //Regenerate until player is back to default health
+            }
+        }
     }
 
     /// <summary>
@@ -106,13 +117,17 @@ public class PlayerController : MonoBehaviour
     public void IsHit(int damage)
     {
         //Hit effects:
-        audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Default_Hurt_Sound")); //TEMP play hurt sound
-        currentHealth -= damage;                                                         //Deal projectile damage to player
+        currentHealth = Mathf.Max(currentHealth - damage, 0); //Deal projectile damage, floor at 0
 
         //Death check:
         if (currentHealth <= 0) //Player is being killed by this projectile hit
         {
             IsKilled(); //Indicate that player has been killed
+        }
+        else //Player is being hurt by this projectile hit
+        {
+            audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Default_Hurt_Sound"));   //TEMP play hurt sound
+            if (healthSettings.regenSpeed > 0) timeUntilRegen = healthSettings.regenPauseTime; //Begin regeneration sequence (of set)
         }
     }
     /// <summary>
