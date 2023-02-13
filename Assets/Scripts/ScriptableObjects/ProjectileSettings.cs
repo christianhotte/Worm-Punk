@@ -31,7 +31,8 @@ public class ProjectileSettings : ScriptableObject
     [Min(1), Tooltip("Number of times per second projectile runs targeting function during target acquisition period.")]                                       public int targetingTickRate = 30;
     
     [Header("Collision:")]
-    [Tooltip("Physics layers which projectile will not collide with.")]                                public LayerMask ignoreLayers;
-    [Tooltip("Radius used by remote projectile scripts to manually check for non-networked targets.")] public float dumbTargetAquisitionRadius = 1;
-    //[Min(0), Tooltip("Wideness of projectile collision zone (zero if projectile is a point).")] public float radius = 0;
+    [Tooltip("Physics layers which projectile will not collide with.")]                                                         public LayerMask ignoreLayers;
+    [Tooltip("Extra physics layers which projectile will ignore during cast with radius (reccomended to add obstacles here).")] public LayerMask radiusIgnoreLayers;
+    [Tooltip("Radius used by remote projectile scripts to manually check for non-networked targets.")]                          public float dumbTargetAquisitionRadius = 1;
+    [Min(0), Tooltip("Wideness of projectile collision zone (zero if projectile is a point).")]                                 public float radius = 0;
 }

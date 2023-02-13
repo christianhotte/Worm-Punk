@@ -198,6 +198,15 @@ public class Projectile : MonoBehaviourPunCallbacks
                 HitObject(hitInfo);                                     //Trigger hit procedure
                 return;                                                 //Do nothing else
             }
+            if (settings.radius > 0) //Projectile has a radius
+            {
+                if (Physics.SphereCast(transform.position + (velocity.normalized * settings.radius), settings.radius, velocity, out hitInfo, travelDistance - (settings.radius * 2), settings.radiusIgnoreLayers)) //Do a spherecast with exact length of linecast
+                {
+                    totalDistance -= velocity.magnitude - hitInfo.distance; //Update totalDistance to reflect actual distance traveled at exact point of contact
+                    HitObject(hitInfo);                                     //Trigger hit procedure
+                    return;                                                 //Do nothing else
+                }
+            }
         }
 
         //Perform move:
