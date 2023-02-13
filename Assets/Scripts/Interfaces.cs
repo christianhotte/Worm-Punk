@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Interface for any class which reacts to being shot by player weapons.
+/// DEPRECATED: Interface for any class which reacts to being shot by player weapons.
 /// </summary>
 public interface IShootable
 {

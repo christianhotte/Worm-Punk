@@ -136,7 +136,7 @@ public class PlayerController : MonoBehaviour
     public void IsKilled()
     {
         //TEMP DEATH SEQUENCE:
-        audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Default_Death_Sound"));
+        audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Temp_Death_Sound"));
         bodyRb.velocity = Vector3.zero; //Reset player velocity
         if (SpawnManager.instance != null && useSpawnPoint) //Spawn manager is present in scene
         {

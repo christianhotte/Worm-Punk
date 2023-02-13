@@ -5,6 +5,7 @@ using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using Photon.Pun;
 using Photon.Realtime;
+using RootMotion.FinalIK;
 
 // This script was used from https://youtu.be/KHWuTBmT1oI?t=1511
 
@@ -18,15 +19,21 @@ public class NetworkPlayer : MonoBehaviour
     private Transform headRig;
     private Transform leftHandRig;
     private Transform rightHandRig;
+    private Transform modelBaseRig;
 
     // Declaring the player's VR movements
     public Transform head;
     public Transform leftHand;
     public Transform rightHand;
+    public Transform modelBase;
 
     // Gets a list of all of the players on the network
     Player[] allPlayers;
     int myNumberInRoom;
+
+    //Settings:
+    [Header("Debug Settings:")]
+    [SerializeField, Tooltip("Prevents local networkPlayer instance from being hidden on client.")] private bool debugShowLocal;
 
     //Player Data
     private PlayerSetup playerSetup;    //The player's setup component
@@ -35,15 +42,20 @@ public class NetworkPlayer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        photonView = GetComponent<PhotonView>();                         //Get photonView component from NetworkPlayer object
+        photonView = GetComponent<PhotonView>(); //Get photonView component from NetworkPlayer object
 
         // Gets the network player to move with the player instead of just moving locally.
-        XROrigin = GameObject.Find("XR Origin");
-        player = XROrigin.GetComponentInParent<PlayerController>();
-        playerSetup = player.GetComponent<PlayerSetup>();
-        headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
-        leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
-        rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+        if (photonView.IsMine)
+        {
+            XROrigin = GameObject.Find("XR Origin");
+            player = XROrigin.GetComponentInParent<PlayerController>();
+            playerSetup = player.GetComponent<PlayerSetup>();
+            headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
+            leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
+            rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+            modelBaseRig = XROrigin.transform.Find("PlayerModel");
+        }
+        
 
         /*if (photonView.IsMine)
         {
@@ -63,21 +75,24 @@ public class NetworkPlayer : MonoBehaviour
             }
         }
 
-        //Ignore collisions:
-        foreach (Collider collider in GetComponentsInChildren<Collider>())
-        {
-            foreach (Collider otherCollider in XROrigin.transform.parent.GetComponentsInChildren<Collider>())
-            {
-                Physics.IgnoreCollision(collider, otherCollider);
-            }
-        }
-
-        //Hide client renderers:
         if (photonView.IsMine)
         {
-            foreach (var item in GetComponentsInChildren<Renderer>())
+            //Ignore collisions:
+            foreach (Collider collider in GetComponentsInChildren<Collider>())
             {
-                item.enabled = false;
+                foreach (Collider otherCollider in XROrigin.transform.parent.GetComponentsInChildren<Collider>())
+                {
+                    Physics.IgnoreCollision(collider, otherCollider);
+                }
+            }
+
+            //Hide client renderers:
+            if (!debugShowLocal)
+            {
+                foreach (var item in GetComponentsInChildren<Renderer>())
+                {
+                    item.enabled = false;
+                }
             }
         }
     }
@@ -120,6 +135,7 @@ public class NetworkPlayer : MonoBehaviour
             MapPosition(head, headRig);
             MapPosition(leftHand, leftHandRig);
             MapPosition(rightHand, rightHandRig);
+            MapPosition(transform, XROrigin.transform);
         }
 
         // The player dies if the player falls too far below the map.

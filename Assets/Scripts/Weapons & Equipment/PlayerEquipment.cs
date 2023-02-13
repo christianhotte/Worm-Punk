@@ -31,7 +31,7 @@ public class PlayerEquipment : MonoBehaviour
     /// <summary>
     /// Which hand this equipment is associated with (if any).
     /// </summary>
-    internal Handedness handedness;
+    internal Handedness handedness = Handedness.None;
     /// <summary>
     /// Equipment in stasis will do nothing and check nothing until it is re-equipped to a player.
     /// </summary>
@@ -40,55 +40,53 @@ public class PlayerEquipment : MonoBehaviour
     //RUNTIME METHODS:
     private protected virtual void Awake()
     {
-        //Validity checks:
-        player = GetComponentInParent<PlayerController>(); if (player == null) { Debug.LogError("PlayerEquipment " + name + " is not childed to a player and must be destroyed."); Destroy(gameObject); }      //Make sure weapon has an associated player controller
-        PlayerInput playerInput = player.GetComponent<PlayerInput>(); if (playerInput == null) { Debug.LogError("PlayerEquipment " + name + " could not find a PlayerInput on Player"); Destroy(gameObject); } //Make sure equipment can find player input component
-        XROrigin origin = GetComponentInParent<XROrigin>();                                                                                                                                                    //Try to get player XR origin
-        if (origin == null) { Debug.LogError("PlayerEquipment " + name + " is not childed to an XR Origin and must be destroyed."); Destroy(gameObject); }                                                     //Call error message and abort if player could not be found
-        if (!origin.TryGetComponent(out playerBody)) { Debug.LogError("PlayerEquipment " + name + " could not find player rigidbody and must be destroyed."); Destroy(gameObject); }                           //Call error message and abort if player rigidbody could not be found
-        player.attachedEquipment.Add(this);                                                                                                                                                                    //Indicate that this equipment has now been attached to player
+        //Flexible system setup:
+        player = GetComponentInParent<PlayerController>(); //Try to get player controlling this equipment
+        if (player != null) //Equipment is childed to a player (normal operation)
+        {
+            //Validity checks:
+            PlayerInput playerInput = player.GetComponent<PlayerInput>(); if (playerInput == null) { Debug.LogError("PlayerEquipment " + name + " could not find a PlayerInput on Player"); Destroy(gameObject); } //Make sure equipment can find player input component
+            XROrigin origin = GetComponentInParent<XROrigin>();                                                                                                                                                    //Try to get player XR origin
+            if (origin == null) { Debug.LogError("PlayerEquipment " + name + " is not childed to an XR Origin and must be destroyed."); Destroy(gameObject); }                                                     //Call error message and abort if player could not be found
+            if (!origin.TryGetComponent(out playerBody)) { Debug.LogError("PlayerEquipment " + name + " could not find player rigidbody and must be destroyed."); Destroy(gameObject); }                           //Call error message and abort if player rigidbody could not be found
+            player.attachedEquipment.Add(this);                                                                                                                                                                    //Indicate that this equipment has now been attached to player
 
-        //Initial component get:
-        basePlayerTransform = origin.transform.parent;                                               //Get root player transform (above XR Origin)
-        targetTransform = transform.parent;                                                          //Use current parent as target transform
-        transform.parent = basePlayerTransform;                                                      //Reparent equipment to base player transform
+            //Initial component setup:
+            basePlayerTransform = origin.transform.parent; //Get root player transform (above XR Origin)
+            targetTransform = transform.parent;            //Use current parent as target transform
+            transform.parent = basePlayerTransform;        //Reparent equipment to base player transform
+            InitializeFollower(basePlayerTransform);       //Initialize rigidbody follower system
+
+            //Check handedness & setup input:
+            if (targetTransform.name.Contains("Left") || targetTransform.name.Contains("left")) //Equipment is being attached to the left hand/side
+            {
+                inputMap = playerInput.actions.FindActionMap("XRI LeftHand Interaction"); //Get left hand input map
+                handedness = Handedness.Left;                                             //Indicate left-handedness
+            }
+            else if (targetTransform.name.Contains("Right") || targetTransform.name.Contains("right")) //Equipment is being attached to the right hand/side
+            {
+                inputMap = playerInput.actions.FindActionMap("XRI RightHand Interaction"); //Get right hand input map
+                handedness = Handedness.Right;                                             //Indicate right-handedness
+            }
+            else //Equipment is not being attached to an identifiable side
+            {
+                inputMap = playerInput.actions.FindActionMap("XRI Generic Interaction"); //Get generic input map
+                handedness = Handedness.None;                                            //Indicate that equipment is not attached to a side
+            }
+            if (inputMap != null) inputMap.actionTriggered += InputActionTriggered; //Otherwise, subscribe to input triggered event
+            else Debug.LogWarning("PlayerEquipment " + name + " could not get its desired input map, make sure PlayerInput's actions are set up properly."); //Post warning if input get was unsuccessful
+        }
+        else //Equipment is not being controlled by a player (probably for demo purposes
+        {
+            //Initial component setup:
+            if (transform.parent.TryGetComponent(out DemoEquipmentMount mount)) { mount.equipment = this; } //Send reference to equipment mount if relevant
+            targetTransform = transform.parent;                                                             //Make parent the effective target handle
+            transform.parent = null;                                                                        //Unchild weapon from parent
+            InitializeFollower(null);                                                                       //Initialize rigidbody follower system, unchilding system from any parent
+        }
+
+        //Universal component setup:
         if (!TryGetComponent(out audioSource)) audioSource = gameObject.AddComponent<AudioSource>(); //Make sure equipment has audio source
-
-        //Check for settings:
-        if (jointSettings == null) //No joint settings were provided
-        {
-            Debug.Log("PlayerEquipment " + name + " is missing jointSettings, using system defaults.");              //Log warning in case someone forgot
-            jointSettings = (EquipmentJointSettings)Resources.Load("DefaultSettings/DefaultEquipmentJointSettings"); //Load default settings from Resources folder
-        }
-
-        //Check handedness & setup input:
-        if (targetTransform.name.Contains("Left") || targetTransform.name.Contains("left")) //Equipment is being attached to the left hand/side
-        {
-            inputMap = playerInput.actions.FindActionMap("XRI LeftHand Interaction"); //Get left hand input map
-            handedness = Handedness.Left;                                             //Indicate left-handedness
-        }
-        else if (targetTransform.name.Contains("Right") || targetTransform.name.Contains("right")) //Equipment is being attached to the right hand/side
-        {
-            inputMap = playerInput.actions.FindActionMap("XRI RightHand Interaction"); //Get right hand input map
-            handedness = Handedness.Right;                                             //Indicate right-handedness
-        }
-        else //Equipment is not being attached to an identifiable side
-        {
-            inputMap = playerInput.actions.FindActionMap("XRI Generic Interaction"); //Get generic input map
-            handedness = Handedness.None;                                            //Indicate that equipment is not attached to a side
-        }
-        if (inputMap != null) inputMap.actionTriggered += InputActionTriggered; //Otherwise, subscribe to input triggered event
-        else Debug.LogWarning("PlayerEquipment " + name + " could not get its desired input map, make sure PlayerInput's actions are set up properly."); //Post warning if input get was unsuccessful
-
-
-        //Instantiate rigidbody follower:
-        Transform followerTransform = new GameObject(name + "Follower").transform; //Instantiate empty gameobject as follower
-        followerTransform.parent = basePlayerTransform;                            //Child follower to base player transform
-        followerTransform.position = targetTransform.position;                     //Set followBody position to exact position of target
-        followerTransform.rotation = targetTransform.rotation;                     //Set followBody orientation to exact orientation of target
-        followerBody = followerTransform.gameObject.AddComponent<Rigidbody>();     //Give follower a rigidbody component (and save a reference to it)
-        followerBody.isKinematic = true;                                           //Make follower rigidbody kinematic
-        followerBody.useGravity = false;                                           //Ensure follower body is not affected by gravity
 
         //Setup rigidbody:
         if (!TryGetComponent(out rb)) rb = gameObject.AddComponent<Rigidbody>();                                      //Make sure system has a rigidbody
@@ -99,6 +97,13 @@ public class PlayerEquipment : MonoBehaviour
         rb.isKinematic = false;                                                                                       //Make sure rigidbody is not kinematic
         rb.interpolation = RigidbodyInterpolation.Interpolate;                                                        //Enable interpolation
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;                                         //Enable continuous dynamic collisions
+
+        //Check for settings:
+        if (jointSettings == null) //No joint settings were provided
+        {
+            Debug.Log("PlayerEquipment " + name + " is missing jointSettings, using system defaults.");              //Log warning in case someone forgot
+            jointSettings = (EquipmentJointSettings)Resources.Load("DefaultSettings/DefaultEquipmentJointSettings"); //Load default settings from Resources folder
+        }
 
         //Setup configurable joint:
         joint = gameObject.AddComponent<ConfigurableJoint>();   //Instantiate a configurable joint on this equipment gameobject
@@ -111,10 +116,13 @@ public class PlayerEquipment : MonoBehaviour
         joint.angularZMotion = ConfigurableJointMotion.Limited; //Enable Z axis angular motion limits
         ConfigureJoint();                                       //Perform the remainder of joint configuration in a separate function
 
-        //Disable collisions with player:
-        foreach (Collider collider in GetComponentsInChildren<Collider>()) //Iterate through each collider in this equipment
+        //Ignore player collisions:
+        if (playerBody != null) //System is attached to a player with a rigidbody
         {
-            Physics.IgnoreCollision(playerBody.GetComponent<Collider>(), collider, true); //Make physics ignore collisions between equipment colliders and player
+            foreach (Collider collider in GetComponentsInChildren<Collider>()) //Iterate through each collider in this equipment
+            {
+                Physics.IgnoreCollision(playerBody.GetComponent<Collider>(), collider, true); //Make physics ignore collisions between equipment colliders and player
+            }
         }
     }
     private protected virtual void Update()
@@ -138,17 +146,17 @@ public class PlayerEquipment : MonoBehaviour
 
     //FUNCTIONALITY METHODS:
     /// <summary>
-    /// Detaches equipment from player and puts it into stasis.
-    /// </summary>
-    public void UnEquip()
-    {
-
-    }
-    /// <summary>
     /// Equips equipment onto target transform (should be under a player's XR Origin).
     /// </summary>
     /// <param name="target">Needs to be under a specific player's XR Origin, named "Left..." or "Right..." if it's on a specific side of the player.</param>
     public void Equip(Transform target)
+    {
+
+    }
+    /// <summary>
+    /// Detaches equipment from player and puts it into stasis.
+    /// </summary>
+    public void UnEquip()
     {
 
     }
@@ -159,7 +167,7 @@ public class PlayerEquipment : MonoBehaviour
     {
         //Calculate follower position:
         Vector3 targetPos = targetTransform.position; //Get base target position for rigidbody follower
-        if (jointSettings.velocityCompensation > 0) //Velocity compensation is enabled by settings
+        if (jointSettings.velocityCompensation > 0 && playerBody != null) //Velocity compensation is enabled by settings (and has a playerBody to reference)
         {
             targetPos += playerBody.velocity * jointSettings.velocityCompensation; //Adjust target position based on velocity compensation to account for lag
         }
@@ -174,6 +182,19 @@ public class PlayerEquipment : MonoBehaviour
     }
 
     //UTILITY METHODS:
+    /// <summary>
+    /// Initializes rigidbody follower system as child of target parent.
+    /// </summary>
+    private void InitializeFollower(Transform followerParent)
+    {
+        Transform followerTransform = new GameObject(name + "Follower").transform; //Instantiate empty gameobject as follower
+        followerTransform.parent = followerParent;                                 //Child follower to target parent
+        followerTransform.position = targetTransform.position;                     //Set followBody position to exact position of target
+        followerTransform.rotation = targetTransform.rotation;                     //Set followBody orientation to exact orientation of target
+        followerBody = followerTransform.gameObject.AddComponent<Rigidbody>();     //Give follower a rigidbody component (and save a reference to it)
+        followerBody.isKinematic = true;                                           //Make follower rigidbody kinematic
+        followerBody.useGravity = false;                                           //Ensure follower body is not affected by gravity
+    }
     /// <summary>
     /// Applies current joint settings to local ConfigurableJoint.
     /// </summary>

@@ -11,6 +11,7 @@ public class NewShotgunController : PlayerEquipment
     //Objects & Components:
     internal ConfigurableJoint breakJoint;         //Joint controlling weapon's break action
     internal RemoteShotgunController networkedGun; //Remote weapon script used to fire guns on the network
+    internal NewShotgunController otherGun;        //Shotgun in the player's other hand
 
     //Settings:
     [SerializeField, Tooltip("Transforms representing position and direction of weapon barrels.")] private Transform[] barrels;
@@ -24,6 +25,7 @@ public class NewShotgunController : PlayerEquipment
     internal bool breachOpen = false;   //Indicates whether or not weapon breach is swung open
     private float breachOpenTime = 0;   //Time breach has been open for (zero if breach is closed)
     private bool triggerPulled = false; //Whether or not the trigger is currently pulled
+    private float doubleFireWindow = 0; //Above zero means that weapon has just been fired and firing another weapon will cause a double fire
 
     //RUNTIME METHODS:
     private protected override void Awake()
@@ -41,6 +43,17 @@ public class NewShotgunController : PlayerEquipment
         }
         loadedShots = gunSettings.maxLoadedShots; //Fully load weapon on start
     }
+    private void Start()
+    {
+        //Late component get:
+        if (player != null) //Only try this if weapon is attached to a player
+        {
+            foreach (PlayerEquipment equipment in player.attachedEquipment) //Iterate through equipment currently attached to player
+            {
+                if (equipment.TryGetComponent(out NewShotgunController other) && other != this) otherGun = other; //Try to get other shotgun controller
+            }
+        }
+    }
     private protected override void Update()
     {
         //Initialization:
@@ -52,6 +65,7 @@ public class NewShotgunController : PlayerEquipment
             breachOpenTime = Mathf.Min(breachOpenTime + Time.deltaTime, gunSettings.cooldownTime); //Increment time tracker and max out at cooldown time
             if (breachOpenTime >= gunSettings.cooldownTime) Reload();                              //Reload weapon once cooldown time has been reached
         }
+        if (doubleFireWindow > 0) doubleFireWindow = Mathf.Max(doubleFireWindow - Time.deltaTime, 0); //Decrement time tracker and floor at zero
     }
 
     //INPUT METHODS:
@@ -101,19 +115,22 @@ public class NewShotgunController : PlayerEquipment
         Transform currentBarrel = barrels[currentBarrelIndex]; //Get reference to active barrel
 
         //Rigidbody effects:
-        player.bodyRb.velocity = -currentBarrel.forward * gunSettings.fireVelocity;                                    //Launch player based on current barrel facing direction
+        float effectiveFireVel = gunSettings.fireVelocity;                                                             //Store fire velocity so it can be optionally modified
+        if (otherGun != null && otherGun.doubleFireWindow > 0) effectiveFireVel *= gunSettings.doubleFireBoost;        //Apply boost if player is firing both weapons simultaneously
+        if (player != null) player.bodyRb.velocity = -currentBarrel.forward * effectiveFireVel;                        //Launch player based on current barrel facing direction
         rb.AddForceAtPosition(currentBarrel.up * gunSettings.recoilTorque, currentBarrel.position, ForceMode.Impulse); //Apply upward torque to weapon at end of barrel
 
         //Instantiate projectile(s):
         if (networkedGun == null || debugFireLocal) //Weapon is in local fire mode
         {
             Projectile projectile = ((GameObject)Instantiate(Resources.Load("Projectiles/" + gunSettings.projectileResourceName))).GetComponent<Projectile>(); //Instantiate projectile
-            projectile.Fire(currentBarrel);                                                                                                                    //Initialize projectile
             projectile.localOnly = true;                                                                                                                       //Indicate that projectile is only being fired on local game version
+            projectile.Fire(currentBarrel);                                                                                                                    //Initialize projectile
         }
         else networkedGun.LocalFire(currentBarrel); //Fire weapon on the network
 
         //Cleanup:
+        doubleFireWindow = gunSettings.doubleFireTime; //Open double fire window so that other weapon can check for it
         if (gunSettings.fireSound != null) audioSource.PlayOneShot(gunSettings.fireSound); //Play sound effect
         if (barrels.Length > 1) //Only index barrel if there is more than one
         {

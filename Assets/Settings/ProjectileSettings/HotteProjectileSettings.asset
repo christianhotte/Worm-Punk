@@ -17,12 +17,13 @@ MonoBehaviour:
   initialVelocity: 155
   range: 150
   barrelGap: 0.7
-  drop: 0
-  homingStrength: 20
+  drop: 10
+  homingStrength: 120
   targetDesignationAngle: {x: 15, y: 90}
-  targetingDistance: 85
+  targetingDistance: 60
   LOSTargeting: 0
   alwaysLookForTarget: 1
+  predictionStrength: 0.65
   angleDistancePreference: 0.4
   targetingIgnoreLayers:
     serializedVersion: 2
@@ -31,3 +32,8 @@ MonoBehaviour:
   ignoreLayers:
     serializedVersion: 2
     m_Bits: 64
+  radiusIgnoreLayers:
+    serializedVersion: 2
+    m_Bits: 320
+  dumbTargetAquisitionRadius: 1
+  radius: 0.3
