@@ -12,3 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ec0f1dd18a8cd349bf03b4b732c357e, type: 3}
   m_Name: DefaultHealthSettings
   m_EditorClassIdentifier: 
+  defaultHealth: 3
+  regenSpeed: 0
+  regenPauseTime: 0
