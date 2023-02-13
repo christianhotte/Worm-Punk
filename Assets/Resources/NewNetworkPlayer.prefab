@@ -669,8 +669,6 @@ MonoBehaviour:
   head: {fileID: 2045331856573916999}
   leftHand: {fileID: 6838640129832064427}
   rightHand: {fileID: 526713800682842818}
-  modelBase: {fileID: 8672763673493976817}
-  debugShowLocal: 0
 --- !u!114 &2251721190600430653
 MonoBehaviour:
   m_ObjectHideFlags: 0
