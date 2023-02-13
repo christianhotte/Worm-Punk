@@ -27,6 +27,7 @@ namespace Photon.Chat.UtilityScripts
             return;
             #endif
 
+            /* COMMENTED TO REMOVE UNREACHABLE CODE WARNING
             EventSystem sceneEventSystem = FindObjectOfType<EventSystem>();
             if (sceneEventSystem == null)
             {
@@ -35,6 +36,7 @@ namespace Photon.Chat.UtilityScripts
                 eventSystem.AddComponent<EventSystem>();
                 eventSystem.AddComponent<StandaloneInputModule>();
             }
+            */
         }
     }
 }
