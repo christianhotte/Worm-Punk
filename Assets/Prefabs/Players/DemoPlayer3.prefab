@@ -3165,9 +3165,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
-  m_Height: 1
+  m_Height: 1.9286346
   m_Direction: 1
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Center: {x: -0, y: 0.9643173, z: 0}
 --- !u!1 &8290651123642528309
 GameObject:
   m_ObjectHideFlags: 0
@@ -3769,6 +3769,14 @@ PrefabInstance:
     - target: {fileID: 2131844743722543912, guid: 5899b4f71be4515409a1785955a99941, type: 3}
       propertyPath: m_Name
       value: HookshotA
+      objectReference: {fileID: 0}
+    - target: {fileID: 5594788833240499159, guid: 5899b4f71be4515409a1785955a99941, type: 3}
+      propertyPath: sidePullStrength
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5594788833240499159, guid: 5899b4f71be4515409a1785955a99941, type: 3}
+      propertyPath: fowardPullStrength
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7666980383762839507, guid: 5899b4f71be4515409a1785955a99941, type: 3}
       propertyPath: m_RootOrder

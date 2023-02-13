@@ -14,6 +14,7 @@ public class RocketBoost : PlayerEquipment  //renametograpple
     public MeshRenderer Rocket;
     public HookDetector hookScript;
     public LineRenderer cable;
+    public SecondaryWeapons SawScript;
     [Space()]
     public float sidePullStrength = 5f, fowardPullStrength = 10;
 
@@ -41,11 +42,16 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             rayToHitDistance = 999;
 
             if (checkSaw.collider == null) return;
-            rayToHitDistance = Vector3.Distance(rocketTip.position, checkSaw.transform.position);
             if (checkSaw.collider.tag == "Blade")
             {
-              //  Debug.Log("cut");
-                GrappleStop();
+                SawScript = checkSaw.collider.GetComponentInParent<SecondaryWeapons>();
+
+                rayToHitDistance = Vector3.Distance(rocketTip.position, checkSaw.transform.position);
+                if (SawScript.deployed)
+                {
+                    Debug.Log("cut");
+                    GrappleStop();
+                }
             }
             if(rayToHitDistance < realDistance&&grappleCooldown)
             {
@@ -75,14 +81,14 @@ public class RocketBoost : PlayerEquipment  //renametograpple
 
         if (Grapplin&&!grappleCooldown)
         {
- 
-            rocketTip.LookAt(HookInstance.transform);//sets grapple to look at grapple point
             Vector3 newHandPos = player.xrOrigin.transform.InverseTransformPoint(targetTransform.position);
             Vector3 diff = hitHandPos - newHandPos;
-            float pullAmt = Vector3.Project(diff, -rocketTip.forward).magnitude;
-            var pullStrength = pullAmt * fowardPullStrength;
-            Vector3 newPlayerVelocity = (rocketTip.forward * rocketPower);
-            newPlayerVelocity += diff * (sidePullStrength+fowardPullStrength);
+            float forwardPullAmt = Vector3.Project(diff, targetTransform.forward).magnitude;
+            float sidePullAmt = Vector3.ProjectOnPlane(diff, targetTransform.forward).magnitude;
+
+            Vector3 newPlayerVelocity = (HookInstance.transform.position - transform.position).normalized * rocketPower;
+            newPlayerVelocity += diff.normalized * (forwardPullAmt * fowardPullStrength);
+            newPlayerVelocity += diff.normalized * (sidePullAmt * sidePullStrength);
             playerBody.velocity = newPlayerVelocity;//move the player
         }
         if (!grappleCooldown && realDistance < 2.5&&grapplinWall)
