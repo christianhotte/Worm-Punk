@@ -110,24 +110,27 @@ public class Projectile : MonoBehaviourPunCallbacks
                         targetHeuristic = currentHeuristic; //Update target heuristic
 
                         //Have other projectiles acquire target:
-                        if (!target.TryGetComponent(out PhotonView targetView)) targetView = target.GetComponentInParent<PhotonView>(); //Try to get photonView from target
-                        if (targetView != null) //Target has a photon view component
+                        if (!localOnly)
                         {
-                            photonView.RPC("RPC_AcquireTarget", RpcTarget.Others, targetView.ViewID); //Use view ID to lock other projectiles onto this component
-                        }
-                        else //Targeted object is not on network (in this case it should ideally be stationary)
-                        {
-                            Collider[] checkColliders = Physics.OverlapSphere(target.position, settings.dumbTargetAquisitionRadius); //Get list of colliders currently overlapping target position (hopefully just target)
-                            foreach (Collider collider in checkColliders) //Iterate through identified colliders within target area
+                            if (!target.TryGetComponent(out PhotonView targetView)) targetView = target.GetComponentInParent<PhotonView>(); //Try to get photonView from target
+                            if (targetView != null) //Target has a photon view component
                             {
-                                if (collider.transform == target) //Target can be acquired with this solution
+                                photonView.RPC("RPC_AcquireTarget", RpcTarget.Others, targetView.ViewID); //Use view ID to lock other projectiles onto this component
+                            }
+                            else //Targeted object is not on network (in this case it should ideally be stationary)
+                            {
+                                Collider[] checkColliders = Physics.OverlapSphere(target.position, settings.dumbTargetAquisitionRadius); //Get list of colliders currently overlapping target position (hopefully just target)
+                                foreach (Collider collider in checkColliders) //Iterate through identified colliders within target area
                                 {
-                                    photonView.RPC("RPC_AcquireTargetDumb", RpcTarget.Others, target.position); //Send position of target as identifying acquisition data
-                                    break;                                                                      //Ignore all other checks
+                                    if (collider.transform == target) //Target can be acquired with this solution
+                                    {
+                                        photonView.RPC("RPC_AcquireTargetDumb", RpcTarget.Others, target.position); //Send position of target as identifying acquisition data
+                                        break;                                                                      //Ignore all other checks
+                                    }
                                 }
                             }
+                            photonView.RPC("RPC_Move", RpcTarget.Others, transform.position, velocity); //Sync up position and velocity between all versions of networked projectile
                         }
-                        photonView.RPC("RPC_Move", RpcTarget.Others, transform.position, velocity); //Sync up position and velocity between all versions of networked projectile
                     }
                 }
 
