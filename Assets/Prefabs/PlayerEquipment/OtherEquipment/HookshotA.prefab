@@ -316,11 +316,12 @@ MonoBehaviour:
   HookInstance: {fileID: 0}
   rayHitPoint: {x: 0, y: 0, z: 0}
   rocketTipStart: {x: 0, y: 0, z: 0}
-  rocketPower: 20
+  rocketPower: 30
   grappleDistance: 50
   releasePower: 5
   realDistance: 0
   hookSpeed: 50
+  rayToHitDistance: 0
   Grapplin: 0
   grappleCooldown: 1
   grapplinWall: 0
@@ -329,7 +330,9 @@ MonoBehaviour:
   Rocket: {fileID: 0}
   hookScript: {fileID: 0}
   cable: {fileID: 0}
-  maneuverStrength: 15
+  SawScript: {fileID: 0}
+  sidePullStrength: 5
+  fowardPullStrength: 10
 --- !u!120 &6208467324972217419
 LineRenderer:
   m_ObjectHideFlags: 0

@@ -3770,6 +3770,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: HookshotA
       objectReference: {fileID: 0}
+    - target: {fileID: 5594788833240499159, guid: 5899b4f71be4515409a1785955a99941, type: 3}
+      propertyPath: sidePullStrength
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5594788833240499159, guid: 5899b4f71be4515409a1785955a99941, type: 3}
+      propertyPath: fowardPullStrength
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 7666980383762839507, guid: 5899b4f71be4515409a1785955a99941, type: 3}
       propertyPath: m_RootOrder
       value: 1
