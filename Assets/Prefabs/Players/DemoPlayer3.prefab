@@ -3742,11 +3742,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: -0.00903368
+      value: -0.00900507
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: 1.3129997
+      value: 1.3130188
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105951, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_TagString
@@ -3769,6 +3769,10 @@ PrefabInstance:
     - target: {fileID: 2131844743722543912, guid: 5899b4f71be4515409a1785955a99941, type: 3}
       propertyPath: m_Name
       value: HookshotA
+      objectReference: {fileID: 0}
+    - target: {fileID: 5594788833240499159, guid: 5899b4f71be4515409a1785955a99941, type: 3}
+      propertyPath: hookSpeed
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 5594788833240499159, guid: 5899b4f71be4515409a1785955a99941, type: 3}
       propertyPath: sidePullStrength
@@ -3984,11 +3988,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: -0.00903368
+      value: -0.00900507
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: 1.3129997
+      value: 1.3130188
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105951, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_TagString
