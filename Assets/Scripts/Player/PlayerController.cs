@@ -73,7 +73,6 @@ public class PlayerController : MonoBehaviour
         {
             Transform spawnpoint = SpawnManager.instance.GetSpawnPoint(); //Get spawnpoint from spawnpoint manager
             xrOrigin.transform.position = spawnpoint.position;            //Move spawned player to target position
-            //xrOrigin.transform.rotation = spawnpoint.rotation;            //Orient network player according to target rotation
         }
     }
     private void Update()
@@ -142,7 +141,6 @@ public class PlayerController : MonoBehaviour
         {
             Transform spawnpoint = SpawnManager.instance.GetSpawnPoint(); //Get spawnpoint from spawnpoint manager
             xrOrigin.transform.position = spawnpoint.position;            //Move spawned player to target position
-            xrOrigin.transform.rotation = spawnpoint.rotation;            //Orient network player according to target rotation
         }
         currentHealth = healthSettings.defaultHealth; //Reset to max health
         print("Player Killed!");
