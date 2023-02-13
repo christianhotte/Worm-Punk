@@ -650,6 +650,7 @@ MonoBehaviour:
   - {fileID: 1897244419514603091}
   - {fileID: 8280270145973470429}
   - {fileID: 1082075741073289626}
+  - {fileID: 8928056812020872112}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -668,6 +669,8 @@ MonoBehaviour:
   head: {fileID: 2045331856573916999}
   leftHand: {fileID: 6838640129832064427}
   rightHand: {fileID: 526713800682842818}
+  modelBase: {fileID: 8672763673493976817}
+  debugShowLocal: 0
 --- !u!114 &2251721190600430653
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -705,7 +708,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1582608167865522411}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.011000037, y: 1.1226, z: 0.002}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5298113293296667786}
@@ -858,7 +861,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1733365802815576640}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.1176, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3291371583004416668}
@@ -906,7 +909,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8359820835116723838}
   - component: {fileID: 6912405265540401540}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TargetPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1447,7 +1450,7 @@ MonoBehaviour:
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
-  m_UseLocal: 1
+  m_UseLocal: 0
 --- !u!96 &1537848167494093593
 TrailRenderer:
   serializedVersion: 2
@@ -1634,7 +1637,7 @@ MonoBehaviour:
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
-  m_UseLocal: 1
+  m_UseLocal: 0
 --- !u!1 &3229975485309536223
 GameObject:
   m_ObjectHideFlags: 0
@@ -2091,7 +2094,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4566975357409833545}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.1176, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7842748044495970993}
@@ -2516,6 +2519,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8672763673493976817}
   - component: {fileID: 285141329437472461}
+  - component: {fileID: 8928056812020872112}
   m_Layer: 0
   m_Name: PlayerModel
   m_TagString: Untagged
@@ -2877,6 +2881,22 @@ MonoBehaviour:
       onRightFootstep:
         m_PersistentCalls:
           m_Calls: []
+--- !u!114 &8928056812020872112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6769115939993604694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 0
 --- !u!1 &6957673022421549695
 GameObject:
   m_ObjectHideFlags: 0
@@ -3019,7 +3039,7 @@ MonoBehaviour:
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
-  m_UseLocal: 1
+  m_UseLocal: 0
 --- !u!1 &8595506502603904907
 GameObject:
   m_ObjectHideFlags: 0
