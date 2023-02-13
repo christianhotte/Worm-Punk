@@ -5,6 +5,7 @@ using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.SceneManagement;
 
 // This script was used from https://youtu.be/KHWuTBmT1oI?t=1511
 
@@ -48,8 +49,7 @@ public class NetworkPlayer : MonoBehaviour
         if (photonView.IsMine)
         {
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
-            LocalPlayerSettings(PlayerSettings.Instance.charData, false);
-            SyncData(PlayerSettings.Instance);
+            SceneManager.sceneLoaded += SettingsOnLoad;
         }
 
         // Gets the player list
@@ -80,6 +80,17 @@ public class NetworkPlayer : MonoBehaviour
                 item.enabled = false;
             }
         }
+    }
+
+    /// <summary>
+    /// An event called to load settings when a new scene is loaded.
+    /// </summary>
+    /// <param name="scene">The new scene information.</param>
+    /// <param name="mode">The mode in which the scene was loaded in.</param>
+    private void SettingsOnLoad(Scene scene, LoadSceneMode mode)
+    {
+        LocalPlayerSettings(PlayerSettings.Instance.charData, false);
+        SyncData(PlayerSettings.Instance);
     }
 
     private void SyncData(PlayerSettings playerData)
