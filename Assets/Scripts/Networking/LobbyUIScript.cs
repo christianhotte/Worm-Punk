@@ -10,6 +10,7 @@ public class LobbyUIScript : MonoBehaviour
 {
     [SerializeField] TMP_InputField roomNameInPutField;
     [SerializeField] TMP_Text roomNameText;
+    [SerializeField] TMP_Text playerNameText;
     [SerializeField] TMP_Text errorText;
     [SerializeField] Transform roomListContent;
     [SerializeField] Transform playerListContent;
@@ -37,6 +38,10 @@ public class LobbyUIScript : MonoBehaviour
             {
                 // Then we can open the menu
                 OpenMenu(menus[i]);
+
+                // Clear the input box if going to create room menu
+                if (menuName == "create room")
+                    ClearNameBox();
             }
 
             // If it's not the menu we're trying to open, then we want to close it.
@@ -123,9 +128,18 @@ public class LobbyUIScript : MonoBehaviour
         // Loops through the list of rooms.
         for (int i = 0; i < roomListInfo.Count; i++)
         {
-            // Adds the rooms to the list of rooms.
-            Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(roomListInfo[i]);
+            if(roomListInfo[i].PlayerCount > 0)
+            {
+                // Adds the rooms to the list of rooms.
+                Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(roomListInfo[i]);
+            }
         }
+
+        //Refresh the find room menu's list of rooms
+        FindRoomController findRoomController = FindObjectOfType<FindRoomController>();
+
+        if (findRoomController != null)
+            findRoomController.RefreshRoomListItems();
     }
 
     public void OpenRoomList()
@@ -138,6 +152,7 @@ public class LobbyUIScript : MonoBehaviour
     {
         // Opens the room menu UI
         roomNameText.text = NetworkManagerScript.instance.GetCurrentRoom();
+        playerNameText.text = NetworkManagerScript.instance.GetLocalPlayerName();
 
         playerList = NetworkManagerScript.instance.GetPlayerNameList();
 

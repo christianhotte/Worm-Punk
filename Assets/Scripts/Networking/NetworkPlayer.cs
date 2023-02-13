@@ -30,7 +30,6 @@ public class NetworkPlayer : MonoBehaviour
 
     //Player Data
     private PlayerSetup playerSetup;    //The player's setup component
-    [SerializeField] private CharacterData charData;
 
     // Start is called before the first frame update
     void Start()
@@ -49,7 +48,7 @@ public class NetworkPlayer : MonoBehaviour
         if (photonView.IsMine)
         {
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
-            playerSetup.SetColor(PlayerSettings.Instance.charData.testColor);
+            LocalPlayerSettings(PlayerSettings.Instance.charData, false);
             SyncData(PlayerSettings.Instance);
         }
 
@@ -93,8 +92,25 @@ public class NetworkPlayer : MonoBehaviour
     public void LoadPlayerSettings(string data)
     {
         Debug.Log("Loading Player Settings...");
-        charData = JsonUtility.FromJson<CharacterData>(data);
+        LocalPlayerSettings(JsonUtility.FromJson<CharacterData>(data), true);
+    }
+
+    private void LocalPlayerSettings(CharacterData charData, bool isOnNetwork)
+    {
+        Debug.Log("Is On Network: " + isOnNetwork);
+
+        Debug.Log("Changing " + charData.playerName + " to " + charData.testColor);
         playerSetup.SetColor(charData.testColor);
+    }
+
+    /// <summary>
+    /// Indicates that this player has been hit by a networked projectile.
+    /// </summary>
+    /// <param name="damage">How much damage the projectile dealt.</param>
+    [PunRPC]
+    public void RPC_Hit(int damage)
+    {
+        if (photonView.IsMine) player.IsHit(damage); //Inflict damage upon hit player
     }
 
     private void OnDestroy()

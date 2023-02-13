@@ -31,6 +31,15 @@ public class PhysicalButtonController : MonoBehaviour
         buttonConstraints = joint.GetComponent<Rigidbody>().constraints;
     }
 
+    private void OnDisable()
+    {
+        //If the button is unlocked, reset the position when disabling
+        if (!isLocked && joint != null)
+        {
+            joint.transform.localPosition = startPos;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -65,8 +74,8 @@ public class PhysicalButtonController : MonoBehaviour
     /// </summary>
     private void Pressed()
     {
-        //If the button is not locked, press the button
-        if (!isLocked)
+        //If the button is not locked and there's no transition active, press the button
+        if (!isLocked && !GameManager.Instance.levelTransitionActive)
         {
             isPressed = true;
 
@@ -77,7 +86,7 @@ public class PhysicalButtonController : MonoBehaviour
                     GetComponent<AudioSource>().PlayOneShot(onPressedSoundEffect, PlayerPrefs.GetFloat("SFXVolume", 0.5f));
 
                 onPressed.Invoke();
-                //Debug.Log(gameObject.name + " Pressed.");
+                Debug.Log(gameObject.name + " Pressed.");
 
                 if (lockOnPress)
                     LockButton(true);
@@ -122,8 +131,8 @@ public class PhysicalButtonController : MonoBehaviour
     {
         isPressed = false;
 
-        //If the button is interactable
-        if (isInteractable)
+        //If the button is interactable and level transition is not active
+        if (isInteractable && !GameManager.Instance.levelTransitionActive)
         {
             if (onReleasedSoundEffect != null)
                 GetComponent<AudioSource>().PlayOneShot(onReleasedSoundEffect, PlayerPrefs.GetFloat("SFXVolume", 0.5f));

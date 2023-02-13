@@ -21,5 +21,5 @@ public class CharacterData
 {
     public int playerID;
     public string playerName;
-    public Color testColor;
+    public Color testColor = new Color(1, 1, 1, 1);
 }

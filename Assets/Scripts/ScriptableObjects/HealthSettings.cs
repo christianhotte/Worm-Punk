@@ -9,9 +9,9 @@ using UnityEngine;
 public class HealthSettings : ScriptableObject
 {
     [Header("General Health Settings:")]
-    [Min(1), Tooltip("Base starting health value.")] public float defaultHealth = 100;
+    [Min(1), Tooltip("Base starting health value.")] public int defaultHealth = 1;
 
     [Header("Regeneration:")]
-    [Min(0), Tooltip("Rate (in units per second) that health regenerates (set to zero to disable regeneration).")] private float regenSpeed = 0;
-    [Min(0), Tooltip("Number of seconds to wait after damage before beginning regeneration (ignore if health does not regenerate).")] private float regenPauseTime = 0;
+    [Min(0), Tooltip("Rate (in units per second) that health regenerates (set to zero to disable regeneration).")]                    public float regenSpeed = 0;
+    [Min(0), Tooltip("Number of seconds to wait after damage before beginning regeneration (ignore if health does not regenerate).")] public float regenPauseTime = 0;
 }

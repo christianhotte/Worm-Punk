@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    internal bool levelTransitionActive = false;
+
     private void Awake()
     {
         Instance = this;
