@@ -46,9 +46,12 @@ public class NewShotgunController : PlayerEquipment
     private void Start()
     {
         //Late component get:
-        foreach (PlayerEquipment equipment in player.attachedEquipment) //Iterate through equipment currently attached to player
+        if (player != null) //Only try this if weapon is attached to a player
         {
-            if (equipment.TryGetComponent(out NewShotgunController other) && other != this) otherGun = other; //Try to get other shotgun controller
+            foreach (PlayerEquipment equipment in player.attachedEquipment) //Iterate through equipment currently attached to player
+            {
+                if (equipment.TryGetComponent(out NewShotgunController other) && other != this) otherGun = other; //Try to get other shotgun controller
+            }
         }
     }
     private protected override void Update()
