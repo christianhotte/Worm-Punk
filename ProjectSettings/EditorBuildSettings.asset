@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: d8cec1c8994dd8d4798acc12f54250fe
   - enabled: 1
+    path: Assets/Scenes/NetworkLockerRoom.unity
+    guid: 6faf5c240247a20489867b22a80ef5ec
+  - enabled: 1
     path: Assets/Scenes/DMarshall_Test_Scene.unity
     guid: cc0807f6a25148340b30c25c9a3f5f63
   - enabled: 0
