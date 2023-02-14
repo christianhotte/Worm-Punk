@@ -7971,6 +7971,82 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_NotificationBehavior
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.size
+      value: 27
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[19].m_ActionId
+      value: 655e4b97-af3e-4ea6-9089-656856b46cbc
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[20].m_ActionId
+      value: cda3da7a-36fb-45ff-946b-30928ea18303
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[21].m_ActionId
+      value: 5ff6a158-b893-4df1-8d17-7c5fdf085581
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[22].m_ActionId
+      value: 3e636aee-58d1-4507-b012-d64f6541234a
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[23].m_ActionId
+      value: 6fe34c99-de06-4800-98a5-7a1faa93f20c
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[24].m_ActionId
+      value: cce0fd71-f0f9-4a1b-842e-27dde5ab6ad5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[25].m_ActionId
+      value: 6856363d-6dfd-4e97-a6de-a51c5f359694
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[26].m_ActionId
+      value: c1d4e497-0218-4492-8af8-03bd41380f7f
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[19].m_ActionName
+      value: XRI LeftHand Interaction/Select
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[20].m_ActionName
+      value: XRI LeftHand Interaction/Select Value
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[21].m_ActionName
+      value: XRI LeftHand Interaction/Activate
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[22].m_ActionName
+      value: XRI LeftHand Interaction/Activate Value
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[23].m_ActionName
+      value: XRI RightHand Interaction/Select
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[24].m_ActionName
+      value: XRI RightHand Interaction/Select Value
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[25].m_ActionName
+      value: XRI RightHand Interaction/Activate
+      objectReference: {fileID: 0}
+    - target: {fileID: 5645792693487314851, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_ActionEvents.Array.data[26].m_ActionName
+      value: XRI RightHand Interaction/Activate Value
+      objectReference: {fileID: 0}
     - target: {fileID: 8290651122862171406, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
       propertyPath: m_RootOrder
       value: 2
