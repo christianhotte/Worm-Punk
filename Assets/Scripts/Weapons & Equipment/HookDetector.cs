@@ -54,6 +54,7 @@ public class HookDetector : MonoBehaviour
             Debug.Log("hit object " + collision.collider.name + " on Layer " + collision.collider.gameObject.layer);
             RBScript.grappleCooldown = false;
             RBScript.HookHit();
+
         }
        
     }
