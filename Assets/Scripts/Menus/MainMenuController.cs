@@ -48,7 +48,11 @@ public class MainMenuController : MonoBehaviour
     /// <param name="doorController">The door that opens to let the player get launched.</param>
     public void LaunchPlayer(DoorController doorController)
     {
-        StartCoroutine(LaunchPlayerSequence(doorController));
+        if (NetworkManagerScript.instance.IsLocalPlayerInRoom())
+        {
+            GameManager.Instance.levelTransitionActive = true;
+            StartCoroutine(LaunchPlayerSequence(doorController));
+        }
     }
 
     private IEnumerator LaunchPlayerSequence(DoorController doorController)

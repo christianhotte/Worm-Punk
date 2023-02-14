@@ -31,6 +31,10 @@ public class LeverController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //If there is an active level transition, don't do anything
+        if (GameManager.Instance.levelTransitionActive)
+            return;
+
         //If the lever is not locked, check its angle
         if (!isLocked)
         {
