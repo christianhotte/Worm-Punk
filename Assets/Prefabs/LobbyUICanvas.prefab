@@ -3122,8 +3122,7 @@ MonoBehaviour:
   slider: {fileID: 3332131641483067932}
   arrowObject: {fileID: 6600871285950733773}
   scrollArea: {fileID: 3976407870015523376}
-  menuItemHeight: 22.59
-  selectedRoomColor: {r: 0.34901962, g: 0.5411765, b: 0.87843144, a: 1}
+  menuItemHeight: 1.6951507
 --- !u!1 &1335372260152694183
 GameObject:
   m_ObjectHideFlags: 0
