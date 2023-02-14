@@ -109,7 +109,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     // The connection of the room [Also spawns a network player in NetworkPlayerSpawn]
     public override void OnJoinedRoom()
     {
-        Debug.Log("Joined A Room.");
+        Debug.Log("Joined " + PhotonNetwork.CurrentRoom.Name + " room.");
 
         LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
 
@@ -119,6 +119,21 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
             lobbyUI.UpdateRoomList();
             lobbyUI.OpenMenu("room");
             lobbyUI.ShowLaunchButton(true);
+        }
+    }
+
+    // If the room fails to join
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        Debug.LogError("Join Room Failed. Reason: " + message);
+
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
+
+        //If there is a lobby in the scene, display an error message
+        if (lobbyUI != null)
+        {
+            lobbyUI.UpdateErrorMessage("Join Room Failed. Reason: " + message);
+            lobbyUI.OpenMenu("error");
         }
     }
 
