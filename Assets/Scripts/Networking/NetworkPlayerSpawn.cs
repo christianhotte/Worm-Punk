@@ -56,7 +56,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         // Spawns the network player in the tube scene.
         if (loadedScene.name == networkSceneName)
         {
-            //SpawnNetworkPlayer();
+            SpawnNetworkPlayer();
         }
     }
 
