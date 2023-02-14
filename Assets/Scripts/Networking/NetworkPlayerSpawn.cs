@@ -23,19 +23,29 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     {
         //Initialization:
         if (instance == null) { instance = this; } else { Debug.LogError("Tried to load two NetworkPlayerSpawn scripts in the same scene!"); Destroy(this); } //Singleton-ize this script
+        mainMenuScene = "MainMenu";
     }
+
     // When someone joins a room, we spawn the player.
     public override void OnJoinedRoom()
     {
         //Initialization:
         base.OnJoinedRoom();
 
+        // The network players should never spawn in the main menu
         Scene scene = SceneManager.GetActiveScene();
-        //if ()
-        
-        //Spawn network player:
-        clientNetworkPlayer = PhotonNetwork.Instantiate(networkPlayerName, Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
-        if (clientNetworkPlayer == null) Debug.LogError("Tried to spawn network player prefab that doesn't have NetworkPlayer component!");  //Indicate problem if relevant
+        if (scene.name == mainMenuScene)
+        {
+            return;
+        }
+
+        // Spawns network players when you join a room on any other scene besides the main menu.
+        else
+        {
+            //Spawn network player:
+            clientNetworkPlayer = PhotonNetwork.Instantiate(networkPlayerName, Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
+            if (clientNetworkPlayer == null) Debug.LogError("Tried to spawn network player prefab that doesn't have NetworkPlayer component!");  //Indicate problem if relevant
+        }
     }
 
     // When someone leaves a room, we want to remove the player from the game.
