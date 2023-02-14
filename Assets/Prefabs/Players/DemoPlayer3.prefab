@@ -3290,6 +3290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthSettings: {fileID: 0}
+  targetHitSound: {fileID: 8300000, guid: ba699daa1a77ff547b65b08e06538eca, type: 3}
   debugUpdateSettings: 0
   useSpawnPoint: 1
 --- !u!1 &8290651123066708156
@@ -3517,7 +3518,7 @@ GameObject:
   - component: {fileID: 8290651123266976374}
   - component: {fileID: 4902200939074016700}
   - component: {fileID: 8854734742226596885}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: XR Origin
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -4179,11 +4180,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: -0.00900507
+      value: -0.009032488
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: 1.3129997
+      value: 1.313
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105951, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_TagString
@@ -4518,11 +4519,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: -0.00900507
+      value: -0.009032488
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105945, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: 1.3129997
+      value: 1.313
       objectReference: {fileID: 0}
     - target: {fileID: 4572272537239105951, guid: d54d71e55312fe341b99f6a9eb26e5b3, type: 3}
       propertyPath: m_TagString
