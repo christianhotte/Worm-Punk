@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.SceneManagement;
 
 // Script was used from https://youtu.be/KHWuTBmT1oI?t=1186
 
@@ -11,6 +12,8 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     public static NetworkPlayerSpawn instance; //Singleton instance of this script in scene
     
     private NetworkPlayer clientNetworkPlayer; //Instance of local client's network player in scene
+
+    private string mainMenuScene;
 
     //Settings:
     [Header("Resource References:")]
@@ -26,6 +29,9 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     {
         //Initialization:
         base.OnJoinedRoom();
+
+        Scene scene = SceneManager.GetActiveScene();
+        //if ()
         
         //Spawn network player:
         clientNetworkPlayer = PhotonNetwork.Instantiate(networkPlayerName, Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
