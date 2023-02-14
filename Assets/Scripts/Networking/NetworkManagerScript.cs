@@ -20,7 +20,12 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     private void Awake()
     {
         // Creates a static reference meaning the variable is bound to the class and not the actual object in Unity; references this script.
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+            Destroy(gameObject);
     }
 
     // Start is called before the first frame update

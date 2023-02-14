@@ -9,18 +9,10 @@ public class FindRoomController : MonoBehaviour
     [SerializeField] private RectTransform arrowObject;
     [SerializeField] private RectTransform scrollArea;
     [SerializeField] private float menuItemHeight = 22.59f;
-    [SerializeField] private Color selectedRoomColor = new Color(1, 0, 0, 1);
-
-    private Color defaultColor;
 
     private RoomListItem selectedRoom;
 
     private RoomListItem[] listedRooms;
-
-    private void Start()
-    {
-        defaultColor = new Color(1, 1, 1, 1);
-    }
 
     private void OnEnable()
     {
@@ -29,6 +21,7 @@ public class FindRoomController : MonoBehaviour
         if(listedRooms.Length > 0)
         {
             selectedRoom = listedRooms[0];
+            selectedRoom.OnSelect();
         }
 
         UpdateMenu();
@@ -56,25 +49,30 @@ public class FindRoomController : MonoBehaviour
     /// </summary>
     private void UpdateMenu()
     {
-        Debug.Log("Arrow: " + arrowObject.transform.position.y);
+        Debug.Log("Arrow: " + arrowObject.GetComponent<RectTransform>().position.y);
 
-        float arrowYPos = arrowObject.transform.position.y;
+        float arrowYPos = arrowObject.GetComponent<RectTransform>().position.y;
 
+        int counter = 1;
         foreach (var rooms in listedRooms)
         {
-            Debug.Log(rooms.GetRoomListInfo().Name + " Room Menu Position: " + rooms.GetComponent<RectTransform>().transform.position.y);
-            if (Mathf.Abs(arrowYPos - rooms.GetComponent<RectTransform>().transform.position.y) < menuItemHeight / 2f)
+            Debug.Log(" Room Menu Item "+ counter + " Position: " + rooms.GetComponent<RectTransform>().position.y);
+            Debug.Log("Arrow and Menu Item Distance: " + Mathf.Abs(arrowYPos - rooms.GetComponent<RectTransform>().position.y));
+            if (Mathf.Abs(arrowYPos - rooms.GetComponent<RectTransform>().position.y) < menuItemHeight / 2f)
             {
-                rooms.GetComponent<Image>().color = selectedRoomColor;
+                Debug.Log("Selecting Room " + counter + "...");
+                rooms.OnSelect();
+                if (selectedRoom != null)
+                    selectedRoom.OnDeselect();
                 selectedRoom = rooms;
             }
-            else
-            {
-                rooms.GetComponent<Image>().color = defaultColor;
-            }
+            counter++;
         }
     }
-
+    
+    /// <summary>
+    /// Connects to the selected room.
+    /// </summary>
     public void ConnectToRoom()
     {
         if(selectedRoom != null)
@@ -87,5 +85,6 @@ public class FindRoomController : MonoBehaviour
     public void RefreshRoomListItems()
     {
         listedRooms = scrollArea.GetComponentsInChildren<RoomListItem>();
+        UpdateMenu();
     }
 }
