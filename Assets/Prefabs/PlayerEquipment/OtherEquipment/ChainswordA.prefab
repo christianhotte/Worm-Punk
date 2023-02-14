@@ -450,7 +450,7 @@ MonoBehaviour:
   activationTime: 0.2
   activationSpeed: 1.225
   timeAtSpeed: 0
-  grindSpeed: 12
+  grindSpeed: 21
   grindRange: 0.1
   deploySpeed: 1
   blockRadius: 10
