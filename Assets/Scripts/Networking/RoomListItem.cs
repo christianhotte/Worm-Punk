@@ -15,15 +15,20 @@ public class RoomListItem : MonoBehaviour
     public void SetUp(RoomInfo roomInfo)
     {
         currentRoomInfo = roomInfo;
-        text.text = roomInfo.Name;
+        UpdateText(roomInfo.Name + " - " + roomInfo.PlayerCount + "/" + roomInfo.MaxPlayers);
     }
 
     // When the button is pressed
     public void OnClick()
     {
         // Joins the room that was selected
-        Debug.Log("Joining " + text.text + "...");
-        NetworkManagerScript.instance.JoinRoom(text.text);
+        Debug.Log("Joining " + currentRoomInfo.Name + "...");
+        NetworkManagerScript.instance.JoinRoom(currentRoomInfo.Name);
+    }
+
+    public void UpdateText(string roomText)
+    {
+        text.text = roomText;
     }
 
     public RoomInfo GetRoomListInfo() => currentRoomInfo;
