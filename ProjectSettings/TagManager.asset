@@ -17,7 +17,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - PlayerWeapon
@@ -45,7 +45,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - HUD
   m_SortingLayers:
   - name: Default
     uniqueID: 0
