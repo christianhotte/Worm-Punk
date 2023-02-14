@@ -7,17 +7,19 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class SecondaryWeapons : PlayerEquipment
 {
-    public GameObject blade,hand;
+    public GameObject blade,hand,ProjectilePrefab;
+    public GameObject[] StoredShots;
     public Rigidbody playerRB,bladeRB;
-    public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,rocketTip,ShotgunBarrelTip,stowedTip,rayStartPoint;
-    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance;
+    public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,rocketTip,ShotgunBarrelTip,stowedTip,rayStartPoint,bulletSpredPoint;
+    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance,maxSpreadAngle=4;
     public AnimationCurve deployMotionCurve, deployScaleCurve, sheathMotionCurve, sheathScaleCurve;
     public bool deployed = false,cooldown=false,grindin=false,deflectin=false;
     public Vector3 prevHandPos,tipPos;
     [Space()]
     [SerializeField, Range(0, 1)] private float gripThreshold = 1;
     public Projectile projScript;
-    private bool gripPressed = false;
+    private bool gripPressed = false,shootin=false,stabbin=false;
+    public int shotsHeld = 0, shotCap = 3,shotsToFire,shotsCharged=0;
     public AudioSource sawAud;
     public AudioClip punchSound;
     int num;
@@ -26,6 +28,7 @@ public class SecondaryWeapons : PlayerEquipment
     {
         attachedHand = hand.transform;
         sawAud = this.GetComponent<AudioSource>();
+
         //bladeRB = this.gameObject.GetComponent<Rigidbody>();
         base.Awake();
         //StartCoroutine(StartCooldown());
@@ -33,10 +36,13 @@ public class SecondaryWeapons : PlayerEquipment
     // Update is called once per frame
     private protected override void Update()
     {
- 
 
 
-        if (deflectin)
+        if (shotsToFire > 0 && !shootin)
+        {
+            StartCoroutine(ShootAbsorbed());
+        }
+        if (deployed)
         {
             //Debug.Log("checkstart");
 
@@ -46,13 +52,14 @@ public class SecondaryWeapons : PlayerEquipment
             {
                 float bulletDistance = Vector3.Distance(stowedTip.position, hit.transform.position);
                 projScript = hit.gameObject.GetComponent<Projectile>();
-                if (bulletDistance <= blockRadius)
+                if (bulletDistance <= blockRadius&&shotsHeld<shotCap)
                 {
                     Debug.Log(bulletDistance);
                     //grindin = true;
-                    //bladeTip.LookAt(hit.transform);
-                    projScript.Fire(bladeTip.position, bladeTip.rotation);
-                    Deploy();
+                    Destroy(hit);
+                    shotsHeld++;
+                    StoredShots[shotsHeld - 1].SetActive(true);
+
                     break;
                 }
             }
@@ -89,6 +96,7 @@ public class SecondaryWeapons : PlayerEquipment
             }
 
         }
+
         if (grindin&&deployed)
         {
             //Debug.Log("Grindin");
@@ -97,36 +105,43 @@ public class SecondaryWeapons : PlayerEquipment
         Vector3 handPos,handMotion;
         handPos = headpos.InverseTransformPoint(attachedHand.position);
         handMotion = handPos - prevHandPos;
-        float forwardAngle = Vector3.Angle(handMotion, transform.forward);
-
-        if (forwardAngle < 90&&!cooldown) //|| (deployed && forwardAngle > 90&&!cooldown))
+        float punchSpeed = handMotion.magnitude / Time.deltaTime;
+        if (deployed && punchSpeed >= activationSpeed&&!stabbin)
         {
-            
-            handMotion = Vector3.Project(handPos - prevHandPos, hand.transform.forward);
-
-            float punchSpeed = handMotion.magnitude / Time.deltaTime;
-            
-            if ((!deployed&&punchSpeed >= activationSpeed))
-            {
-                
-               
-                        // Deploy();
-                        
-                 num++;
-                // Debug.Log("Punch"+num);
-                sawAud.PlayOneShot(punchSound);
-                StartCoroutine(DeflectTime());
-                StartCoroutine(StartCooldown());
-
-             
+            for (; shotsHeld > 0; shotsHeld--){
+                shotsCharged++;
             }
         }
-        else
-        {
-           // timeAtSpeed = 0;
-        }
-        base.Update();
-        prevHandPos = handPos;
+        //float forwardAngle = Vector3.Angle(handMotion, transform.forward);
+
+        //if (forwardAngle < 90&&!cooldown) //|| (deployed && forwardAngle > 90&&!cooldown))                   Code for punch detection
+        //{
+
+        //    handMotion = Vector3.Project(handPos - prevHandPos, hand.transform.forward);
+
+        //    float punchSpeed = handMotion.magnitude / Time.deltaTime;
+
+        //    if ((!deployed&&punchSpeed >= activationSpeed))
+        //    {
+
+
+        //                // Deploy();
+
+        //         num++;
+        //        // Debug.Log("Punch"+num);
+        //        sawAud.PlayOneShot(punchSound);
+        //        StartCoroutine(DeflectTime());
+        //        StartCoroutine(StartCooldown());
+
+
+        //    }
+        //}
+        //else
+        //{
+        //   // timeAtSpeed = 0;
+        //}
+        //base.Update();
+        //prevHandPos = handPos;
     }
 
     private protected override void InputActionTriggered(InputAction.CallbackContext context)
@@ -161,6 +176,7 @@ public class SecondaryWeapons : PlayerEquipment
         //  bladeRB.velocity += blade.transform.forward*-deploySpeed;
         blade.transform.localRotation = bladeDeployed.transform.localRotation;
         deployed = true;
+        
         StartCoroutine(StartCooldown());
 
     }
@@ -168,6 +184,15 @@ public class SecondaryWeapons : PlayerEquipment
     {
        // Debug.Log("Sheethe");
         blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeSheethed.transform.position, deploySpeed);
+   
+
+            for (; shotsHeld > 0; shotsHeld--)
+            {
+          
+            shotsToFire++;
+
+        }
+        
 
        // blade.transform.position = bladeSheethed.transform.position;
         deployed = false;
@@ -180,7 +205,23 @@ public class SecondaryWeapons : PlayerEquipment
         yield return new WaitForSeconds(1.0f);
         cooldown = false;
     }
-
+    public IEnumerator ShootAbsorbed()
+    {
+        shootin = true;
+        for (; shotsToFire > 0; shotsToFire--)
+        {
+            GameObject projInstance = Instantiate(ProjectilePrefab);
+            Vector3 exitAngles = Random.insideUnitCircle * maxSpreadAngle;
+            bulletSpredPoint.localEulerAngles = new Vector3(bladeTip.position.x + exitAngles.x, bladeTip.position.y + exitAngles.y, bladeTip.position.z + exitAngles.z);
+            projInstance.transform.position = bulletSpredPoint.position;
+            projInstance.transform.rotation = bulletSpredPoint.rotation;
+            projScript = projInstance.GetComponent<Projectile>();
+            projScript.Fire(bulletSpredPoint.position, bladeTip.rotation);
+            StoredShots[shotsToFire - 1].SetActive(false);
+            yield return new WaitForSeconds(.05f);
+        }
+        shootin = false;
+    }
     public IEnumerator DeflectTime()
     {
         deflectin = true;
@@ -189,4 +230,5 @@ public class SecondaryWeapons : PlayerEquipment
        // yield return new WaitForSeconds(0.2f);
          Sheethe();
     }
+
 }

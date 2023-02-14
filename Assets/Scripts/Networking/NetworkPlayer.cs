@@ -123,6 +123,14 @@ public class NetworkPlayer : MonoBehaviour
     {
         if (photonView.IsMine) player.IsHit(damage); //Inflict damage upon hit player
     }
+    /// <summary>
+    /// Indicates that this player has successfully hit an enemy with a projecile.
+    /// </summary>
+    [PunRPC]
+    public void RPC_HitEnemy()
+    {
+        if (photonView.IsMine) player.HitEnemy(); //Pass enemy hit onto player
+    }
 
     private void OnDestroy()
     {

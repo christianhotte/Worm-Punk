@@ -38,15 +38,16 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             realDistance = Vector3.Distance(rocketTip.position, HookInstance.transform.position); // gets distance to the hit
             rayToHitDistance = Vector3.Distance(rocketTip.position, HookInstance.transform.position);
             RaycastHit checkSaw;
-            var sawRay = Physics.Raycast(rocketTip.position, rocketTip.forward, out checkSaw,9999, ~LayerMask.GetMask("PlayerWeapon"));
+            var sawRay = Physics.Raycast(rocketTip.position, rocketTip.forward, out checkSaw,9999999, ~LayerMask.GetMask("PlayerWeapon"));
             rayToHitDistance = 999;
 
             if (checkSaw.collider == null) return;
+            rayToHitDistance = Vector3.Distance(rocketTip.position, checkSaw.transform.position);
             if (checkSaw.collider.tag == "Blade")
             {
                 SawScript = checkSaw.collider.GetComponentInParent<SecondaryWeapons>();
 
-                rayToHitDistance = Vector3.Distance(rocketTip.position, checkSaw.transform.position);
+
                 if (SawScript.deployed)
                 {
                     Debug.Log("cut");
@@ -98,7 +99,7 @@ public class RocketBoost : PlayerEquipment  //renametograpple
         }
         else if (!grappleCooldown && realDistance < 2.5 && !grapplinWall)
         {
-            playerBody.velocity = (rocketTip.forward * releasePower); //the bounce after grapple is released
+           // playerBody.velocity = (rocketTip.forward * releasePower); //the bounce after grapple is released
             GrappleStop();
         }
         base.Update();
