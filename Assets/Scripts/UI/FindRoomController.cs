@@ -56,26 +56,30 @@ public class FindRoomController : MonoBehaviour
     /// </summary>
     private void UpdateMenu()
     {
-        Debug.Log("Arrow: " + arrowObject.GetComponent<RectTransform>().localPosition.y);
+        Debug.Log("Arrow: " + arrowObject.GetComponent<RectTransform>().anchoredPosition.y);
 
-        float arrowYPos = arrowObject.GetComponent<RectTransform>().localPosition.y;
+        float arrowYPos = arrowObject.GetComponent<RectTransform>().anchoredPosition.y;
 
+        int counter = 1;
         foreach (var rooms in listedRooms)
         {
-            Debug.Log(rooms.GetRoomListInfo().Name + " Room Menu Position: " + rooms.GetComponent<RectTransform>().localPosition.y);
-            if (Mathf.Abs(arrowYPos - rooms.GetComponent<RectTransform>().localPosition.y) < menuItemHeight / 2f)
+            Debug.Log(" Room Menu Item "+ counter + " Position: " + rooms.GetComponent<RectTransform>().anchoredPosition.y);
+            Debug.Log("Arrow and Menu Item Distance: " + Mathf.Abs(arrowYPos - rooms.GetComponent<RectTransform>().anchoredPosition.y));
+            if (Mathf.Abs(arrowYPos - rooms.GetComponent<RectTransform>().anchoredPosition.y) < menuItemHeight / 2f)
             {
+                Debug.Log("Selecting Room " + counter + "...");
                 rooms.GetComponent<Image>().color = selectedRoomColor;
-                selectedRoom.GetComponent<Image>().color = defaultColor;
+                if(selectedRoom != null)
+                    selectedRoom.GetComponent<Image>().color = defaultColor;
                 selectedRoom = rooms;
             }
-            else
-            {
-                rooms.GetComponent<Image>().color = defaultColor;
-            }
+            counter++;
         }
     }
-
+    
+    /// <summary>
+    /// Connects to the selected room.
+    /// </summary>
     public void ConnectToRoom()
     {
         if(selectedRoom != null)
@@ -88,5 +92,6 @@ public class FindRoomController : MonoBehaviour
     public void RefreshRoomListItems()
     {
         listedRooms = scrollArea.GetComponentsInChildren<RoomListItem>();
+        UpdateMenu();
     }
 }
