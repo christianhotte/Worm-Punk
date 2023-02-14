@@ -249,8 +249,8 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Cleanup:
-        transform.position = targetPosition;                                                    //Move to initial position
-        if (doLocalStuff && settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
+        transform.position = targetPosition;                                    //Move to initial position
+        if (settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
     }
 
     //REMOTE METHODS:
