@@ -4137,6 +4137,10 @@ PrefabInstance:
       value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 5594788833240499159, guid: 5899b4f71be4515409a1785955a99941, type: 3}
+      propertyPath: jointSettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 6b12243a97cccb34983b382025185c85, type: 2}
+    - target: {fileID: 5594788833240499159, guid: 5899b4f71be4515409a1785955a99941, type: 3}
       propertyPath: sidePullStrength
       value: 18
       objectReference: {fileID: 0}
@@ -4278,6 +4282,10 @@ PrefabInstance:
       propertyPath: bulletSpredPoint
       value: 
       objectReference: {fileID: 25496668}
+    - target: {fileID: 6619349005983234540, guid: dc052da53b3e1e44b8e0ab06d9f57a98, type: 3}
+      propertyPath: debugUpdateSettings
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6619349005983234540, guid: dc052da53b3e1e44b8e0ab06d9f57a98, type: 3}
       propertyPath: StoredShots.Array.size
       value: 3

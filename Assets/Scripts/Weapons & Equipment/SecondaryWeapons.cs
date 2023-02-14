@@ -18,8 +18,8 @@ public class SecondaryWeapons : PlayerEquipment
     [Space()]
     [SerializeField, Range(0, 1)] private float gripThreshold = 1;
     public Projectile projScript;
-    private bool gripPressed = false,shootin=false;
-    public int shotsHeld = 0, shotCap = 3,shotsToFire;
+    private bool gripPressed = false,shootin=false,stabbin=false;
+    public int shotsHeld = 0, shotCap = 3,shotsToFire,shotsCharged=0;
     public AudioSource sawAud;
     public AudioClip punchSound;
     int num;
@@ -102,31 +102,38 @@ public class SecondaryWeapons : PlayerEquipment
             //Debug.Log("Grindin");
             playerRB.velocity = bladeDeployed.forward * grindSpeed;
         }
-        //Vector3 handPos,handMotion;
-        //handPos = headpos.InverseTransformPoint(attachedHand.position);
-        //handMotion = handPos - prevHandPos;
+        Vector3 handPos,handMotion;
+        handPos = headpos.InverseTransformPoint(attachedHand.position);
+        handMotion = handPos - prevHandPos;
+        float punchSpeed = handMotion.magnitude / Time.deltaTime;
+        if (deployed && punchSpeed >= activationSpeed&&!stabbin)
+        {
+            for (; shotsHeld > 0; shotsHeld--){
+                shotsCharged++;
+            }
+        }
         //float forwardAngle = Vector3.Angle(handMotion, transform.forward);
 
         //if (forwardAngle < 90&&!cooldown) //|| (deployed && forwardAngle > 90&&!cooldown))                   Code for punch detection
         //{
-            
+
         //    handMotion = Vector3.Project(handPos - prevHandPos, hand.transform.forward);
 
         //    float punchSpeed = handMotion.magnitude / Time.deltaTime;
-            
+
         //    if ((!deployed&&punchSpeed >= activationSpeed))
         //    {
-                
-               
+
+
         //                // Deploy();
-                        
+
         //         num++;
         //        // Debug.Log("Punch"+num);
         //        sawAud.PlayOneShot(punchSound);
         //        StartCoroutine(DeflectTime());
         //        StartCoroutine(StartCooldown());
 
-             
+
         //    }
         //}
         //else
