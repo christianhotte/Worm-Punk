@@ -2756,7 +2756,7 @@ MonoBehaviour:
         m_RotationOrder: 4
     rightArm:
       bones: []
-      target: {fileID: 1854058839}
+      target: {fileID: 0}
       bendGoal: {fileID: 0}
       positionWeight: 1
       rotationWeight: 1
