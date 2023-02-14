@@ -111,27 +111,26 @@ public class Projectile : MonoBehaviourPunCallbacks
                         targetHeuristic = currentHeuristic; //Update target heuristic
 
                         //Have other projectiles acquire target:
-                        if (!localOnly)
+                        if (!target.TryGetComponent(out PhotonView targetView)) targetView = target.GetComponentInParent<PhotonView>(); //Try to get photonView from target
+                        if (targetView != null) //Target has a photon view component
                         {
-                            if (!target.TryGetComponent(out PhotonView targetView)) targetView = target.GetComponentInParent<PhotonView>(); //Try to get photonView from target
-                            if (targetView != null) //Target has a photon view component
+                            if (photonView.ViewID != 0) photonView.RPC("RPC_AcquireTarget", RpcTarget.Others, targetView.ViewID); //Use view ID to lock other projectiles onto this component
+                            print("Target Acquired: " + targetView.name);
+                        }
+                        else //Targeted object is not on network (in this case it should ideally be stationary)
+                        {
+                            Collider[] checkColliders = Physics.OverlapSphere(target.position, settings.dumbTargetAquisitionRadius); //Get list of colliders currently overlapping target position (hopefully just target)
+                            foreach (Collider collider in checkColliders) //Iterate through identified colliders within target area
                             {
-                                photonView.RPC("RPC_AcquireTarget", RpcTarget.Others, targetView.ViewID); //Use view ID to lock other projectiles onto this component
-                            }
-                            else //Targeted object is not on network (in this case it should ideally be stationary)
-                            {
-                                Collider[] checkColliders = Physics.OverlapSphere(target.position, settings.dumbTargetAquisitionRadius); //Get list of colliders currently overlapping target position (hopefully just target)
-                                foreach (Collider collider in checkColliders) //Iterate through identified colliders within target area
+                                if (collider.transform == target) //Target can be acquired with this solution
                                 {
-                                    if (collider.transform == target) //Target can be acquired with this solution
-                                    {
-                                        photonView.RPC("RPC_AcquireTargetDumb", RpcTarget.Others, target.position); //Send position of target as identifying acquisition data
-                                        break;                                                                      //Ignore all other checks
-                                    }
+                                    if (photonView.ViewID != 0) photonView.RPC("RPC_AcquireTargetDumb", RpcTarget.Others, target.position); //Send position of target as identifying acquisition data
+                                    print("Dumb Target Acquired: " + target.name);
+                                    break;                                                                                                  //Ignore all other checks
                                 }
                             }
-                            photonView.RPC("RPC_Move", RpcTarget.Others, transform.position); //Sync up position and velocity between all versions of networked projectile
                         }
+                        if (photonView.ViewID != 0) photonView.RPC("RPC_Move", RpcTarget.Others, transform.position); //Sync up position and velocity between all versions of networked projectile
                     }
                 }
 
@@ -278,6 +277,8 @@ public class Projectile : MonoBehaviourPunCallbacks
         PhotonView targetView = PhotonNetwork.GetPhotonView(targetViewID);                                                        //Get photonView from ID
         if (!targetView.TryGetComponent(out Targetable targetable)) targetable = targetView.GetComponentInChildren<Targetable>(); //Get targetable script from photonView
         if (targetable != null) target = targetable.targetPoint;                                                                  //Get target from script
+
+        if (targetable != null) print("Target Remotely Acquired: " + targetable.name);
     }
     /// <summary>
     /// Attempts to acquire stationary, non-networked target based on position.
@@ -305,8 +306,8 @@ public class Projectile : MonoBehaviourPunCallbacks
         NetworkPlayer targetPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>(); //Try to get network player from hit collider
         if (targetPlayer != null) //Hit object was a player
         {
-            targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);         //Indicate to player that it has been hit
-            PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
+            targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);                                  //Indicate to player that it has been hit
+            if (originPlayerID != 0) PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
         }
         else //Hit object is not a player
         {
