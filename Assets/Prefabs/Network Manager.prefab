@@ -57,4 +57,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9934210c4c8822c4387e8dde05d786bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkSceneName: NetworkLockerRoom
   networkPlayerName: NewNetworkPlayer
