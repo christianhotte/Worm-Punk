@@ -49,6 +49,7 @@ MonoBehaviour:
   - RPC_Hit
   - RPC_Move
   - RPC_AcquireTargetDumb
+  - RPC_HitEnemy
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
