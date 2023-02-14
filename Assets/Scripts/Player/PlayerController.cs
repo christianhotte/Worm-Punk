@@ -104,10 +104,12 @@ public class PlayerController : MonoBehaviour
         foreach (var controller in GetComponentsInChildren<ActionBasedController>())
         {
             foreach (Transform transform in controller.transform)
+            {
                 if (transform.CompareTag("PlayerEquipment") || transform.CompareTag("Wall"))
                     transform.gameObject.SetActive(inCombat);
-            if (transform.CompareTag("PlayerHand"))
-                transform.gameObject.SetActive(!inCombat);
+                if (transform.CompareTag("PlayerHand"))
+                    transform.gameObject.SetActive(!inCombat);
+            }
         }
     }
 
