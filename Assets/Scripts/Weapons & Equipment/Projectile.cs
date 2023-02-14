@@ -15,6 +15,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     [Tooltip("Settings object determining base properties of projectile.")] public ProjectileSettings settings;
 
     //Runtime Variables:
+    internal int originPlayerID; //PhotonID of player which last fired this projectile
     private Vector3 velocity;    //Speed and direction at which projectile is traveling
     private Transform target;    //Transform which projectile is currently homing toward
     private float totalDistance; //Total travel distance covered by this projectile
@@ -260,14 +261,13 @@ public class Projectile : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_Move(Vector3 newPosition)
     {
-        transform.position = newPosition;                       //Move to new position
-        //velocity = newVelocity;                                 //Record new velocity
-        //transform.rotation = Quaternion.LookRotation(velocity); //Rotate projectile to face direction of new velocity
+        transform.position = newPosition; //Move to new position
     }
     [PunRPC]
-    public void RPC_Fire(Vector3 barrelPos, Quaternion barrelRot)
+    public void RPC_Fire(Vector3 barrelPos, Quaternion barrelRot, int playerID)
     {
-        Fire(barrelPos, barrelRot);
+        originPlayerID = playerID;  //Record player ID number
+        Fire(barrelPos, barrelRot); //Initialize projectile
     }
     /// <summary>
     /// Locks remote projectile onto target identified by its PhotonView ID.
@@ -302,8 +302,12 @@ public class Projectile : MonoBehaviourPunCallbacks
     private protected virtual void HitObject(RaycastHit hitInfo)
     {
         //Look for strikeable scripts:
-        NetworkPlayer targetPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>();              //Try to get network player from hit collider
-        if (targetPlayer != null) targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage); //Indicate to player that it has been hit
+        NetworkPlayer targetPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>(); //Try to get network player from hit collider
+        if (targetPlayer != null) //Hit object was a player
+        {
+            targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);         //Indicate to player that it has been hit
+            PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
+        }
         else //Hit object is not a player
         {
             Targetable targetObject = hitInfo.collider.GetComponent<Targetable>(); //Try to get targetable script from target
