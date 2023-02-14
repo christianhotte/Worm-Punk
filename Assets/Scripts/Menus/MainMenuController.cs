@@ -48,7 +48,11 @@ public class MainMenuController : MonoBehaviour
     /// <param name="doorController">The door that opens to let the player get launched.</param>
     public void LaunchPlayer(DoorController doorController)
     {
-        StartCoroutine(LaunchPlayerSequence(doorController));
+        if (NetworkManagerScript.instance.IsLocalPlayerInRoom())
+        {
+            GameManager.Instance.levelTransitionActive = true;
+            StartCoroutine(LaunchPlayerSequence(doorController));
+        }
     }
 
     private IEnumerator LaunchPlayerSequence(DoorController doorController)
@@ -61,7 +65,7 @@ public class MainMenuController : MonoBehaviour
         playerObject.GetComponentInChildren<Rigidbody>().AddForce(Vector3.up * 10f, ForceMode.Impulse);
 
         yield return new WaitForSeconds(0.5f);
-        GameManager.Instance.LoadGame(SceneIndexes.ARENA);
+        GameManager.Instance.LoadGame(SceneIndexes.NETWORKLOCKERROOM);
     }
 
     private IEnumerator MovePlayerInMenu(MenuArea menuArea, float speed)

@@ -16,11 +16,11 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Singleton instance of player controller.")]                                    public static PlayerController instance;
     [Tooltip("Singleton instance of this client's photonNetwork (on their NetworkPlayer).")] public static PhotonView photonView;
 
-    [Tooltip("XROrigin component attached to player instance in scene.")]  internal XROrigin xrOrigin;
-    [Tooltip("Rigidbody for player's body (the part that flies around).")] internal Rigidbody bodyRb;
-    [Tooltip("Controller component for player's left hand.")]              internal ActionBasedController leftHand;
-    [Tooltip("Controller component for player's right hand.")]             internal ActionBasedController rightHand;
-    [Tooltip("Equipment which is currently attached to the player")]       internal List<PlayerEquipment> attachedEquipment = new List<PlayerEquipment>();
+    [Tooltip("XROrigin component attached to player instance in scene.")]                    internal XROrigin xrOrigin;
+    [Tooltip("Rigidbody for player's body (the part that flies around).")]                   internal Rigidbody bodyRb;
+    [Tooltip("Controller component for player's left hand.")]                                internal ActionBasedController leftHand;
+    [Tooltip("Controller component for player's right hand.")]                               internal ActionBasedController rightHand;
+    [Tooltip("Equipment which is currently attached to the player")]                         internal List<PlayerEquipment> attachedEquipment = new List<PlayerEquipment>();
 
     private Camera cam;              //Main player camera
     internal PlayerInput input;      //Input manager component used by player to send messages to hands and such
@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
     //Settings:
     [Header("Settings Objects:")]
     [SerializeField, Tooltip("Settings determining player health properties.")] private HealthSettings healthSettings;
+    [Header("Sound Settings:")]
+    [SerializeField, Tooltip("SFX played when player strikes a target.")] private AudioClip targetHitSound;
     [Header("Debug Options:")]
     [SerializeField, Tooltip("Enables constant settings checks in order to test changes.")]                                private bool debugUpdateSettings;
     [SerializeField, Tooltip("Enables usage of SpawnManager system to automatically position player upon instantiation.")] private bool useSpawnPoint = true;
@@ -102,14 +104,23 @@ public class PlayerController : MonoBehaviour
         foreach (var controller in GetComponentsInChildren<ActionBasedController>())
         {
             foreach (Transform transform in controller.transform)
-                if (transform.CompareTag("PlayerEquipment"))
+            {
+                if (transform.CompareTag("PlayerEquipment") || transform.CompareTag("Wall"))
                     transform.gameObject.SetActive(inCombat);
-            if (transform.CompareTag("PlayerHand"))
-                transform.gameObject.SetActive(!inCombat);
+                if (transform.CompareTag("PlayerHand"))
+                    transform.gameObject.SetActive(!inCombat);
+            }
         }
     }
 
-    //INTERFACE METHODS:
+    //INPUT METHODS:
+    /// <summary>
+    /// Called when player hits an enemy with a projectile.
+    /// </summary>
+    public void HitEnemy()
+    {
+        if (targetHitSound != null) audioSource.PlayOneShot(targetHitSound); //Play hit sound when player shoots (or damages) a target
+    }
     /// <summary>
     /// Method called when this player is hit by a projectile.
     /// </summary>
