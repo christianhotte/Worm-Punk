@@ -41,6 +41,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     IEnumerator DoTargetAcquisition()
     {
         //Initialization:
+        print("Homing Initiated!");
         target = null;                                            //Reset current target
         float secsPerUpdate = 1 / settings.targetingTickRate;     //Get seconds per tick
         List<Transform> potentialTargets = new List<Transform>(); //Create list for storing viable targets
@@ -249,8 +250,9 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Cleanup:
-        transform.position = targetPosition;                                    //Move to initial position
-        if (settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
+        print("Projectile Fired!");
+        transform.position = targetPosition;                                                    //Move to initial position
+        if (doLocalStuff && settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
     }
 
     //REMOTE METHODS:

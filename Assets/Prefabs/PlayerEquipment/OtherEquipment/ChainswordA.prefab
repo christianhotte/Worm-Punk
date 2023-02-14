@@ -432,10 +432,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 403cec5d614311b41861b8556b63439e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jointSettings: {fileID: 0}
+  jointSettings: {fileID: 11400000, guid: 6b12243a97cccb34983b382025185c85, type: 2}
   debugUpdateSettings: 0
   blade: {fileID: 6619349005550171251}
   hand: {fileID: 0}
+  ProjectilePrefab: {fileID: 0}
+  StoredShots: []
   playerRB: {fileID: 0}
   bladeRB: {fileID: 0}
   headpos: {fileID: 0}
@@ -447,6 +449,7 @@ MonoBehaviour:
   ShotgunBarrelTip: {fileID: 0}
   stowedTip: {fileID: 6619349005987609313}
   rayStartPoint: {fileID: 3716464544192623360}
+  bulletSpredPoint: {fileID: 0}
   activationTime: 0.2
   activationSpeed: 1.225
   timeAtSpeed: 0
@@ -456,6 +459,7 @@ MonoBehaviour:
   blockRadius: 10
   sawDistance: 0
   rayHitDistance: 0
+  maxSpreadAngle: 4
   deployMotionCurve:
     serializedVersion: 2
     m_Curve: []
@@ -488,6 +492,9 @@ MonoBehaviour:
   tipPos: {x: 0, y: 0, z: 0}
   gripThreshold: 1
   projScript: {fileID: 0}
+  shotsHeld: 0
+  shotCap: 3
+  shotsToFire: 0
   sawAud: {fileID: 0}
   punchSound: {fileID: 8300000, guid: a6a7ef8e6326dec4fb5335b6b08c4248, type: 3}
 --- !u!82 &6326253358599443324

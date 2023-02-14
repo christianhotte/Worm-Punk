@@ -47,10 +47,15 @@ public class HookDetector : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        hookrb.isKinematic = true;
-        flying = false;
-        Debug.Log("hit object " + collision.collider.name + " on Layer " + collision.collider.gameObject.layer);
-        RBScript.grappleCooldown = false;
-        RBScript.HookHit();
+        if (collision.collider.tag != "Blade")
+        {
+            hookrb.isKinematic = true;
+            flying = false;
+            Debug.Log("hit object " + collision.collider.name + " on Layer " + collision.collider.gameObject.layer);
+            RBScript.grappleCooldown = false;
+            RBScript.HookHit();
+
+        }
+       
     }
 }
