@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 1
   knockback: 0
-  initialVelocity: 170
-  range: 100
+  initialVelocity: 185
+  range: 150
   barrelGap: 0.7
   drop: 0
-  homingStrength: 55
-  targetDesignationAngle: {x: 17, y: 90}
+  homingStrength: 70
+  targetDesignationAngle: {x: 14, y: 90}
   targetingDistance: 50
   LOSTargeting: 0
   alwaysLookForTarget: 1
