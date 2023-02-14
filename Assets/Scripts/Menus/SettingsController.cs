@@ -45,7 +45,7 @@ public class SettingsController : MonoBehaviour
                 break;
         }
 
-        PlayerSettings.Instance.charData.testColor = newColor;   //Set the player color in the player settings
+        FindObjectOfType<PlayerSettings>().charData.testColor = newColor;   //Set the player color in the player settings
         FindObjectOfType<PlayerSetup>().SetColor(newColor);
 
         colorSettingsObject.text = "Player Color: " + newColorText;

@@ -154,6 +154,10 @@ public class SliderController : MonoBehaviour
     /// </summary>
     public void MoveToHand()
     {
+        //If there is an active level transition, don't do anything
+        if (GameManager.Instance.levelTransitionActive)
+            return;
+
         //If the slider is locked, don't move the hand
         if (sliderRestriction == SliderRestriction.LOCKED)
             return;
