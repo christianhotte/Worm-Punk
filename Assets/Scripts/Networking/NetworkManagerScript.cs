@@ -14,7 +14,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
 {
     public static NetworkManagerScript instance;
 
-    [SerializeField] private bool joinRoomOnLoad = true;
+    public bool joinRoomOnLoad = true;
 
     // On awake function
     private void Awake()
