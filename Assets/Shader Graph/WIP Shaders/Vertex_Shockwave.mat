@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: mat_test_1
-  m_Shader: {fileID: -6465566751694194690, guid: a59c11678c28f604d8e5b5b8c69e7592, type: 3}
+  m_Name: Vertex_Shockwave
+  m_Shader: {fileID: -6465566751694194690, guid: 86e03659d8e85e343a85a2ecc3d0f387, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -19,16 +19,20 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _SampleTexture2D_1218de0ec7ad4e3486d6d9ce19075726_Texture_1:
-        m_Texture: {fileID: 2800000, guid: 6d6b22676a5904549a10b7bdf625491e, type: 3}
+    - _SampleTexture2D_45a2d80e878c434da349702f2c18366a_Texture_1:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_c2ea5f2442b54fba85b138059cacb751_Texture_1:
-        m_Texture: {fileID: 2800000, guid: ef15ca91d11e77d46aef5d56678821e4, type: 3}
+    - _SampleTexture2D_58193ea8e9c3473d83b60ea4cb6c35af_Texture_1:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_f31e810e64bd40c0971b1611294ccdae_Texture_1:
-        m_Texture: {fileID: 2800000, guid: c2bd2eed4ff69fa42aaa5bdb938e7698, type: 3}
+    - _SampleTexture2D_8802c0a2d1214c1187a53bc8bd2d3165_Texture_1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_cbe0eb839afd49519e1d4239d78a6702_Texture_1:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
