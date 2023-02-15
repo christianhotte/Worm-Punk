@@ -8,10 +8,10 @@ public class FindRoomController : MonoBehaviour
     [SerializeField] private SliderController slider;
     [SerializeField] private RectTransform arrowObject;
     [SerializeField] private RectTransform scrollArea;
-    [SerializeField] private float menuItemHeight = 22.59f;
 
+    private float menuItemDistance = 22.59f;
+    private float menuItemGlobalHeight;
     private RoomListItem selectedRoom;
-
     private RoomListItem[] listedRooms;
 
     private void OnEnable()
@@ -33,7 +33,9 @@ public class FindRoomController : MonoBehaviour
     /// <param name="sliderPos">The position of the slider.</param>
     public void ChangeScrollAreaPosition(float sliderPos)
     {
-        float maximumYPos = menuItemHeight * (listedRooms.Length - 1);
+        float maximumYPos = menuItemDistance * (listedRooms.Length - 1);
+
+        Debug.Log("Menu Item Distance: " + menuItemDistance);
 
         Vector3 scrollLocalPos = scrollArea.localPosition;
         scrollLocalPos.y = maximumYPos * sliderPos;
@@ -49,22 +51,26 @@ public class FindRoomController : MonoBehaviour
     /// </summary>
     private void UpdateMenu()
     {
-        Debug.Log("Arrow: " + arrowObject.GetComponent<RectTransform>().position.y);
-
         float arrowYPos = arrowObject.GetComponent<RectTransform>().position.y;
+
+        if (listedRooms.Length > 1)
+        {
+            menuItemGlobalHeight = Mathf.Abs(listedRooms[1].GetComponent<RectTransform>().position.y - listedRooms[0].GetComponent<RectTransform>().position.y);
+        }
 
         int counter = 1;
         foreach (var rooms in listedRooms)
         {
-            Debug.Log(" Room Menu Item "+ counter + " Position: " + rooms.GetComponent<RectTransform>().position.y);
-            Debug.Log("Arrow and Menu Item Distance: " + Mathf.Abs(arrowYPos - rooms.GetComponent<RectTransform>().position.y));
-            if (Mathf.Abs(arrowYPos - rooms.GetComponent<RectTransform>().position.y) < menuItemHeight / 2f)
+            if (rooms == null)
+                return;
+
+            if (Mathf.Abs(arrowYPos - rooms.GetComponent<RectTransform>().position.y) < menuItemGlobalHeight / 2f)
             {
-                Debug.Log("Selecting Room " + counter + "...");
-                rooms.OnSelect();
                 if (selectedRoom != null)
                     selectedRoom.OnDeselect();
+
                 selectedRoom = rooms;
+                selectedRoom.OnSelect();
             }
             counter++;
         }
@@ -85,6 +91,7 @@ public class FindRoomController : MonoBehaviour
     public void RefreshRoomListItems()
     {
         listedRooms = scrollArea.GetComponentsInChildren<RoomListItem>();
+
         UpdateMenu();
     }
 }

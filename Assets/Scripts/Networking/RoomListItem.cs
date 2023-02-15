@@ -17,7 +17,7 @@ public class RoomListItem : MonoBehaviour
 
     private void Start()
     {
-        defaultColor = listImage.color;
+        defaultColor = Color.white;
     }
 
     // Sets the text to the name of the room
@@ -31,17 +31,18 @@ public class RoomListItem : MonoBehaviour
     public void OnClick()
     {
         // Joins the room that was selected
-        Debug.Log("Joining " + currentRoomInfo.Name + "...");
         NetworkManagerScript.instance.JoinRoom(currentRoomInfo.Name);
     }
 
     public void OnSelect()
     {
+        Debug.Log("Selecting " + text.text + "...");
         listImage.color = selectedRoomColor;
     }
 
     public void OnDeselect()
     {
+        Debug.Log("Deselecting " + text.text + "...");
         listImage.color = defaultColor;
     }
 

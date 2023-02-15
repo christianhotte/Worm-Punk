@@ -145,7 +145,7 @@ public class LobbyUIScript : MonoBehaviour
         // Loops through the list of rooms.
         for (int i = 0; i < roomListInfo.Count; i++)
         {
-            if (roomListInfo[i].PlayerCount > 0 || roomListInfo[i].PlayerCount < roomListInfo[i].MaxPlayers || roomListInfo[i].IsOpen)
+            if (IsValidRoom(roomListInfo[i]))
             {
                 // Adds the rooms to the list of rooms.
                 Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(roomListInfo[i]);
@@ -157,6 +157,11 @@ public class LobbyUIScript : MonoBehaviour
 
         if (findRoomController != null)
             findRoomController.RefreshRoomListItems();
+    }
+
+    private bool IsValidRoom(RoomInfo room)
+    {
+        return (room.PlayerCount > 0 && room.PlayerCount < room.MaxPlayers) && room.IsOpen && room.IsVisible;
     }
 
     public void OpenRoomList()
