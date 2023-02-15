@@ -142,7 +142,7 @@ public class PlayerEquipment : MonoBehaviour
         //Unsubscribe from events:
         if (inputMap != null) inputMap.actionTriggered -= TryGiveInput; //Unsubscribe from input event
     }
-    private void TryGiveInput(InputAction.CallbackContext context) { if (!player.InCombat()) InputActionTriggered(context); }
+    private void TryGiveInput(InputAction.CallbackContext context) { if (player.InCombat()) InputActionTriggered(context); }
     private protected virtual void InputActionTriggered(InputAction.CallbackContext context) { }
 
     //FUNCTIONALITY METHODS:
