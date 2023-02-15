@@ -11,7 +11,7 @@ public class SecondaryWeapons : PlayerEquipment
     public GameObject[] StoredShots;
     public Rigidbody playerRB;
     public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,stowedTip,rayStartPoint,bulletSpredPoint,bladeImpulsePosition,EnergyBladeStowed,EnergyBladeExtended;
-    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance,maxSpreadAngle=4,energySpeed=5;
+    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance,maxSpreadAngle=4,energySpeed=5, maxPossibleHandSpeed=10, minPossibleHandSpeed= 1,maxBladeReductSpeed = 1;
     public AnimationCurve deployMotionCurve, deployScaleCurve, sheathMotionCurve, sheathScaleCurve;
     public bool deployed = false,cooldown=false,grindin=false,deflectin=false;
     public Vector3 prevHandPos, tipPos, storedScale, energyBladeBaseScale, energyTargetScale,energyCurrentScale,energyBladeStartSize;
@@ -23,6 +23,8 @@ public class SecondaryWeapons : PlayerEquipment
     public AudioSource sawAud;
     public AudioClip punchSound,chainsawDeploy,chainsawSheethe;
     int num;
+    private float prevInterpolant;
+
     // Start is called before the first frame update
     private protected override void Awake()
     {
@@ -107,6 +109,7 @@ public class SecondaryWeapons : PlayerEquipment
         handPos = headpos.InverseTransformPoint(attachedHand.position);
         handMotion = handPos - prevHandPos;
         float punchSpeed = handMotion.magnitude / Time.deltaTime;
+        Debug.Log(punchSpeed);
         //if (deployed && punchSpeed >= activationSpeed&&!stabbin)
         //{
         //    storedScale = energyBlade.transform.localScale;
@@ -124,19 +127,23 @@ public class SecondaryWeapons : PlayerEquipment
         if (deployed)
         {
             energyBlade.SetActive(true);
-            float maxPossibleHandSpeed = 10;
-            float targetInterpolant = Mathf.Min(1, Mathf.InverseLerp(0, maxPossibleHandSpeed, punchSpeed));
+            float targetInterpolant = Mathf.Clamp01(Mathf.InverseLerp(minPossibleHandSpeed, maxPossibleHandSpeed, punchSpeed));
+            if (targetInterpolant < prevInterpolant) targetInterpolant = Mathf.MoveTowards(prevInterpolant, targetInterpolant, maxBladeReductSpeed * Time.deltaTime);
+
             Vector3 targetPosition = Vector3.Lerp(EnergyBladeStowed.position, EnergyBladeExtended.position, targetInterpolant);
             Vector3 targetScale = Vector3.Lerp(EnergyBladeStowed.localScale, EnergyBladeExtended.localScale, targetInterpolant);
            // energyBlade.transform.localPosition = Vector3.Lerp(energyBlade.transform.position, targetPosition, energySpeed);
             energyBlade.transform.position = targetPosition;
-           // energyBlade.transform.localScale = targetScale;
-           
-            energyBlade.transform.localScale = Vector3.Lerp(energyBlade.transform.localScale, targetScale, energySpeed);
+            energyBlade.transform.localScale = targetScale;
+            // energyBlade.transform.localScale = targetScale;
+
+            //Vector3.Lerp(energyBlade.transform.localScale, targetScale, energySpeed * Time.deltaTime);
+            prevInterpolant = targetInterpolant;
         }
         else
         {
-            energyBlade.transform.localScale = Vector3.Lerp(energyBlade.transform.localScale, energyBladeStartSize, energySpeed);
+            energyBlade.transform.position = EnergyBladeStowed.position; //Vector3.Lerp(energyBlade.transform.localScale, energyBladeStartSize, energySpeed);
+            energyBlade.transform.localScale = EnergyBladeStowed.localScale; //Vector3.Lerp(energyBlade.transform.localScale, energyBladeStartSize, energySpeed);
             energyBlade.SetActive(false);
         }
         prevHandPos = handPos;
