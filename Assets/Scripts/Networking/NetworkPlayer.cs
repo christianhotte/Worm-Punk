@@ -111,6 +111,7 @@ public class NetworkPlayer : MonoBehaviour
         photonView.RPC("LoadPlayerSettings", RpcTarget.OthersBuffered, characterData);
     }
 
+    [PunRPC]
     public void LoadPlayerSettings(string data)
     {
         Debug.Log("Loading Player Settings...");
