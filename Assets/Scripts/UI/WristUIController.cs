@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class WristUIController : MonoBehaviour
 {
+    [SerializeField, Tooltip("The player controller.")] private PlayerController playerController;
     [SerializeField, Tooltip("The player input actions asset.")] private InputActionAsset inputActions;
     [SerializeField, Tooltip("The menu ray interactors.")] private GameObject[] rayInteractors;
     [SerializeField, Tooltip("The gameobject that shows the player HUD.")] private GameObject playerHUD;
@@ -47,6 +48,7 @@ public class WristUIController : MonoBehaviour
     {
         wristCanvas.enabled = showMenu;
         playerHUD.SetActive(showMenu);
+        playerController.SetCombat(!showMenu);
         foreach (var interactor in rayInteractors)
             interactor.SetActive(showMenu);
     }

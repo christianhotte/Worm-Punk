@@ -34,7 +34,8 @@ namespace AnyUI
         public bool UseMaterialLayering = true;
 		[Tooltip("If you need a camera other than the 'Main Camera' to interact with the projected canvas, set it here")]
         public Camera UseCamera;
-		
+        [Tooltip("If true, the canvas is interactable. If false, the player cannot interact with the mesh UI.")]
+        public bool isInteractable = false;
         
         
         public override Camera eventCamera
@@ -67,6 +68,9 @@ namespace AnyUI
 
         public override void Raycast(PointerEventData eventData, List<RaycastResult> resultAppendList)
         {
+            if (!isInteractable)
+                return;
+
             Collider c = GetComponent<Collider>();
 #if VRTK_VERSION_3_2_1_OR_NEWER
             
