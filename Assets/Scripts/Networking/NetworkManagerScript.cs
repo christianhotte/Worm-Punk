@@ -14,13 +14,18 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
 {
     public static NetworkManagerScript instance;
 
-    [SerializeField] private bool joinRoomOnLoad = true;
+    public bool joinRoomOnLoad = true;
 
     // On awake function
     private void Awake()
     {
         // Creates a static reference meaning the variable is bound to the class and not the actual object in Unity; references this script.
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+            Destroy(gameObject);
     }
 
     // Start is called before the first frame update
@@ -104,7 +109,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     // The connection of the room [Also spawns a network player in NetworkPlayerSpawn]
     public override void OnJoinedRoom()
     {
-        Debug.Log("Joined A Room.");
+        Debug.Log("Joined " + PhotonNetwork.CurrentRoom.Name + " room.");
 
         LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
 
@@ -114,6 +119,21 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
             lobbyUI.UpdateRoomList();
             lobbyUI.OpenMenu("room");
             lobbyUI.ShowLaunchButton(true);
+        }
+    }
+
+    // If the room fails to join
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        Debug.LogError("Join Room Failed. Reason: " + message);
+
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
+
+        //If there is a lobby in the scene, display an error message
+        if (lobbyUI != null)
+        {
+            lobbyUI.UpdateErrorMessage("Join Room Failed. Reason: " + message);
+            lobbyUI.OpenMenu("error");
         }
     }
 

@@ -669,8 +669,6 @@ MonoBehaviour:
   head: {fileID: 2045331856573916999}
   leftHand: {fileID: 6838640129832064427}
   rightHand: {fileID: 526713800682842818}
-  modelBase: {fileID: 8672763673493976817}
-  debugShowLocal: 0
 --- !u!114 &2251721190600430653
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -909,7 +907,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8359820835116723838}
   - component: {fileID: 6912405265540401540}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: TargetPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -923,8 +921,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1835944638956969785}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 1.4210853e-14, y: 5.9250104e-14, z: 0.000000029802294, w: 1}
+  m_LocalPosition: {x: 0.40475953, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3770565513072590042}
@@ -941,7 +939,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.92
+  m_Radius: 1.2
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1879740136521926057
 GameObject:
@@ -1492,7 +1490,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 0.5
+  m_Time: 1
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -1501,7 +1499,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.318182
+        value: 0.47727013
         inSlope: 0
         outSlope: 0
         tangentMode: 0

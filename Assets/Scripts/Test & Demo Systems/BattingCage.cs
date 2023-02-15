@@ -29,7 +29,7 @@ public class BattingCage : MonoBehaviour
         projInstance.transform.position = spawnPos.position;
         projScript = projInstance.GetComponent<Projectile>();
         projScript.Fire(spawnPos.position,spawnPos.rotation);
-        projScript.localOnly = true;
+        //projScript.localOnly = true;
         yield return new WaitForSeconds(2.0f);
         cooldown = false;
     }
