@@ -3883,6 +3883,22 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 149.54
       objectReference: {fileID: 0}
+    - target: {fileID: 4160910349191143079, guid: 3af7ab9f6da90a543a46e243f6a3eeb4, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160910349191143079, guid: 3af7ab9f6da90a543a46e243f6a3eeb4, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160910349191143079, guid: 3af7ab9f6da90a543a46e243f6a3eeb4, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160910349191143079, guid: 3af7ab9f6da90a543a46e243f6a3eeb4, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4239253344528237557, guid: 3af7ab9f6da90a543a46e243f6a3eeb4, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -7990,6 +8006,10 @@ PrefabInstance:
     - target: {fileID: 4063457352474366958, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4213550045682860641, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: rayInteractors.Array.size
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4998845224250294488, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
       propertyPath: m_IsActive
@@ -17804,6 +17824,7 @@ MonoBehaviour:
   blade: {fileID: 1356794646}
   hand: {fileID: 0}
   ProjectilePrefab: {fileID: 0}
+  energyBlade: {fileID: 0}
   StoredShots: []
   playerRB: {fileID: 0}
   bladeRB: {fileID: 0}
@@ -17857,6 +17878,7 @@ MonoBehaviour:
   deflectin: 0
   prevHandPos: {x: 0, y: 0, z: 0}
   tipPos: {x: 0, y: 0, z: 0}
+  storedScale: {x: 0, y: 0, z: 0}
   gripThreshold: 1
   projScript: {fileID: 0}
   shotsHeld: 0
