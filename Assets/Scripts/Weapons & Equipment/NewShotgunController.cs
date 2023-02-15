@@ -124,7 +124,7 @@ public class NewShotgunController : PlayerEquipment
         if (networkedGun == null || debugFireLocal) //Weapon is in local fire mode
         {
             Projectile projectile = ((GameObject)Instantiate(Resources.Load("Projectiles/" + gunSettings.projectileResourceName))).GetComponent<Projectile>(); //Instantiate projectile
-            projectile.localOnly = true;                                                                                                                       //Indicate that projectile is only being fired on local game version
+            //projectile.localOnly = true;                                                                                                                     //Indicate that projectile is only being fired on local game version
             projectile.Fire(currentBarrel);                                                                                                                    //Initialize projectile
         }
         else networkedGun.LocalFire(currentBarrel); //Fire weapon on the network

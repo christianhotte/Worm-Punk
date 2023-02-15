@@ -20,7 +20,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
 
     //Settings:
     [Header("Resource References:")]
-    [SerializeField, Tooltip("Exact name of network player prefab in Resources folder.")] private string networkPlayerName = "Network Player";
+    [SerializeField, Tooltip("Exact name of network player prefab in Resources folder.")] private string networkPlayerName;
 
     private void Awake()
     {

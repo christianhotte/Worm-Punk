@@ -1331,7 +1331,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PrefabBehaviour: 0
-  PrefabSourceAlignment: 4
+  PrefabSourceAlignment: 2
   PrefabDestinationAlignment: 0
   Version: 1.1
   OperationType: 0

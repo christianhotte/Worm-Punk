@@ -7,14 +7,14 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class SecondaryWeapons : PlayerEquipment
 {
-    public GameObject blade,hand,ProjectilePrefab;
+    public GameObject blade,hand,ProjectilePrefab,energyBlade;
     public GameObject[] StoredShots;
     public Rigidbody playerRB,bladeRB;
     public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,rocketTip,ShotgunBarrelTip,stowedTip,rayStartPoint,bulletSpredPoint;
     public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance,maxSpreadAngle=4;
     public AnimationCurve deployMotionCurve, deployScaleCurve, sheathMotionCurve, sheathScaleCurve;
     public bool deployed = false,cooldown=false,grindin=false,deflectin=false;
-    public Vector3 prevHandPos,tipPos;
+    public Vector3 prevHandPos,tipPos,storedScale;
     [Space()]
     [SerializeField, Range(0, 1)] private float gripThreshold = 1;
     public Projectile projScript;
@@ -70,7 +70,7 @@ public class SecondaryWeapons : PlayerEquipment
         foreach (var hit in hits)
         {
 
-            if (hit.gameObject.tag != "Player"&&hit.name!="Blade"&&hit.tag != "Bullet")
+            if (hit.gameObject.tag != "Player"&&hit.tag!="Blade"&&hit.tag != "Bullet")
             {
                // Debug.Log(hit.name);
                 grindin = true;
@@ -108,10 +108,19 @@ public class SecondaryWeapons : PlayerEquipment
         float punchSpeed = handMotion.magnitude / Time.deltaTime;
         if (deployed && punchSpeed >= activationSpeed&&!stabbin)
         {
+            storedScale = energyBlade.transform.localScale;
+            stabbin = true;
+            energyBlade.SetActive(true);
             for (; shotsHeld > 0; shotsHeld--){
                 shotsCharged++;
+                Vector3 currentScale = energyBlade.transform.localScale;
+                energyBlade.transform.localScale = new Vector3(currentScale.x, currentScale.y * 1.2f, currentScale.z);
+                StoredShots[shotsHeld - 1].SetActive(false);
             }
+
+            StartCoroutine(BladeSlice());
         }
+        prevHandPos = handPos;
         //float forwardAngle = Vector3.Angle(handMotion, transform.forward);
 
         //if (forwardAngle < 90&&!cooldown) //|| (deployed && forwardAngle > 90&&!cooldown))                   Code for punch detection
@@ -230,5 +239,12 @@ public class SecondaryWeapons : PlayerEquipment
        // yield return new WaitForSeconds(0.2f);
          Sheethe();
     }
-
+    public IEnumerator BladeSlice()
+    {
+        yield return new WaitForSeconds(1.5f);
+        energyBlade.SetActive(false);
+        // yield return new WaitForSeconds(5.0f);
+        energyBlade.transform.localScale = storedScale;
+        stabbin = false;
+    }
 }
