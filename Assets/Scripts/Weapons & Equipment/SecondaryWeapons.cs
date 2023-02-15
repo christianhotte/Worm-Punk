@@ -10,7 +10,7 @@ public class SecondaryWeapons : PlayerEquipment
     public GameObject blade,hand,ProjectilePrefab,energyBlade;
     public GameObject[] StoredShots;
     public Rigidbody playerRB;
-    public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,stowedTip,rayStartPoint,bulletSpredPoint,bladeImpulsePosition;
+    public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,stowedTip,rayStartPoint,bulletSpredPoint,bladeImpulsePosition,EnergyBladeStowed,EnergyBladeExtended;
     public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance,maxSpreadAngle=4,energySpeed=5;
     public AnimationCurve deployMotionCurve, deployScaleCurve, sheathMotionCurve, sheathScaleCurve;
     public bool deployed = false,cooldown=false,grindin=false,deflectin=false;
@@ -107,19 +107,37 @@ public class SecondaryWeapons : PlayerEquipment
         handPos = headpos.InverseTransformPoint(attachedHand.position);
         handMotion = handPos - prevHandPos;
         float punchSpeed = handMotion.magnitude / Time.deltaTime;
-        if (deployed && punchSpeed >= activationSpeed&&!stabbin)
-        {
-            storedScale = energyBlade.transform.localScale;
-            stabbin = true;
-            energyBlade.SetActive(true);
-            for (; shotsHeld > 0; shotsHeld--){
-                shotsCharged++;
-                Vector3 currentScale = energyBlade.transform.localScale;
-              //  energyBlade.transform.localScale = new Vector3(currentScale.x, currentScale.y * 1.2f, currentScale.z);
-                StoredShots[shotsHeld - 1].SetActive(false);
-            }
+        //if (deployed && punchSpeed >= activationSpeed&&!stabbin)
+        //{
+        //    storedScale = energyBlade.transform.localScale;
+        //    stabbin = true;
+        //    energyBlade.SetActive(true);
+        //    for (; shotsHeld > 0; shotsHeld--){
+        //        shotsCharged++;
+        //        Vector3 currentScale = energyBlade.transform.localScale;
+        //      //  energyBlade.transform.localScale = new Vector3(currentScale.x, currentScale.y * 1.2f, currentScale.z);
+        //        StoredShots[shotsHeld - 1].SetActive(false);
+        //    }
 
-            StartCoroutine(BladeSlice());
+        //    StartCoroutine(BladeSlice());
+        //}
+        if (deployed)
+        {
+            energyBlade.SetActive(true);
+            float maxPossibleHandSpeed = 10;
+            float targetInterpolant = Mathf.Min(1, Mathf.InverseLerp(0, maxPossibleHandSpeed, punchSpeed));
+            Vector3 targetPosition = Vector3.Lerp(EnergyBladeStowed.position, EnergyBladeExtended.position, targetInterpolant);
+            Vector3 targetScale = Vector3.Lerp(EnergyBladeStowed.localScale, EnergyBladeExtended.localScale, targetInterpolant);
+           // energyBlade.transform.localPosition = Vector3.Lerp(energyBlade.transform.position, targetPosition, energySpeed);
+            energyBlade.transform.position = targetPosition;
+           // energyBlade.transform.localScale = targetScale;
+           
+            energyBlade.transform.localScale = Vector3.Lerp(energyBlade.transform.localScale, targetScale, energySpeed);
+        }
+        else
+        {
+            energyBlade.transform.localScale = Vector3.Lerp(energyBlade.transform.localScale, energyBladeStartSize, energySpeed);
+            energyBlade.SetActive(false);
         }
         prevHandPos = handPos;
         //float forwardAngle = Vector3.Angle(handMotion, transform.forward);
@@ -242,7 +260,7 @@ public class SecondaryWeapons : PlayerEquipment
     }
     public IEnumerator BladeSlice()
     {
-        energyBlade.transform.localScale = Vector3.Lerp(energyBlade.transform.localScale, energyTargetScale, energySpeed * Time.deltaTime);
+       
         yield return new WaitForSeconds(1.5f);
         energyBlade.SetActive(false);
        
