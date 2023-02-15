@@ -13,7 +13,8 @@ public class Projectile : MonoBehaviourPunCallbacks
     private AudioSource audioSource; //Audiosource component used by this projectile to make sound effects
 
     //Settings:
-    [Tooltip("Settings object determining base properties of projectile.")]                                     public ProjectileSettings settings;
+    [Tooltip("Settings object determining base properties of projectile.")]                      public ProjectileSettings settings;
+    [SerializeField, Tooltip("When on, projectile will print debug information as it travels.")] private bool printDebug = true;
     [Header("Sounds:")]
     [SerializeField, Tooltip("Material projectile has when it has locked onto a target (for debug purposes).")] private Material homingMat;
     [SerializeField, Tooltip("Sound projectile makes when it's homing in on a player.")]                        private AudioClip homingSound;
@@ -45,7 +46,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     IEnumerator DoTargetAcquisition()
     {
         //Initialization:
-        print("Homing Initiated!");
+        if (printDebug) print("Homing Initiated!");               //Have projectile log that it has begun homing
         target = null;                                            //Reset current target
         float secsPerUpdate = 1 / settings.targetingTickRate;     //Get seconds per tick
         List<Transform> potentialTargets = new List<Transform>(); //Create list for storing viable targets
@@ -57,14 +58,23 @@ public class Projectile : MonoBehaviourPunCallbacks
             //Eliminate non-viable targets:
             Vector3 targetSep = targetable.targetPoint.position - transform.position; //Get distance and direction from projectile to target
             float targetDist = targetSep.magnitude;                                   //Distance from projectile to target
-            if (targetDist > RemainingRange) continue;                                //Ignore targets which are outside projectile's potential range
-            float targetAngle = Vector3.Angle(targetSep, transform.forward);          //Get angle between target direction and projectile movement direction
-            if (targetAngle > settings.targetDesignationAngle.y) continue;            //Ignore targets which are behind the projectile and will likely never be hit
+            if (targetDist > RemainingRange)                                          //Target is outside projectile's potential range
+            {
+                if (printDebug) print("Target ignored, too far away. Distance: " + targetDist); //Indicate reason target was ignored
+                continue;                                                                       //Ignore target
+            }
+            float targetAngle = Vector3.Angle(targetSep, transform.forward); //Get angle between target direction and projectile movement direction
+            if (targetAngle > settings.targetDesignationAngle.y) //Target is outside projectile's viable targeting angle
+            {
+                if (printDebug) print("Target ignored, outside angle. Angle from projectile: " + targetAngle); //Indicate reason target was ignored
+                continue;                                                                                      //Ignore target
+            }
+                
 
             //Cleanup:
             potentialTargets.Add(targetable.targetPoint); //Add valid targets to list of targets to check
         }
-        print("Potential Targets: " + potentialTargets.Count + " / " + Targetable.instances.Count);
+        if (printDebug) print("Potential Targets: " + potentialTargets.Count + " / " + Targetable.instances.Count); //Indicate number of potential targets vs actual target options
 
         //Look for targets:
         while (potentialTargets.Count > 0) //Run forever (while projectile has targets to consider
@@ -84,6 +94,7 @@ public class Projectile : MonoBehaviourPunCallbacks
                         LoseTarget();        //Clear current target
                         targetHeuristic = 0; //Clear current target heuristic
                     }
+                    if (printDebug) print("Potential target ignored, outside angle. Angle to projectile: " + targetAngle); //Indicate why target is being ignored
                     continue; //Skip to next potential target
                 }
 
@@ -354,6 +365,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     /// <summary>
     /// Causes remote projectile to clear target field.
     /// </summary>
+    [PunRPC]
     public void RPC_LostTarget()
     {
         target = null;                                         //Indicate that target has been lost
