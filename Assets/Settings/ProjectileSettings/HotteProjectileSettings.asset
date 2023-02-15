@@ -18,9 +18,9 @@ MonoBehaviour:
   range: 200
   barrelGap: 0.7
   drop: 0
-  homingStrength: 200
+  homingStrength: 100
   targetDesignationAngle: {x: 20, y: 90}
-  targetingDistance: 70
+  targetingDistance: 50
   LOSTargeting: 0
   alwaysLookForTarget: 1
   predictionStrength: 0.65
@@ -28,7 +28,6 @@ MonoBehaviour:
   targetingIgnoreLayers:
     serializedVersion: 2
     m_Bits: 736
-  targetingTickRate: 25
   ignoreLayers:
     serializedVersion: 2
     m_Bits: 64

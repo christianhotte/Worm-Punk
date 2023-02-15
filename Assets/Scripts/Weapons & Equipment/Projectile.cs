@@ -406,6 +406,6 @@ public class Projectile : MonoBehaviourPunCallbacks
     }
     private void Delete()
     {
-        if (photonView.IsMine) PhotonNetwork.Destroy(gameObject);
+        if (photonView.IsMine || photonView.ViewID == 0) PhotonNetwork.Destroy(gameObject);
     }
 }
