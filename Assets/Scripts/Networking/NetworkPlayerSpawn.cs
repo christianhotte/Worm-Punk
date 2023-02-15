@@ -12,6 +12,9 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     public static NetworkPlayerSpawn instance; //Singleton instance of this script in scene
     
     private NetworkPlayer clientNetworkPlayer; //Instance of local client's network player in scene
+    [SerializeField] private string networkSceneName = "NetworkLockerRoom";
+    private GameObject init;
+    private GameObject demoPlayer;
 
     private string mainMenuScene;
 
@@ -23,7 +26,38 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     {
         //Initialization:
         if (instance == null) { instance = this; } else { Debug.LogError("Tried to load two NetworkPlayerSpawn scripts in the same scene!"); Destroy(this); } //Singleton-ize this script
+
+        init = FindObjectOfType<GameManager>().gameObject;
+        
+        // If it's the main menu scene, then we are throwing the DemoPlayer into the DontDestroyOnLoad
+        Scene scene = SceneManager.GetActiveScene();
+        if (scene.name == mainMenuScene)
+        {
+            demoPlayer = GameObject.Find("DemoPlayer3");
+            demoPlayer.transform.SetParent(init.transform);
+        }
+        
         mainMenuScene = "MainMenu";
+        SceneManager.sceneLoaded += OnSceneLoaded; // Subscribes to event manager
+    }
+
+    // Unsubscribes to scene event manager
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // Spawns the network player once the scene has loaded in.
+    public void OnSceneLoaded(Scene loadedScene, LoadSceneMode mode)
+    {
+        // Checks for debugging if you have debugging checked off. Throw a AutoJoinRoom script on something.
+        StartCoroutine(CheckForDebugging());
+
+        // Spawns the network player in the tube scene.
+        if (loadedScene.name == networkSceneName)
+        {
+            SpawnNetworkPlayer();
+        }
     }
 
     // When someone joins a room, we spawn the player.
@@ -42,9 +76,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         // Spawns network players when you join a room on any other scene besides the main menu.
         else
         {
-            //Spawn network player:
-            clientNetworkPlayer = PhotonNetwork.Instantiate(networkPlayerName, Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
-            if (clientNetworkPlayer == null) Debug.LogError("Tried to spawn network player prefab that doesn't have NetworkPlayer component!");  //Indicate problem if relevant
+            SpawnNetworkPlayer();
         }
     }
 
@@ -54,5 +86,45 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         Debug.Log("A player has left the room.");
         base.OnLeftRoom();
         if (clientNetworkPlayer != null) PhotonNetwork.Destroy(clientNetworkPlayer.gameObject);
+    }
+
+    // Spawns the Network Player.
+    public void SpawnNetworkPlayer()
+    {
+        //Spawn network player:
+        clientNetworkPlayer = PhotonNetwork.Instantiate(networkPlayerName, Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
+        if (clientNetworkPlayer == null) Debug.LogError("Tried to spawn network player prefab that doesn't have NetworkPlayer component!");  //Indicate problem if relevant
+        else
+            clientNetworkPlayer.transform.SetParent(init.transform);
+    }
+
+    // If we want to play without having to start from the Main Menu scene...
+    IEnumerator CheckForDebugging()
+    {
+        // Waits for the Network Manager Script to check for joinRoomOnLoad
+        yield return new WaitForSeconds(0.01f); // Seconds
+
+        // If we are debugging, then we can just test without having to start from the main menu.
+        if (NetworkManagerScript.instance.joinRoomOnLoad == true)
+        {
+            // We don't spawn an extra Network Player in the tube scene
+            Scene scene = SceneManager.GetActiveScene();
+            if (scene.name == networkSceneName)
+            {
+                // Do nothing
+            }
+
+            // We never spawn a Network player in the Main Menu
+            else if (scene.name == mainMenuScene)
+            {
+                // Do nothing
+            }
+
+            // Spawns a Network Player in other people's scenes.
+            else
+            {
+                SpawnNetworkPlayer();
+            }
+        }
     }
 }
