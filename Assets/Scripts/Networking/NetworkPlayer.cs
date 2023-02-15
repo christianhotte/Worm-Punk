@@ -46,8 +46,6 @@ public class NetworkPlayer : MonoBehaviour
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
             SceneManager.sceneLoaded += SettingsOnLoad;
         }
-
-        LocalPlayerSettings(PlayerSettings.Instance.charData, false);
     }
 
     // Start is called before the first frame update
@@ -101,13 +99,13 @@ public class NetworkPlayer : MonoBehaviour
     /// <param name="mode">The mode in which the scene was loaded in.</param>
     private void SettingsOnLoad(Scene scene, LoadSceneMode mode)
     {
-        LocalPlayerSettings(PlayerSettings.Instance.charData, false);
+        LocalPlayerSettings(playerSetup.GetCharacterData(), false);
     }
 
-    private void SyncData(PlayerSettings playerData)
+    private void SyncData()
     {
         Debug.Log("Syncing Player Data...");
-        string characterData = playerData.CharDataToString();
+        string characterData = playerSetup.CharDataToString();
         photonView.RPC("LoadPlayerSettings", RpcTarget.OthersBuffered, characterData);
     }
 
@@ -115,7 +113,7 @@ public class NetworkPlayer : MonoBehaviour
     {
         Debug.Log("Loading Player Settings...");
         LocalPlayerSettings(JsonUtility.FromJson<CharacterData>(data), true);
-        SyncData(PlayerSettings.Instance);
+        SyncData();
     }
 
     private void LocalPlayerSettings(CharacterData charData, bool isOnNetwork)

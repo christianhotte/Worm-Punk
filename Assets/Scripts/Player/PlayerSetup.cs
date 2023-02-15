@@ -6,9 +6,15 @@ using UnityEngine.XR.Interaction.Toolkit;
 [RequireComponent(typeof(PlayerController))]
 public class PlayerSetup : MonoBehaviour
 {
-    public void SetPlayer(CharacterData charData)
+    private CharacterData playerCharData;
+
+    private void Awake()
     {
-        SetColor(charData.testColor);
+        playerCharData = new CharacterData();
+    }
+    public void SetPlayer()
+    {
+        SetColor(playerCharData.testColor);
     }
 
     /// <summary>
@@ -32,4 +38,14 @@ public class PlayerSetup : MonoBehaviour
             player.material.color = playerColor;
         }
     }
+
+    public CharacterData GetCharacterData() => playerCharData;
+    public string CharDataToString() => JsonUtility.ToJson(playerCharData);
+}
+
+public class CharacterData
+{
+    public int playerID;
+    public string playerName;
+    public Color testColor = new Color(1, 1, 1, 1);
 }

@@ -75,8 +75,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
 
         Debug.Log("Joined a lobby.");
         base.OnJoinedLobby();
-        PhotonNetwork.NickName = "Player " + Random.Range(0, 1000).ToString("0000");
-        PlayerSettings.Instance.charData.playerName = PhotonNetwork.NickName;
+        SetPlayerNickname("Player " + Random.Range(0, 1000).ToString("0000"));
 
         // Setting up the room options
         if (joinRoomOnLoad && !PhotonNetwork.InRoom)
@@ -88,7 +87,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     public void SetPlayerNickname(string name)
     {
         PhotonNetwork.NickName = name;
-        PlayerSettings.Instance.charData.playerName = PhotonNetwork.NickName;
+        FindObjectOfType<PlayerSetup>().GetCharacterData().playerName = PhotonNetwork.NickName;
     }
     public void OnCreateRoom(string roomName)
     {
