@@ -35,6 +35,12 @@ public class NetworkPlayer : MonoBehaviour
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();    //Get photonView component from NetworkPlayer object
+                                                    // Gets the network player to move with the player instead of just moving locally.
+        XROrigin = GameObject.Find("XR Origin");
+        player = XROrigin.GetComponentInParent<PlayerController>();
+
+        playerSetup = player.GetComponent<PlayerSetup>();
+
         if (photonView.IsMine)
         {
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
@@ -47,15 +53,7 @@ public class NetworkPlayer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Gets the network player to move with the player instead of just moving locally.
-        XROrigin = GameObject.Find("XR Origin");
-        player = XROrigin.GetComponentInParent<PlayerController>();
-        
-        playerSetup = player.GetComponent<PlayerSetup>();
-        headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
-        leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
-        rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
-
+        SetRig();
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
         foreach (Player p in allPlayers)
@@ -84,6 +82,16 @@ public class NetworkPlayer : MonoBehaviour
                 item.enabled = false;
             }
         }
+    }
+
+    private void SetRig()
+    {
+        if(XROrigin == null)
+            XROrigin = GameObject.Find("XR Origin");
+
+        headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
+        leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
+        rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
     }
 
     /// <summary>
@@ -147,7 +155,6 @@ public class NetworkPlayer : MonoBehaviour
         // Synchronizes the player over the network.
         if (photonView.IsMine)
         {
-            // Calls these functions to map the position of the player's hands & headset
             MapPosition(head, headRig);
             MapPosition(leftHand, leftHandRig);
             MapPosition(rightHand, rightHandRig);

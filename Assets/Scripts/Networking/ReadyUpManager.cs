@@ -18,7 +18,8 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     private void Start()
     {
-
+        playersNeededToStart = PhotonNetwork.CurrentRoom.PlayerCount;
+        Debug.Log("Initial Amount of Players Needed To Start: " + playersNeededToStart);
     }
 
     // Once the room is joined.
