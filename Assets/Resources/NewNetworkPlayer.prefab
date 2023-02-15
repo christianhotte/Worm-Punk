@@ -212,7 +212,6 @@ Transform:
   m_LocalPosition: {x: -0.20237976, y: 0.0000000011920929, z: -9.521272e-15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 8359820835116723838}
   - {fileID: 1468775836695375085}
   - {fileID: 2301668905029209446}
   - {fileID: 3813627161396450757}
@@ -921,12 +920,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1835944638956969785}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.293, y: -0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: 0.000000029802322, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 3770565513072590042}
-  m_RootOrder: 0
+  m_Father: {fileID: 4356358165992832182}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &6912405265540401540
 SphereCollider:
@@ -1001,7 +1000,7 @@ Transform:
   m_Children:
   - {fileID: 7038021697181535676}
   m_Father: {fileID: 3770565513072590042}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1956203295895770035
 GameObject:
@@ -1490,7 +1489,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 0.5
+  m_Time: 1
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -1499,7 +1498,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.318182
+        value: 0.47727013
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1818,7 +1817,7 @@ Transform:
   m_Children:
   - {fileID: 6833830534035750184}
   m_Father: {fileID: 3770565513072590042}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4218366162764098777
 GameObject:
@@ -1940,7 +1939,7 @@ Transform:
   m_Children:
   - {fileID: 2447637834433724851}
   m_Father: {fileID: 3770565513072590042}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4465343186078306950
 GameObject:
@@ -2956,6 +2955,7 @@ Transform:
   - {fileID: 3108876586060288342}
   - {fileID: 8155823584398992069}
   - {fileID: 3729366527741962675}
+  - {fileID: 8359820835116723838}
   m_Father: {fileID: 8672763673493976817}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
