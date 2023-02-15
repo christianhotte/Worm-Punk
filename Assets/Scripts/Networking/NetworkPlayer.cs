@@ -32,11 +32,21 @@ public class NetworkPlayer : MonoBehaviour
     //Player Data
     private PlayerSetup playerSetup;    //The player's setup component
 
+    private void Awake()
+    {
+        photonView = GetComponent<PhotonView>();    //Get photonView component from NetworkPlayer object
+        if (photonView.IsMine)
+        {
+            PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
+            SceneManager.sceneLoaded += SettingsOnLoad;
+        }
+
+        LocalPlayerSettings(PlayerSettings.Instance.charData, false);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        photonView = GetComponent<PhotonView>();    //Get photonView component from NetworkPlayer object
-
         // Gets the network player to move with the player instead of just moving locally.
         XROrigin = GameObject.Find("XR Origin");
         player = XROrigin.GetComponentInParent<PlayerController>();
@@ -45,12 +55,6 @@ public class NetworkPlayer : MonoBehaviour
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
         rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
-
-        if (photonView.IsMine)
-        {
-            PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
-            SceneManager.sceneLoaded += SettingsOnLoad;
-        }
 
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
@@ -90,7 +94,6 @@ public class NetworkPlayer : MonoBehaviour
     private void SettingsOnLoad(Scene scene, LoadSceneMode mode)
     {
         LocalPlayerSettings(PlayerSettings.Instance.charData, false);
-        SyncData(PlayerSettings.Instance);
     }
 
     private void SyncData(PlayerSettings playerData)
@@ -104,6 +107,7 @@ public class NetworkPlayer : MonoBehaviour
     {
         Debug.Log("Loading Player Settings...");
         LocalPlayerSettings(JsonUtility.FromJson<CharacterData>(data), true);
+        SyncData(PlayerSettings.Instance);
     }
 
     private void LocalPlayerSettings(CharacterData charData, bool isOnNetwork)
