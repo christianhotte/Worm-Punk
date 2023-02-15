@@ -427,7 +427,7 @@ MonoBehaviour:
       TexGenIndex: 8
     - EdgeIndices: 0f0000000e0000000d0000000c0000000b0000000a0000000900000008000000
       TexGenIndex: 9
-    Generation: 215
+    Generation: 424
 --- !u!1 &310662744116046820
 GameObject:
   m_ObjectHideFlags: 0
@@ -484,7 +484,7 @@ MonoBehaviour:
         a: 0.70710677
         b: 0
         c: 0.70710677
-        d: 19.798992
+        d: 19.79899
       Tangent: {x: 0.70710677, y: 0, z: -0.70710677}
       BiNormal: {x: -0, y: 1, z: 0}
       TexGenIndex: 0
@@ -500,7 +500,7 @@ MonoBehaviour:
         a: 0.70710677
         b: 0
         c: -0.70710677
-        d: 19.798992
+        d: 19.79899
       Tangent: {x: -0.70710677, y: -0, z: -0.70710677}
       BiNormal: {x: -0, y: 1, z: 0}
       TexGenIndex: 2
@@ -516,7 +516,7 @@ MonoBehaviour:
         a: -0.70710677
         b: 0
         c: -0.70710677
-        d: 19.798992
+        d: 19.79899
       Tangent: {x: -0.70710677, y: 0, z: 0.70710677}
       BiNormal: {x: 0, y: 1, z: 0}
       TexGenIndex: 4
@@ -532,7 +532,7 @@ MonoBehaviour:
         a: -0.70710677
         b: 0
         c: 0.70710677
-        d: 19.798992
+        d: 19.79899
       Tangent: {x: 0.70710677, y: 0, z: 0.70710677}
       BiNormal: {x: 0, y: 1, z: -0}
       TexGenIndex: 6
@@ -548,7 +548,7 @@ MonoBehaviour:
         a: 0
         b: 1
         c: 0
-        d: 2
+        d: 4
       Tangent: {x: 1, y: 0, z: 0}
       BiNormal: {x: 0, y: 0, z: -1}
       TexGenIndex: 8
@@ -556,7 +556,7 @@ MonoBehaviour:
         a: 0
         b: -1
         c: 0
-        d: 0
+        d: 2
       Tangent: {x: -1, y: 0, z: 0}
       BiNormal: {x: -0, y: -0, z: -1}
       TexGenIndex: 9
@@ -625,22 +625,22 @@ MonoBehaviour:
     Materials: []
   ControlMesh:
     Vertices:
-    - {x: 20, y: 2, z: 8}
-    - {x: 20, y: 2, z: -8}
-    - {x: 8, y: 2, z: -20}
-    - {x: -8, y: 2, z: -20}
-    - {x: -20, y: 2, z: -8}
-    - {x: -20, y: 2, z: 8}
-    - {x: -8, y: 2, z: 20}
-    - {x: 8, y: 2, z: 20}
-    - {x: 8, y: 0, z: 20}
-    - {x: 20, y: 0, z: 8}
-    - {x: 20, y: 0, z: -8}
-    - {x: 8, y: 0, z: -20}
-    - {x: -8, y: 0, z: -20}
-    - {x: -20, y: 0, z: -8}
-    - {x: -20, y: 0, z: 8}
-    - {x: -8, y: 0, z: 20}
+    - {x: 20, y: 4, z: 8}
+    - {x: 20, y: 4, z: -8}
+    - {x: 8, y: 4, z: -20}
+    - {x: -8, y: 4, z: -20}
+    - {x: -20, y: 4, z: -8}
+    - {x: -20, y: 4, z: 8}
+    - {x: -8, y: 4, z: 20}
+    - {x: 8, y: 4, z: 20}
+    - {x: 8, y: -2, z: 20}
+    - {x: 20, y: -2, z: 8}
+    - {x: 20, y: -2, z: -8}
+    - {x: 8, y: -2, z: -20}
+    - {x: -8, y: -2, z: -20}
+    - {x: -20, y: -2, z: -8}
+    - {x: -20, y: -2, z: 8}
+    - {x: -8, y: -2, z: 20}
     Edges:
     - TwinIndex: 16
       PolygonIndex: 8
@@ -855,7 +855,7 @@ MonoBehaviour:
       TexGenIndex: 8
     - EdgeIndices: 0f0000000e0000000d0000000c0000000b0000000a0000000900000008000000
       TexGenIndex: 9
-    Generation: 207
+    Generation: 418
 --- !u!1 &310662744197216309
 GameObject:
   m_ObjectHideFlags: 0
@@ -1283,7 +1283,7 @@ MonoBehaviour:
       TexGenIndex: 8
     - EdgeIndices: 0f0000000e0000000d0000000c0000000b0000000a0000000900000008000000
       TexGenIndex: 9
-    Generation: 178
+    Generation: 387
 --- !u!1 &310662744283848545
 GameObject:
   m_ObjectHideFlags: 0
@@ -1711,7 +1711,7 @@ MonoBehaviour:
       TexGenIndex: 8
     - EdgeIndices: 0f0000000e0000000d0000000c0000000b0000000a0000000900000008000000
       TexGenIndex: 9
-    Generation: 184
+    Generation: 393
 --- !u!1 &310662744332947114
 GameObject:
   m_ObjectHideFlags: 0
@@ -2139,7 +2139,7 @@ MonoBehaviour:
       TexGenIndex: 8
     - EdgeIndices: 0f0000000e0000000d0000000c0000000b0000000a0000000900000008000000
       TexGenIndex: 9
-    Generation: 179
+    Generation: 388
 --- !u!1 &310662744734038462
 GameObject:
   m_ObjectHideFlags: 0
@@ -2567,7 +2567,7 @@ MonoBehaviour:
       TexGenIndex: 8
     - EdgeIndices: 0f0000000e0000000d0000000c0000000b0000000a0000000900000008000000
       TexGenIndex: 9
-    Generation: 209
+    Generation: 418
 --- !u!1 &310662744967342889
 GameObject:
   m_ObjectHideFlags: 0
