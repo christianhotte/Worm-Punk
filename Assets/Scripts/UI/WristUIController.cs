@@ -7,6 +7,7 @@ public class WristUIController : MonoBehaviour
 {
     [SerializeField, Tooltip("The player input actions asset.")] private InputActionAsset inputActions;
 
+    [SerializeField, Tooltip("The gameobject that shows the player HUD.")] private GameObject playerHUD;
     private Canvas wristCanvas; //The canvas that shows the wrist menu
     private InputAction menu;   //The action that activates the menu
 
@@ -45,5 +46,6 @@ public class WristUIController : MonoBehaviour
     public void ShowMenu(bool showMenu)
     {
         wristCanvas.enabled = showMenu;
+        playerHUD.SetActive(showMenu);
     }
 }
