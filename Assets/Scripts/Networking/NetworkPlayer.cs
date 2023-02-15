@@ -45,6 +45,7 @@ public class NetworkPlayer : MonoBehaviour
         {
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
             SceneManager.sceneLoaded += SettingsOnLoad;
+            LocalPlayerSettings(playerSetup.GetCharacterData(), false);
         }
     }
 
