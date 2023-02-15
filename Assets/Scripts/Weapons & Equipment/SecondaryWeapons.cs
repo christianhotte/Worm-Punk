@@ -9,26 +9,29 @@ public class SecondaryWeapons : PlayerEquipment
 {
     public GameObject blade,hand,ProjectilePrefab,energyBlade;
     public GameObject[] StoredShots;
-    public Rigidbody playerRB,bladeRB;
-    public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,rocketTip,ShotgunBarrelTip,stowedTip,rayStartPoint,bulletSpredPoint;
-    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance,maxSpreadAngle=4;
+    public Rigidbody playerRB;
+    public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,stowedTip,rayStartPoint,bulletSpredPoint,bladeImpulsePosition,EnergyBladeStowed,EnergyBladeExtended;
+    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance,maxSpreadAngle=4,energySpeed=5, maxPossibleHandSpeed=10, minPossibleHandSpeed= 1,maxBladeReductSpeed = 1;
     public AnimationCurve deployMotionCurve, deployScaleCurve, sheathMotionCurve, sheathScaleCurve;
     public bool deployed = false,cooldown=false,grindin=false,deflectin=false;
-    public Vector3 prevHandPos,tipPos,storedScale;
+    public Vector3 prevHandPos, tipPos, storedScale, energyBladeBaseScale, energyTargetScale,energyCurrentScale,energyBladeStartSize;
     [Space()]
     [SerializeField, Range(0, 1)] private float gripThreshold = 1;
     public Projectile projScript;
     private bool gripPressed = false,shootin=false,stabbin=false;
     public int shotsHeld = 0, shotCap = 3,shotsToFire,shotsCharged=0;
     public AudioSource sawAud;
-    public AudioClip punchSound;
+    public AudioClip punchSound,chainsawDeploy,chainsawSheethe;
     int num;
+    private float prevInterpolant;
+
     // Start is called before the first frame update
     private protected override void Awake()
     {
         attachedHand = hand.transform;
         sawAud = this.GetComponent<AudioSource>();
-
+        energyBladeBaseScale = energyBlade.transform.localScale;
+        energyBlade.transform.localScale = energyBladeStartSize;
         //bladeRB = this.gameObject.GetComponent<Rigidbody>();
         base.Awake();
         //StartCoroutine(StartCooldown());
@@ -70,7 +73,7 @@ public class SecondaryWeapons : PlayerEquipment
         foreach (var hit in hits)
         {
 
-            if (hit.gameObject.tag != "Player"&&hit.tag!="Blade"&&hit.tag != "Bullet")
+            if (hit.gameObject.tag != "Player"&&hit.tag!="Blade"&&hit.tag != "Bullet"&&hit.gameObject.tag != "Barrel")
             {
                // Debug.Log(hit.name);
                 grindin = true;
@@ -86,7 +89,7 @@ public class SecondaryWeapons : PlayerEquipment
             rayHitDistance = Vector3.Distance(rayStartPoint.position, checkBlade.point);
             if (rayHitDistance < sawDistance&&checkBlade.collider.tag!="Blade"&&checkBlade.collider.tag!="Player"&&checkBlade.collider.tag!="Barrel")
             {
-                //Debug.Log(checkBlade.collider.name);
+               // Debug.Log(checkBlade.collider.name);
                 grindin = true;
             }
             else if (rayHitDistance > sawDistance)
@@ -100,25 +103,48 @@ public class SecondaryWeapons : PlayerEquipment
         if (grindin&&deployed)
         {
             //Debug.Log("Grindin");
-            playerRB.velocity = bladeDeployed.forward * grindSpeed;
+            playerRB.velocity = bladeImpulsePosition.forward * grindSpeed;
         }
         Vector3 handPos,handMotion;
-        handPos = headpos.InverseTransformPoint(attachedHand.position);
+        handPos = attachedHand.localPosition; //headpos.InverseTransformPoint(attachedHand.position);
         handMotion = handPos - prevHandPos;
         float punchSpeed = handMotion.magnitude / Time.deltaTime;
-        if (deployed && punchSpeed >= activationSpeed&&!stabbin)
-        {
-            storedScale = energyBlade.transform.localScale;
-            stabbin = true;
-            energyBlade.SetActive(true);
-            for (; shotsHeld > 0; shotsHeld--){
-                shotsCharged++;
-                Vector3 currentScale = energyBlade.transform.localScale;
-                energyBlade.transform.localScale = new Vector3(currentScale.x, currentScale.y * 1.2f, currentScale.z);
-                StoredShots[shotsHeld - 1].SetActive(false);
-            }
+        Debug.Log(punchSpeed);
+        //if (deployed && punchSpeed >= activationSpeed&&!stabbin)
+        //{
+        //    storedScale = energyBlade.transform.localScale;
+        //    stabbin = true;
+        //    energyBlade.SetActive(true);
+        //    for (; shotsHeld > 0; shotsHeld--){
+        //        shotsCharged++;
+        //        Vector3 currentScale = energyBlade.transform.localScale;
+        //      //  energyBlade.transform.localScale = new Vector3(currentScale.x, currentScale.y * 1.2f, currentScale.z);
+        //        StoredShots[shotsHeld - 1].SetActive(false);
+        //    }
 
-            StartCoroutine(BladeSlice());
+        //    StartCoroutine(BladeSlice());
+        //}
+        if (deployed)
+        {
+            energyBlade.SetActive(true);
+            float targetInterpolant = Mathf.Clamp01(Mathf.InverseLerp(minPossibleHandSpeed, maxPossibleHandSpeed, punchSpeed));
+            if (targetInterpolant < prevInterpolant) targetInterpolant = Mathf.MoveTowards(prevInterpolant, targetInterpolant, maxBladeReductSpeed * Time.deltaTime);
+
+            Vector3 targetPosition = Vector3.Lerp(EnergyBladeStowed.position, EnergyBladeExtended.position, targetInterpolant);
+            Vector3 targetScale = Vector3.Lerp(EnergyBladeStowed.localScale, EnergyBladeExtended.localScale, targetInterpolant);
+           // energyBlade.transform.localPosition = Vector3.Lerp(energyBlade.transform.position, targetPosition, energySpeed);
+            energyBlade.transform.position = targetPosition;
+            energyBlade.transform.localScale = targetScale;
+            // energyBlade.transform.localScale = targetScale;
+
+            //Vector3.Lerp(energyBlade.transform.localScale, targetScale, energySpeed * Time.deltaTime);
+            prevInterpolant = targetInterpolant;
+        }
+        else
+        {
+            energyBlade.transform.position = EnergyBladeStowed.position; //Vector3.Lerp(energyBlade.transform.localScale, energyBladeStartSize, energySpeed);
+            energyBlade.transform.localScale = EnergyBladeStowed.localScale; //Vector3.Lerp(energyBlade.transform.localScale, energyBladeStartSize, energySpeed);
+            energyBlade.SetActive(false);
         }
         prevHandPos = handPos;
         //float forwardAngle = Vector3.Angle(handMotion, transform.forward);
@@ -241,10 +267,12 @@ public class SecondaryWeapons : PlayerEquipment
     }
     public IEnumerator BladeSlice()
     {
+       
         yield return new WaitForSeconds(1.5f);
         energyBlade.SetActive(false);
+       
         // yield return new WaitForSeconds(5.0f);
-        energyBlade.transform.localScale = storedScale;
+        energyBlade.transform.localScale = energyBladeStartSize;
         stabbin = false;
     }
 }
