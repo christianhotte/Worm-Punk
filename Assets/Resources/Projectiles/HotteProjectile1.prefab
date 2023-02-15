@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: 1ab3bab16571c4d469e301baeab9d5cf, type: 2}
+  printDebug: 1
   homingMat: {fileID: 2100000, guid: 1d9700748198b614ca1a04ed60b8e69c, type: 2}
   homingSound: {fileID: 8300000, guid: 921be1fd789079742a13d08d1927363d, type: 3}
 --- !u!114 &583530828441493081

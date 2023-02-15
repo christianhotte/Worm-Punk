@@ -48,7 +48,6 @@ public class Projectile : MonoBehaviourPunCallbacks
         //Initialization:
         if (printDebug) print("Homing Initiated!");               //Have projectile log that it has begun homing
         target = null;                                            //Reset current target
-        float secsPerUpdate = 1 / settings.targetingTickRate;     //Get seconds per tick
         List<Transform> potentialTargets = new List<Transform>(); //Create list for storing viable targets
         float targetHeuristic = 0;                                //Heuristic value for current target (the higher the better)
 
@@ -69,7 +68,6 @@ public class Projectile : MonoBehaviourPunCallbacks
                 if (printDebug) print("Target ignored, outside angle. Angle from projectile: " + targetAngle); //Indicate reason target was ignored
                 continue;                                                                                      //Ignore target
             }
-                
 
             //Cleanup:
             potentialTargets.Add(targetable.targetPoint); //Add valid targets to list of targets to check
@@ -77,8 +75,9 @@ public class Projectile : MonoBehaviourPunCallbacks
         if (printDebug) print("Potential Targets: " + potentialTargets.Count + " / " + Targetable.instances.Count); //Indicate number of potential targets vs actual target options
 
         //Look for targets:
-        while (potentialTargets.Count > 0) //Run forever (while projectile has targets to consider
+        while (true) //Run forever
         {
+            if (potentialTargets.Count == 0) break; //Stop when projectile has run out of targets
             for (int x = 0; x < potentialTargets.Count;) //Iterate through list of potential targets (allow internal functionality to manually index to next target)
             {
                 //Eliminate non-viable targets:
@@ -86,6 +85,7 @@ public class Projectile : MonoBehaviourPunCallbacks
                 Vector3 targetSep = potentialTarget.position - transform.position; //Get distance and direction from projectile to target
                 float targetDist = targetSep.magnitude;                            //Distance from projectile to target
                 float targetAngle = Vector3.Angle(targetSep, transform.forward);   //Get angle between target direction and projectile movement direction
+                print("TargPos: " + potentialTarget.position + " | ProjPos: " + transform.position);
                 if (targetAngle > settings.targetDesignationAngle.y)               //Angle to potential target is so steep that projectile will likely never hit
                 {
                     potentialTargets.RemoveAt(x); //Remove this target from list of potential targets
@@ -133,8 +133,8 @@ public class Projectile : MonoBehaviourPunCallbacks
             }
 
             //Cleanup:
-            if (target != null && !settings.alwaysLookForTarget) break; //Break out of loop once target is found (unless projectile is always looking for target)
-            yield return new WaitForSeconds(secsPerUpdate);             //Wait until next update
+            if (target != null && !settings.alwaysLookForTarget) break; //Stop homing if permanent target has been found
+            yield return new WaitForFixedUpdate();                      //Wait until next update
         }
     }
 
