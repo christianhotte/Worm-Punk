@@ -45,7 +45,7 @@ public class NetworkPlayer : MonoBehaviour
         {
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
             SceneManager.sceneLoaded += SettingsOnLoad;
-            LocalPlayerSettings(playerSetup.GetCharacterData(), false);
+            LoadPlayerSettings(playerSetup.CharDataToString());
         }
     }
 
@@ -100,7 +100,7 @@ public class NetworkPlayer : MonoBehaviour
     /// <param name="mode">The mode in which the scene was loaded in.</param>
     private void SettingsOnLoad(Scene scene, LoadSceneMode mode)
     {
-        LocalPlayerSettings(playerSetup.GetCharacterData(), false);
+        LoadPlayerSettings(playerSetup.CharDataToString());
     }
 
     private void SyncData()
