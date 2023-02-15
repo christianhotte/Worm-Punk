@@ -28,7 +28,6 @@ public class ProjectileSettings : ScriptableObject
     [Range(0, 1), Tooltip("Amount by which projectile will use target velocity to predict movement and attempt interception.")]                                public float predictionStrength;
     [Range(0, 1), Tooltip("Slide to the left to prioritize easier-to-hit targets, slide to the right to prioritize closer targets.")]                          public float angleDistancePreference;
     [Tooltip("Layers to ignore when raycasting for line-of-sight targeting.")]                                                                                 public LayerMask targetingIgnoreLayers;
-    [Min(1), Tooltip("Number of times per second projectile runs targeting function during target acquisition period.")]                                       public int targetingTickRate = 30;
     
     [Header("Collision:")]
     [Tooltip("Physics layers which projectile will not collide with.")]                                                         public LayerMask ignoreLayers;
