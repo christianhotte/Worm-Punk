@@ -12,6 +12,7 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
 
     private int numberOfPlayers; // The number of players in the current room
     [SerializeField] private int playersNeededToStart; // The number of players needed to start the game
+    [SerializeField] private string sceneToLoad = "DMars_New_Area";
     private int playersReady = 0; // The number of players that have readied up
 
     // Start is called before the first frame update
@@ -23,8 +24,13 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     // Once the room is joined.
     public override void OnJoinedRoom()
     {
-        numberOfPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
-        playersNeededToStart = numberOfPlayers;
+        //numberOfPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
+        playersNeededToStart++;
+    }
+
+    public override void OnLeftRoom()
+    {
+        playersNeededToStart--;
     }
 
     // Once the level is pulled to signify that the player is ready...
@@ -45,7 +51,7 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         // If all players are ready, load the game scene
         if (playersReady == playersNeededToStart && PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.LoadLevel("DMars_New_Area");
+            PhotonNetwork.LoadLevel(sceneToLoad);
         }
     }
 }
