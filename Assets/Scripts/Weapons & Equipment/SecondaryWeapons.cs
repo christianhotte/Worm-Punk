@@ -7,7 +7,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class SecondaryWeapons : PlayerEquipment
 {
-    public GameObject blade,hand,ProjectilePrefab,energyBlade;
+    public GameObject blade,hand,ProjectilePrefab,energyBlade,rightGun;
     public GameObject[] StoredShots;
     public Rigidbody playerRB;
     public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,stowedTip,rayStartPoint,bulletSpredPoint,bladeImpulsePosition,EnergyBladeStowed,EnergyBladeExtended;
@@ -18,6 +18,7 @@ public class SecondaryWeapons : PlayerEquipment
     [Space()]
     [SerializeField, Range(0, 1)] private float gripThreshold = 1;
     public Projectile projScript;
+    private NewShotgunController NSC;
     private bool gripPressed = false,shootin=false,stabbin=false;
     public int shotsHeld = 0, shotCap = 3,shotsToFire,shotsCharged=0;
     public AudioSource sawAud;
@@ -34,6 +35,7 @@ public class SecondaryWeapons : PlayerEquipment
         energyBlade.transform.localScale = energyBladeStartSize;
         //bladeRB = this.gameObject.GetComponent<Rigidbody>();
         base.Awake();
+        NSC = rightGun.GetComponent<NewShotgunController>();
         //StartCoroutine(StartCooldown());
     }
     // Update is called once per frame
@@ -126,6 +128,7 @@ public class SecondaryWeapons : PlayerEquipment
         //}
         if (deployed)
         {
+            NSC.locked = true;
             energyBlade.SetActive(true);
             float targetInterpolant = Mathf.Clamp01(Mathf.InverseLerp(minPossibleHandSpeed, maxPossibleHandSpeed, punchSpeed));
             if (targetInterpolant < prevInterpolant) targetInterpolant = Mathf.MoveTowards(prevInterpolant, targetInterpolant, maxBladeReductSpeed * Time.deltaTime);
@@ -142,6 +145,7 @@ public class SecondaryWeapons : PlayerEquipment
         }
         else
         {
+            NSC.locked = false;
             energyBlade.transform.position = EnergyBladeStowed.position; //Vector3.Lerp(energyBlade.transform.localScale, energyBladeStartSize, energySpeed);
             energyBlade.transform.localScale = EnergyBladeStowed.localScale; //Vector3.Lerp(energyBlade.transform.localScale, energyBladeStartSize, energySpeed);
             energyBlade.SetActive(false);
