@@ -74,10 +74,10 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         }
 
         // Spawns network players when you join a room on any other scene besides the main menu.
-        /*else
+        else
         {
             SpawnNetworkPlayer();
-        }*/
+        }
     }
 
     // When someone leaves a room, we want to remove the player from the game.

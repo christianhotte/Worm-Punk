@@ -1851,6 +1851,8 @@ MonoBehaviour:
   rayStartPoint: {fileID: 1277818383405222910}
   bulletSpredPoint: {fileID: 1277818384726688574}
   bladeImpulsePosition: {fileID: 1277818384457216657}
+  EnergyBladeStowed: {fileID: 0}
+  EnergyBladeExtended: {fileID: 0}
   activationTime: 0.2
   activationSpeed: 23
   timeAtSpeed: 0
@@ -1861,6 +1863,10 @@ MonoBehaviour:
   sawDistance: 0
   rayHitDistance: 0
   maxSpreadAngle: 2
+  energySpeed: 5
+  maxPossibleHandSpeed: 10
+  minPossibleHandSpeed: 1
+  maxBladeReductSpeed: 1
   deployMotionCurve:
     serializedVersion: 2
     m_Curve: []
@@ -1892,6 +1898,10 @@ MonoBehaviour:
   prevHandPos: {x: 0, y: 0, z: 0}
   tipPos: {x: 0, y: 0, z: 0}
   storedScale: {x: 0, y: 0, z: 0}
+  energyBladeBaseScale: {x: 0, y: 0, z: 0}
+  energyTargetScale: {x: 0, y: 0, z: 0}
+  energyCurrentScale: {x: 0, y: 0, z: 0}
+  energyBladeStartSize: {x: 0, y: 0, z: 0}
   gripThreshold: 1
   projScript: {fileID: 0}
   shotsHeld: 0
