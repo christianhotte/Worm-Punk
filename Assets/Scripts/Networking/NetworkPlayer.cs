@@ -32,26 +32,29 @@ public class NetworkPlayer : MonoBehaviour
     //Player Data
     private PlayerSetup playerSetup;    //The player's setup component
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         photonView = GetComponent<PhotonView>();    //Get photonView component from NetworkPlayer object
-
-        // Gets the network player to move with the player instead of just moving locally.
+                                                    // Gets the network player to move with the player instead of just moving locally.
         XROrigin = GameObject.Find("XR Origin");
         player = XROrigin.GetComponentInParent<PlayerController>();
-        
+
         playerSetup = player.GetComponent<PlayerSetup>();
-        headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
-        leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
-        rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
 
         if (photonView.IsMine)
         {
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
             SceneManager.sceneLoaded += SettingsOnLoad;
-        }
 
+            LocalPlayerSettings(playerSetup.GetCharacterData(), false);
+            SyncData();
+        }
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        SetRig();
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
         foreach (Player p in allPlayers)
@@ -82,6 +85,16 @@ public class NetworkPlayer : MonoBehaviour
         }
     }
 
+    private void SetRig()
+    {
+        if(XROrigin == null)
+            XROrigin = GameObject.Find("XR Origin");
+
+        headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
+        leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
+        rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+    }
+
     /// <summary>
     /// An event called to load settings when a new scene is loaded.
     /// </summary>
@@ -89,17 +102,17 @@ public class NetworkPlayer : MonoBehaviour
     /// <param name="mode">The mode in which the scene was loaded in.</param>
     private void SettingsOnLoad(Scene scene, LoadSceneMode mode)
     {
-        LocalPlayerSettings(PlayerSettings.Instance.charData, false);
-        SyncData(PlayerSettings.Instance);
+        LoadPlayerSettings(playerSetup.CharDataToString());
     }
 
-    private void SyncData(PlayerSettings playerData)
+    private void SyncData()
     {
         Debug.Log("Syncing Player Data...");
-        string characterData = playerData.CharDataToString();
+        string characterData = playerSetup.CharDataToString();
         photonView.RPC("LoadPlayerSettings", RpcTarget.OthersBuffered, characterData);
     }
 
+    [PunRPC]
     public void LoadPlayerSettings(string data)
     {
         Debug.Log("Loading Player Settings...");
@@ -143,7 +156,6 @@ public class NetworkPlayer : MonoBehaviour
         // Synchronizes the player over the network.
         if (photonView.IsMine)
         {
-            // Calls these functions to map the position of the player's hands & headset
             MapPosition(head, headRig);
             MapPosition(leftHand, leftHandRig);
             MapPosition(rightHand, rightHandRig);
