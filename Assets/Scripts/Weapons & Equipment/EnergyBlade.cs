@@ -20,6 +20,7 @@ public class EnergyBlade : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("BladeTouched");
         NetworkPlayer targetPlayer = other.GetComponentInParent<NetworkPlayer>();     //Try to get network player from hit collider
         if (targetPlayer == null) targetPlayer = other.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
         if (targetPlayer != null)
