@@ -4,20 +4,22 @@ using UnityEngine;
 using Unity.XR.CoreUtils;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
-
+using Photon;
+using Photon.Pun;
 public class SecondaryWeapons : PlayerEquipment
 {
-    public GameObject blade,hand,ProjectilePrefab,energyBlade;
+    public GameObject blade,hand,ProjectilePrefab,energyBlade,rightGun;
     public GameObject[] StoredShots;
     public Rigidbody playerRB;
     public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,stowedTip,rayStartPoint,bulletSpredPoint,bladeImpulsePosition,EnergyBladeStowed,EnergyBladeExtended;
-    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance,maxSpreadAngle=4,energySpeed=5, maxPossibleHandSpeed=10, minPossibleHandSpeed= 1,maxBladeReductSpeed = 1;
+    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance,maxSpreadAngle=4,energySpeed=5, maxPossibleHandSpeed=10, minPossibleHandSpeed= 1,maxBladeReductSpeed = 1,explosiveForce =5;
     public AnimationCurve deployMotionCurve, deployScaleCurve, sheathMotionCurve, sheathScaleCurve;
     public bool deployed = false,cooldown=false,grindin=false,deflectin=false;
     public Vector3 prevHandPos, tipPos, storedScale, energyBladeBaseScale, energyTargetScale,energyCurrentScale,energyBladeStartSize;
     [Space()]
     [SerializeField, Range(0, 1)] private float gripThreshold = 1;
     public Projectile projScript;
+    private NewShotgunController NSC;
     private bool gripPressed = false,shootin=false,stabbin=false;
     public int shotsHeld = 0, shotCap = 3,shotsToFire,shotsCharged=0;
     public AudioSource sawAud;
@@ -34,6 +36,7 @@ public class SecondaryWeapons : PlayerEquipment
         energyBlade.transform.localScale = energyBladeStartSize;
         //bladeRB = this.gameObject.GetComponent<Rigidbody>();
         base.Awake();
+        NSC = rightGun.GetComponent<NewShotgunController>();
         //StartCoroutine(StartCooldown());
     }
     // Update is called once per frame
@@ -75,7 +78,7 @@ public class SecondaryWeapons : PlayerEquipment
 
             if (hit.gameObject.tag != "Player"&&hit.tag!="Blade"&&hit.tag != "Bullet"&&hit.gameObject.tag != "Barrel")
             {
-                Debug.Log(hit.name);
+               // Debug.Log(hit.name);
                 grindin = true;
                 break;
             }
@@ -89,7 +92,7 @@ public class SecondaryWeapons : PlayerEquipment
             rayHitDistance = Vector3.Distance(rayStartPoint.position, checkBlade.point);
             if (rayHitDistance < sawDistance&&checkBlade.collider.tag!="Blade"&&checkBlade.collider.tag!="Player"&&checkBlade.collider.tag!="Barrel")
             {
-                Debug.Log(checkBlade.collider.name);
+              //  Debug.Log(checkBlade.collider.name);
                 grindin = true;
             }
             else if (rayHitDistance > sawDistance)
@@ -126,6 +129,7 @@ public class SecondaryWeapons : PlayerEquipment
         //}
         if (deployed)
         {
+            NSC.locked = true;
             energyBlade.SetActive(true);
             float targetInterpolant = Mathf.Clamp01(Mathf.InverseLerp(minPossibleHandSpeed, maxPossibleHandSpeed, punchSpeed));
             if (targetInterpolant < prevInterpolant) targetInterpolant = Mathf.MoveTowards(prevInterpolant, targetInterpolant, maxBladeReductSpeed * Time.deltaTime);
@@ -142,6 +146,7 @@ public class SecondaryWeapons : PlayerEquipment
         }
         else
         {
+            NSC.locked = false;
             energyBlade.transform.position = EnergyBladeStowed.position; //Vector3.Lerp(energyBlade.transform.localScale, energyBladeStartSize, energySpeed);
             energyBlade.transform.localScale = EnergyBladeStowed.localScale; //Vector3.Lerp(energyBlade.transform.localScale, energyBladeStartSize, energySpeed);
             energyBlade.SetActive(false);
@@ -219,20 +224,15 @@ public class SecondaryWeapons : PlayerEquipment
     {
        // Debug.Log("Sheethe");
         blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeSheethed.transform.position, deploySpeed);
-   
-
-            for (; shotsHeld > 0; shotsHeld--)
-            {
-          
-            shotsToFire++;
-
-        }
-        
 
        // blade.transform.position = bladeSheethed.transform.position;
         deployed = false;
         //blade.transform.localRotation = bladeSheethed.transform.localRotation;
         StartCoroutine(StartCooldown());
+        if (shotsHeld > 0)
+        {
+            ClearAbsorbed();
+        }
     }
     public IEnumerator StartCooldown()
     {
@@ -257,6 +257,18 @@ public class SecondaryWeapons : PlayerEquipment
         }
         shootin = false;
     }
+    public void ClearAbsorbed()
+    {
+        float prevExplosiveForce=explosiveForce;
+        for(; shotsHeld > 0; shotsHeld--)
+        {
+            StoredShots[shotsHeld - 1].SetActive(false);
+            explosiveForce *= 1.5f;
+        }
+        //  playerRB.AddExplosionForce(explosiveForce,bladeImpulsePosition.position,2);
+        playerRB.velocity = stowedTip.forward * -explosiveForce;
+        explosiveForce = prevExplosiveForce;
+    }
     public IEnumerator DeflectTime()
     {
         deflectin = true;
@@ -274,5 +286,15 @@ public class SecondaryWeapons : PlayerEquipment
         // yield return new WaitForSeconds(5.0f);
         energyBlade.transform.localScale = energyBladeStartSize;
         stabbin = false;
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        NetworkPlayer targetPlayer = other.GetComponentInParent<NetworkPlayer>();     //Try to get network player from hit collider
+        if (targetPlayer == null) targetPlayer = other.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
+        if (targetPlayer != null)
+        {
+            other.GetComponent<NetworkPlayer>().photonView.RPC("RPC_Hit", RpcTarget.All, 5);
+            sawAud.PlayOneShot(punchSound);
+        }
     }
 }

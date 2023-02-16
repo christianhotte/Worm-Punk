@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
     //Runtime Variables:
     private float currentHealth;  //How much health player currently has
     private bool inCombat;        //Whether the player is actively in combat
+    private bool inMenu;          //Whether the player is actively in a menu scene
     private float timeUntilRegen; //Time (in seconds) until health regeneration can begin
 
     private GameObject[] weapons;   //A list of active weapons on the player
@@ -82,6 +83,14 @@ public class PlayerController : MonoBehaviour
             Transform spawnpoint = SpawnManager.instance.GetSpawnPoint(); //Get spawnpoint from spawnpoint manager
             xrOrigin.transform.position = spawnpoint.position;            //Move spawned player to target position
         }
+
+        if (GameManager.Instance.InMenu())
+        {
+            inMenu = true;
+            UpdateWeaponry();
+        }
+        else
+            inMenu = false;
     }
     private void Update()
     {
@@ -106,6 +115,9 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void UpdateWeaponry()
     {
+        if (inMenu)
+            inCombat = false;
+
         foreach (var weapon in weapons)
             weapon.gameObject.SetActive(inCombat);
         foreach (var tool in tools)
@@ -160,9 +172,11 @@ public class PlayerController : MonoBehaviour
     //FUNCTIONALITY METHODS:
 
     public bool InCombat() => inCombat;
+    public bool InMenu() => inMenu;
     public void SetCombat(bool combat)
     {
         inCombat = combat;
         UpdateWeaponry();
     }
+    public void SetInMenu(bool menu) => inMenu = menu;
 }
