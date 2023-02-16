@@ -87,7 +87,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     public void SetPlayerNickname(string name)
     {
         PhotonNetwork.NickName = name;
-        FindObjectOfType<PlayerSetup>().GetCharacterData().playerName = PhotonNetwork.NickName;
+        PlayerSettings.Instance.charData.playerName = PhotonNetwork.NickName;
     }
     public void OnCreateRoom(string roomName)
     {

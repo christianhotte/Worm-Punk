@@ -46,7 +46,7 @@ public class NetworkPlayer : MonoBehaviour
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
             SceneManager.sceneLoaded += SettingsOnLoad;
 
-            LocalPlayerSettings(playerSetup.GetCharacterData(), false);
+            LocalPlayerSettings(PlayerSettings.Instance.charData, false);
             SyncData();
         }
     }
@@ -102,21 +102,25 @@ public class NetworkPlayer : MonoBehaviour
     /// <param name="mode">The mode in which the scene was loaded in.</param>
     private void SettingsOnLoad(Scene scene, LoadSceneMode mode)
     {
-        LoadPlayerSettings(playerSetup.CharDataToString());
+        Debug.Log("Function called on load...");
+        //LoadPlayerSettings(playerSetup.CharDataToString());
     }
 
     private void SyncData()
     {
         Debug.Log("Syncing Player Data...");
-        string characterData = playerSetup.CharDataToString();
-        photonView.RPC("LoadPlayerSettings", RpcTarget.OthersBuffered, characterData);
+        string characterData = PlayerSettings.Instance.CharDataToString();
+        photonView.RPC("LoadPlayerSettings", RpcTarget.AllBuffered, characterData);
     }
 
     [PunRPC]
     public void LoadPlayerSettings(string data)
     {
-        Debug.Log("Loading Player Settings...");
-        LocalPlayerSettings(JsonUtility.FromJson<CharacterData>(data), true);
+        if (photonView.IsMine)
+        {
+            Debug.Log("Loading Player Settings...");
+            LocalPlayerSettings(JsonUtility.FromJson<CharacterData>(data), true);
+        }
     }
 
     private void LocalPlayerSettings(CharacterData charData, bool isOnNetwork)
