@@ -23,6 +23,8 @@ public class PlayerSetup : MonoBehaviour
     /// <param name="playerColor">The color given to the player.</param>
     public void SetColor(Color playerColor)
     {
+        playerCharData.testColor = playerColor;
+
         foreach (var controller in FindObjectsOfType<ActionBasedController>())
         {
             if (controller.GetComponentInChildren<MeshRenderer>() != null)
