@@ -60,6 +60,7 @@ public class HookDetector : MonoBehaviour
     {
         if(collision.collider.tag == "Pullable")
         {
+            Debug.Log("triedtopull");
             this.transform.position = collision.transform.position;
             hookHit = collision.gameObject;
             pullin = true;

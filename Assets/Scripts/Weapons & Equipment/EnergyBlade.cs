@@ -25,6 +25,7 @@ public class EnergyBlade : MonoBehaviour
         if (targetPlayer == null) targetPlayer = other.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
         if (targetPlayer != null)
         {
+            if (targetPlayer.photonView.IsMine) { print("Hit myself"); return; }
             targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, 5);
             sawAud.PlayOneShot(laserSwordCut);
         }

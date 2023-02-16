@@ -13,6 +13,7 @@ TagManager:
   - PlayerHand
   - Wall
   - Blade
+  - Pullable
   layers:
   - Default
   - TransparentFX
