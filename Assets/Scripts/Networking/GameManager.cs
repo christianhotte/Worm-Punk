@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Photon.Pun;
+using Photon.Realtime;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,7 +23,8 @@ public class GameManager : MonoBehaviour
     public void LoadGame(SceneIndexes sceneIndex)
     {
         Debug.Log("Loading Scene - " + sceneIndex.ToString());
-        SceneManager.LoadScene((int)sceneIndex);
+        //SceneManager.LoadScene((int)sceneIndex);
+        PhotonNetwork.LoadLevel((int)sceneIndex);
         levelTransitionActive = false;
     }
 
