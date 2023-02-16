@@ -75,7 +75,7 @@ public class SecondaryWeapons : PlayerEquipment
 
             if (hit.gameObject.tag != "Player"&&hit.tag!="Blade"&&hit.tag != "Bullet"&&hit.gameObject.tag != "Barrel")
             {
-               // Debug.Log(hit.name);
+                Debug.Log(hit.name);
                 grindin = true;
                 break;
             }
@@ -89,7 +89,7 @@ public class SecondaryWeapons : PlayerEquipment
             rayHitDistance = Vector3.Distance(rayStartPoint.position, checkBlade.point);
             if (rayHitDistance < sawDistance&&checkBlade.collider.tag!="Blade"&&checkBlade.collider.tag!="Player"&&checkBlade.collider.tag!="Barrel")
             {
-               // Debug.Log(checkBlade.collider.name);
+                Debug.Log(checkBlade.collider.name);
                 grindin = true;
             }
             else if (rayHitDistance > sawDistance)
@@ -109,7 +109,7 @@ public class SecondaryWeapons : PlayerEquipment
         handPos = attachedHand.localPosition; //headpos.InverseTransformPoint(attachedHand.position);
         handMotion = handPos - prevHandPos;
         float punchSpeed = handMotion.magnitude / Time.deltaTime;
-        Debug.Log(punchSpeed);
+      //  Debug.Log(punchSpeed);
         //if (deployed && punchSpeed >= activationSpeed&&!stabbin)
         //{
         //    storedScale = energyBlade.transform.localScale;
