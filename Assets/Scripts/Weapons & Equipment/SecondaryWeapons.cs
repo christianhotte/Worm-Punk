@@ -109,7 +109,7 @@ public class SecondaryWeapons : PlayerEquipment
         handPos = attachedHand.localPosition; //headpos.InverseTransformPoint(attachedHand.position);
         handMotion = handPos - prevHandPos;
         float punchSpeed = handMotion.magnitude / Time.deltaTime;
-        Debug.Log(punchSpeed);
+      //  Debug.Log(punchSpeed);
         //if (deployed && punchSpeed >= activationSpeed&&!stabbin)
         //{
         //    storedScale = energyBlade.transform.localScale;

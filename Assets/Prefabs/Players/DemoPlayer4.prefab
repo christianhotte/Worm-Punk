@@ -8392,6 +8392,26 @@ PrefabInstance:
       propertyPath: m_IsTrigger
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1277818384457216657, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.54167515
+      objectReference: {fileID: 0}
+    - target: {fileID: 1277818384457216657, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.45451954
+      objectReference: {fileID: 0}
+    - target: {fileID: 1277818384457216657, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.54167515
+      objectReference: {fileID: 0}
+    - target: {fileID: 1277818384457216657, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.45451954
+      objectReference: {fileID: 0}
+    - target: {fileID: 1277818384457216657, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 280
+      objectReference: {fileID: 0}
     - target: {fileID: 7387756998269572742, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -8482,11 +8502,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7912056491496164354, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
       propertyPath: maxPossibleHandSpeed
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7912056491496164354, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
       propertyPath: minPossibleHandSpeed
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7912056491496164354, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
       propertyPath: energyBladeStartSize.x
