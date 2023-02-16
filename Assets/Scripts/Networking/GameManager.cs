@@ -24,7 +24,10 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Loading Scene - " + sceneIndex.ToString());
         //SceneManager.LoadScene((int)sceneIndex);
-        PhotonNetwork.LoadLevel((int)sceneIndex);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel((int)sceneIndex);
+        }
         levelTransitionActive = false;
     }
 
