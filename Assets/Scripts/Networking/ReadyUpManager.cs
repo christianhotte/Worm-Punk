@@ -14,23 +14,30 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     [SerializeField] private int playersNeededToStart; // The number of players needed to start the game
     [SerializeField] private string sceneToLoad = "DMars_New_Area";
     private int playersReady = 0; // The number of players that have readied up
-
-    // Start is called before the first frame update
-    private void Start()
-    {
-
-    }
+    private int maximumPlayers = 6;
 
     // Once the room is joined.
     public override void OnJoinedRoom()
     {
         //numberOfPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
         playersNeededToStart++;
+
+        // If the amount of players in the room is maxed out, close the room so no more people are able to join.
+        if (playersNeededToStart == maximumPlayers)
+        {
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+        }
     }
 
     public override void OnLeftRoom()
     {
         playersNeededToStart--;
+
+        // The room becomes open to let more people come in.
+        if (playersNeededToStart < maximumPlayers)
+        {
+            PhotonNetwork.CurrentRoom.IsOpen = true;
+        }
     }
 
     // Once the level is pulled to signify that the player is ready...
