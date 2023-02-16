@@ -28,6 +28,7 @@ public class NetworkPlayer : MonoBehaviour
     // Gets a list of all of the players on the network
     Player[] allPlayers;
     int myNumberInRoom;
+    private bool disabled = false;
 
     //Player Data
     private PlayerSetup playerSetup;    //The player's setup component
@@ -49,6 +50,27 @@ public class NetworkPlayer : MonoBehaviour
             LocalPlayerSettings(PlayerSettings.Instance.charData, false);
             SyncData();
         }
+        else
+        {
+            if (SceneManager.GetActiveScene().name == "MainMenu") ChangeVisibility(false);
+        }
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (!photonView.IsMine)
+        {
+            if (scene.name == "MainMenu") ChangeVisibility(false);
+            else ChangeVisibility(true);
+        }
+    }
+
+    private void ChangeVisibility(bool makeEnabled)
+    {
+        disabled = !makeEnabled;
+        foreach (Renderer r in transform.GetComponentsInChildren<Renderer>()) r.enabled = makeEnabled;
+        foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = makeEnabled;
     }
 
     // Start is called before the first frame update

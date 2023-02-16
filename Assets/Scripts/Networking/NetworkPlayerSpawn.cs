@@ -51,7 +51,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     public void OnSceneLoaded(Scene loadedScene, LoadSceneMode mode)
     {
         // Checks for debugging if you have debugging checked off. Throw a AutoJoinRoom script on something.
-        StartCoroutine(CheckForDebugging());
+        //StartCoroutine(CheckForDebugging());
 
         // Spawns the network player in the tube scene.
         if (loadedScene.name == networkSceneName)
@@ -68,8 +68,10 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
 
         // The network players should never spawn in the main menu
         Scene scene = SceneManager.GetActiveScene();
-        
-        if (scene.name == mainMenuScene)
+
+        SpawnNetworkPlayer();
+
+        /*if (scene.name == mainMenuScene)
         {
             return;
         }
@@ -78,7 +80,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         else
         {
             SpawnNetworkPlayer();
-        }
+        }*/
     }
 
     // When someone leaves a room, we want to remove the player from the game.
