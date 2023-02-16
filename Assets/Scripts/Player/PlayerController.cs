@@ -40,6 +40,9 @@ public class PlayerController : MonoBehaviour
     private bool inCombat;        //Whether the player is actively in combat
     private float timeUntilRegen; //Time (in seconds) until health regeneration can begin
 
+    private GameObject[] weapons;   //A list of active weapons on the player
+    private GameObject[] tools;     //A list of active tools on the player
+
     //RUNTIME METHODS:
     private void Awake()
     {
@@ -65,7 +68,10 @@ public class PlayerController : MonoBehaviour
         //Setup runtime variables:
         currentHealth = healthSettings.defaultHealth; //Set base health value
 
-        inCombat = false;
+        weapons = GameObject.FindGameObjectsWithTag("PlayerEquipment");
+        tools = GameObject.FindGameObjectsWithTag("Wall");
+
+        inCombat = true;
         UpdateWeaponry();
     }
     private void Start()
@@ -100,17 +106,10 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void UpdateWeaponry()
     {
-        //Show or hide all objects under the tag "PlayerEquipment"
-        foreach (var controller in GetComponentsInChildren<ActionBasedController>())
-        {
-            foreach (Transform transform in controller.transform)
-            {
-                if (transform.CompareTag("PlayerEquipment") || transform.CompareTag("Wall"))
-                    transform.gameObject.SetActive(inCombat);
-                if (transform.CompareTag("PlayerHand"))
-                    transform.gameObject.SetActive(!inCombat);
-            }
-        }
+        foreach (var weapon in weapons)
+            weapon.gameObject.SetActive(inCombat);
+        foreach (var tool in tools)
+            tool.gameObject.SetActive(inCombat);
     }
 
     //INPUT METHODS:
@@ -161,4 +160,9 @@ public class PlayerController : MonoBehaviour
     //FUNCTIONALITY METHODS:
 
     public bool InCombat() => inCombat;
+    public void SetCombat(bool combat)
+    {
+        inCombat = combat;
+        UpdateWeaponry();
+    }
 }
