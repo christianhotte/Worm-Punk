@@ -9,6 +9,7 @@ using TMPro;
 public class LobbyUIScript : MonoBehaviour
 {
     [SerializeField] TMP_InputField roomNameInPutField;
+    [SerializeField] TMP_InputField wormNameInputField;
     [SerializeField] TMP_Text roomNameText;
     [SerializeField] TMP_Text playerNameText;
     [SerializeField] TMP_Text errorText;
@@ -43,10 +44,6 @@ public class LobbyUIScript : MonoBehaviour
             {
                 // Then we can open the menu
                 OpenMenu(menus[i]);
-
-                // Clear the input box if going to create room menu
-                if (menus[i].menuName == "create room")
-                    ClearNameBox();
             }
 
             // If it's not the menu we're trying to open, then we want to close it.
@@ -69,12 +66,17 @@ public class LobbyUIScript : MonoBehaviour
             Debug.Log("Room Name Too Long.");
     }
 
+    public void AddSectionToWormName(string segment)
+    {
+        wormNameInputField.text += segment;
+    }
+
     /// <summary>
     /// Clears the name box text.
     /// </summary>
-    public void ClearNameBox()
+    public void ClearInputBox(TMP_InputField inputField)
     {
-        roomNameInPutField.text = "";
+        inputField.text = "";
     }
 
     public void UpdateErrorMessage(string errorMessage)
@@ -113,7 +115,18 @@ public class LobbyUIScript : MonoBehaviour
         // Creates a room with the name of what the player has typed in.
         NetworkManagerScript.instance.OnCreateRoom(roomNameInPutField.text);
     }
+    public void CreateName()
+    {
+        // Doesn't allow an empty worm name.
+        if (string.IsNullOrEmpty(wormNameInputField.text))
+        {
+            return;
+        }
 
+        // Creates a nickname with the name of what the player has typed in.
+        NetworkManagerScript.instance.SetPlayerNickname(wormNameInputField.text);
+        OpenMenu("title"); // Opens the title screen
+    }
     public void JoinRoom(string roomName)
     {
         OpenMenu("loading");
@@ -161,7 +174,7 @@ public class LobbyUIScript : MonoBehaviour
 
     private bool IsValidRoom(RoomInfo room)
     {
-        return (room.PlayerCount > 0 && room.PlayerCount < room.MaxPlayers) && room.IsOpen && room.IsVisible;
+        return (room.PlayerCount > 0 && room.PlayerCount < room.MaxPlayers);
     }
 
     public void OpenRoomList()
