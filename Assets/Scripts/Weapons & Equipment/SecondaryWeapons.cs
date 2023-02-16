@@ -106,7 +106,7 @@ public class SecondaryWeapons : PlayerEquipment
             playerRB.velocity = bladeImpulsePosition.forward * grindSpeed;
         }
         Vector3 handPos,handMotion;
-        handPos = headpos.InverseTransformPoint(attachedHand.position);
+        handPos = attachedHand.localPosition; //headpos.InverseTransformPoint(attachedHand.position);
         handMotion = handPos - prevHandPos;
         float punchSpeed = handMotion.magnitude / Time.deltaTime;
         Debug.Log(punchSpeed);

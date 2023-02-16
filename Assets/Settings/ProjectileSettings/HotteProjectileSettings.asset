@@ -15,12 +15,12 @@ MonoBehaviour:
   damage: 1
   knockback: 0
   initialVelocity: 150
-  range: 200
+  range: 150
   barrelGap: 0.7
   drop: 0
-  homingStrength: 200
-  targetDesignationAngle: {x: 20, y: 90}
-  targetingDistance: 70
+  homingStrength: 75
+  targetDesignationAngle: {x: 18, y: 70}
+  targetingDistance: 60
   LOSTargeting: 0
   alwaysLookForTarget: 1
   predictionStrength: 0.65
@@ -28,7 +28,6 @@ MonoBehaviour:
   targetingIgnoreLayers:
     serializedVersion: 2
     m_Bits: 736
-  targetingTickRate: 25
   ignoreLayers:
     serializedVersion: 2
     m_Bits: 64
