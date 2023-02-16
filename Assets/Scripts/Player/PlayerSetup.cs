@@ -6,15 +6,9 @@ using UnityEngine.XR.Interaction.Toolkit;
 [RequireComponent(typeof(PlayerController))]
 public class PlayerSetup : MonoBehaviour
 {
-    private CharacterData playerCharData;
-
-    private void Awake()
-    {
-        playerCharData = new CharacterData();
-    }
     public void SetPlayer()
     {
-        SetColor(playerCharData.testColor);
+        SetColor(PlayerSettings.Instance.charData.testColor);
     }
 
     /// <summary>
@@ -23,8 +17,6 @@ public class PlayerSetup : MonoBehaviour
     /// <param name="playerColor">The color given to the player.</param>
     public void SetColor(Color playerColor)
     {
-        playerCharData.testColor = playerColor;
-
         foreach (var controller in FindObjectsOfType<ActionBasedController>())
         {
             if (controller.GetComponentInChildren<MeshRenderer>() != null)
@@ -40,14 +32,4 @@ public class PlayerSetup : MonoBehaviour
             player.material.color = playerColor;
         }
     }
-
-    public CharacterData GetCharacterData() => playerCharData;
-    public string CharDataToString() => JsonUtility.ToJson(playerCharData);
-}
-
-public class CharacterData
-{
-    public int playerID;
-    public string playerName;
-    public Color testColor = new Color(1, 1, 1, 1);
 }
