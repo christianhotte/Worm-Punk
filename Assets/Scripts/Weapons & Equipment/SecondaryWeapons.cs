@@ -11,7 +11,7 @@ public class SecondaryWeapons : PlayerEquipment
     public GameObject[] StoredShots;
     public Rigidbody playerRB;
     public Transform headpos,attachedHand, bladeSheethed, bladeDeployed,bladeTip,stowedTip,rayStartPoint,bulletSpredPoint,bladeImpulsePosition,EnergyBladeStowed,EnergyBladeExtended;
-    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance,maxSpreadAngle=4,energySpeed=5, maxPossibleHandSpeed=10, minPossibleHandSpeed= 1,maxBladeReductSpeed = 1;
+    public float activationTime, activationSpeed, timeAtSpeed, grindSpeed = 10, grindRange = 2, deploySpeed = 5,blockRadius=4,sawDistance,rayHitDistance,maxSpreadAngle=4,energySpeed=5, maxPossibleHandSpeed=10, minPossibleHandSpeed= 1,maxBladeReductSpeed = 1,explosiveForce =5;
     public AnimationCurve deployMotionCurve, deployScaleCurve, sheathMotionCurve, sheathScaleCurve;
     public bool deployed = false,cooldown=false,grindin=false,deflectin=false;
     public Vector3 prevHandPos, tipPos, storedScale, energyBladeBaseScale, energyTargetScale,energyCurrentScale,energyBladeStartSize;
@@ -75,7 +75,7 @@ public class SecondaryWeapons : PlayerEquipment
 
             if (hit.gameObject.tag != "Player"&&hit.tag!="Blade"&&hit.tag != "Bullet"&&hit.gameObject.tag != "Barrel")
             {
-                Debug.Log(hit.name);
+               // Debug.Log(hit.name);
                 grindin = true;
                 break;
             }
@@ -89,7 +89,7 @@ public class SecondaryWeapons : PlayerEquipment
             rayHitDistance = Vector3.Distance(rayStartPoint.position, checkBlade.point);
             if (rayHitDistance < sawDistance&&checkBlade.collider.tag!="Blade"&&checkBlade.collider.tag!="Player"&&checkBlade.collider.tag!="Barrel")
             {
-                Debug.Log(checkBlade.collider.name);
+              //  Debug.Log(checkBlade.collider.name);
                 grindin = true;
             }
             else if (rayHitDistance > sawDistance)
@@ -219,20 +219,15 @@ public class SecondaryWeapons : PlayerEquipment
     {
        // Debug.Log("Sheethe");
         blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeSheethed.transform.position, deploySpeed);
-   
-
-            for (; shotsHeld > 0; shotsHeld--)
-            {
-          
-            shotsToFire++;
-
-        }
-        
 
        // blade.transform.position = bladeSheethed.transform.position;
         deployed = false;
         //blade.transform.localRotation = bladeSheethed.transform.localRotation;
         StartCoroutine(StartCooldown());
+        if (shotsHeld > 0)
+        {
+            ClearAbsorbed();
+        }
     }
     public IEnumerator StartCooldown()
     {
@@ -256,6 +251,18 @@ public class SecondaryWeapons : PlayerEquipment
             yield return new WaitForSeconds(.05f);
         }
         shootin = false;
+    }
+    public void ClearAbsorbed()
+    {
+        float prevExplosiveForce=explosiveForce;
+        for(; shotsHeld > 0; shotsHeld--)
+        {
+            StoredShots[shotsHeld - 1].SetActive(false);
+            explosiveForce *= 1.5f;
+        }
+        //  playerRB.AddExplosionForce(explosiveForce,bladeImpulsePosition.position,2);
+        playerRB.velocity = stowedTip.forward * -explosiveForce;
+        explosiveForce = prevExplosiveForce;
     }
     public IEnumerator DeflectTime()
     {
