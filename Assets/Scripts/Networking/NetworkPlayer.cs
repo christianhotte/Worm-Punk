@@ -46,7 +46,7 @@ public class NetworkPlayer : MonoBehaviour
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
             SceneManager.sceneLoaded += SettingsOnLoad;
 
-            LocalPlayerSettings(playerSetup.GetCharacterData(), false);
+            if (playerSetup != null) LocalPlayerSettings(playerSetup.GetCharacterData(), false);
             SyncData();
         }
     }
@@ -107,6 +107,7 @@ public class NetworkPlayer : MonoBehaviour
 
     private void SyncData()
     {
+        if (playerSetup == null) return;
         Debug.Log("Syncing Player Data...");
         string characterData = playerSetup.CharDataToString();
         photonView.RPC("LoadPlayerSettings", RpcTarget.OthersBuffered, characterData);
