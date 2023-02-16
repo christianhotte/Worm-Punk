@@ -66,7 +66,7 @@ public class LeverController : MonoBehaviour
                 if (hingeJointState != HingeJointState.Min)
                 {
                     Debug.Log(transform.name + "Minimum Limit Reached.");
-                    OnMaxLimitReached.Invoke();
+                    OnMinLimitReached.Invoke();
 
                     //Move the hinge to the lower limit
                     hinge.transform.localEulerAngles = new Vector3(hinge.limits.max, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z);

@@ -51,6 +51,8 @@ MonoBehaviour:
   - RPC_AcquireTargetDumb
   - RPC_HitEnemy
   - RPC_LostTarget
+  - RPC_UpdateReadyStatus
+  - LoadPlayerSettings
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

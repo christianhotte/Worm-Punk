@@ -16,7 +16,7 @@ MonoBehaviour:
   maxLoadedShots: 2
   breakAngle: 32
   cooldownTime: 0.05
-  doubleFireTime: 0.2
+  doubleFireTime: 0.15
   doubleFireBoost: 2.1
   fireVelocity: 30
   triggerThreshold: 0.9
