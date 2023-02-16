@@ -102,7 +102,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     IEnumerator CheckForDebugging()
     {
         // Waits for the Network Manager Script to check for joinRoomOnLoad
-        yield return new WaitForSeconds(3f); // Seconds
+        while (!PhotonNetwork.InRoom) yield return null; //Wait until system is connected to network
 
         // If we are debugging, then we can just test without having to start from the main menu.
         if (NetworkManagerScript.instance.joinRoomOnLoad == true)

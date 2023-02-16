@@ -8230,17 +8230,17 @@ MonoBehaviour:
   energyBlade: {fileID: 0}
   StoredShots: []
   playerRB: {fileID: 0}
-  bladeRB: {fileID: 0}
   headpos: {fileID: 0}
   attachedHand: {fileID: 0}
   bladeSheethed: {fileID: 1358491961}
   bladeDeployed: {fileID: 794996485}
   bladeTip: {fileID: 652784659}
-  rocketTip: {fileID: 0}
-  ShotgunBarrelTip: {fileID: 0}
   stowedTip: {fileID: 0}
   rayStartPoint: {fileID: 0}
   bulletSpredPoint: {fileID: 0}
+  bladeImpulsePosition: {fileID: 0}
+  EnergyBladeStowed: {fileID: 0}
+  EnergyBladeExtended: {fileID: 0}
   activationTime: 0.1
   activationSpeed: 0.37
   timeAtSpeed: 0
@@ -8251,6 +8251,10 @@ MonoBehaviour:
   sawDistance: 0
   rayHitDistance: 0
   maxSpreadAngle: 4
+  energySpeed: 5
+  maxPossibleHandSpeed: 10
+  minPossibleHandSpeed: 1
+  maxBladeReductSpeed: 1
   deployMotionCurve:
     serializedVersion: 2
     m_Curve: []
@@ -8282,6 +8286,10 @@ MonoBehaviour:
   prevHandPos: {x: 0, y: 0, z: 0}
   tipPos: {x: 0, y: 0, z: 0}
   storedScale: {x: 0, y: 0, z: 0}
+  energyBladeBaseScale: {x: 0, y: 0, z: 0}
+  energyTargetScale: {x: 0, y: 0, z: 0}
+  energyCurrentScale: {x: 0, y: 0, z: 0}
+  energyBladeStartSize: {x: 0, y: 0, z: 0}
   gripThreshold: 1
   projScript: {fileID: 0}
   shotsHeld: 0
@@ -8290,6 +8298,8 @@ MonoBehaviour:
   shotsCharged: 0
   sawAud: {fileID: 0}
   punchSound: {fileID: 0}
+  chainsawDeploy: {fileID: 0}
+  chainsawSheethe: {fileID: 0}
 --- !u!1 &1884453610
 GameObject:
   m_ObjectHideFlags: 0
