@@ -414,7 +414,7 @@ GameObject:
   - component: {fileID: 1227148531296601667}
   m_Layer: 6
   m_Name: TestGunB
-  m_TagString: Untagged
+  m_TagString: PlayerEquipment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -581,7 +581,7 @@ GameObject:
   - component: {fileID: 4572272537239105945}
   m_Layer: 6
   m_Name: Barrels
-  m_TagString: Untagged
+  m_TagString: Barrel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
