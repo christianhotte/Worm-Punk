@@ -50,20 +50,14 @@ public class NetworkPlayer : MonoBehaviour
             LocalPlayerSettings(PlayerSettings.Instance.charData, false);
             SyncData();
         }
-        else
-        {
-            if (SceneManager.GetActiveScene().name == "MainMenu") ChangeVisibility(false);
-        }
+        if (SceneManager.GetActiveScene().name == "MainMenu") ChangeVisibility(false);
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (!photonView.IsMine)
-        {
-            if (scene.name == "MainMenu") ChangeVisibility(false);
-            else ChangeVisibility(true);
-        }
+        if (scene.name == "MainMenu") ChangeVisibility(false);
+        else ChangeVisibility(true);
     }
 
     private void ChangeVisibility(bool makeEnabled)
