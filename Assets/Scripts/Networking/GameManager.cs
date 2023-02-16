@@ -22,5 +22,23 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Loading Scene - " + sceneIndex.ToString());
         SceneManager.LoadScene((int)sceneIndex);
+        levelTransitionActive = false;
+    }
+
+    /// <summary>
+    /// Determine whether the player is in a menu depending on the active scene name.
+    /// </summary>
+    /// <returns>If true, the player is in a menu scene. If false, the player is in a combat scene.</returns>
+    public bool InMenu()
+    {
+        switch (SceneManager.GetActiveScene().name)
+        {
+            case "MainMenu":
+                return true;
+            case "NetworkLockerRoom":
+                return true;
+            default:
+                return false;
+        }
     }
 }

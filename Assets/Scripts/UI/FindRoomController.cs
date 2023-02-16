@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 public class FindRoomController : MonoBehaviour
 {
     [SerializeField] private SliderController slider;
     [SerializeField] private RectTransform arrowObject;
     [SerializeField] private RectTransform scrollArea;
+    [SerializeField] private TextMeshProUGUI noRoomsText;
+    [SerializeField] private GameObject connectButton;
 
     private float menuItemDistance = 22.59f;
     private float menuItemGlobalHeight;
@@ -51,12 +53,27 @@ public class FindRoomController : MonoBehaviour
     /// </summary>
     private void UpdateMenu()
     {
+        if (listedRooms.Length > 0)
+        {
+            ShowRoomList(true);
+        }
+        else
+        {
+            ShowRoomList(false);
+            slider.gameObject.SetActive(false);
+            return;
+        }
+
         float arrowYPos = arrowObject.GetComponent<RectTransform>().position.y;
 
+        //Only display the slider if there is more than one option
         if (listedRooms.Length > 1)
         {
             menuItemGlobalHeight = Mathf.Abs(listedRooms[1].GetComponent<RectTransform>().position.y - listedRooms[0].GetComponent<RectTransform>().position.y);
+            slider.gameObject.SetActive(false);
         }
+        else if (!slider.gameObject.activeInHierarchy)
+            slider.gameObject.SetActive(true);
 
         int counter = 1;
         foreach (var rooms in listedRooms)
@@ -74,6 +91,14 @@ public class FindRoomController : MonoBehaviour
             }
             counter++;
         }
+    }
+
+    private void ShowRoomList(bool showRoomList)
+    {
+        scrollArea.gameObject.SetActive(showRoomList);
+        arrowObject.gameObject.SetActive(showRoomList);
+        connectButton.SetActive(showRoomList);
+        noRoomsText.gameObject.SetActive(!showRoomList);
     }
     
     /// <summary>

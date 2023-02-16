@@ -73,7 +73,7 @@ public class PlayerEquipment : MonoBehaviour
                 inputMap = playerInput.actions.FindActionMap("XRI Generic Interaction"); //Get generic input map
                 handedness = Handedness.None;                                            //Indicate that equipment is not attached to a side
             }
-            if (inputMap != null) inputMap.actionTriggered += InputActionTriggered; //Otherwise, subscribe to input triggered event
+            if (inputMap != null) inputMap.actionTriggered += TryGiveInput; //Otherwise, subscribe to input triggered event
             else Debug.LogWarning("PlayerEquipment " + name + " could not get its desired input map, make sure PlayerInput's actions are set up properly."); //Post warning if input get was unsuccessful
         }
         else //Equipment is not being controlled by a player (probably for demo purposes
@@ -140,8 +140,9 @@ public class PlayerEquipment : MonoBehaviour
     private protected virtual void OnDestroy()
     {
         //Unsubscribe from events:
-        if (inputMap != null) inputMap.actionTriggered -= InputActionTriggered; //Unsubscribe from input event
+        if (inputMap != null) inputMap.actionTriggered -= TryGiveInput; //Unsubscribe from input event
     }
+    private void TryGiveInput(InputAction.CallbackContext context) { if (player.InCombat()) InputActionTriggered(context); }
     private protected virtual void InputActionTriggered(InputAction.CallbackContext context) { }
 
     //FUNCTIONALITY METHODS:

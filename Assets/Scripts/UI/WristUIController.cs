@@ -5,8 +5,9 @@ using UnityEngine.InputSystem;
 
 public class WristUIController : MonoBehaviour
 {
+    [SerializeField, Tooltip("The player controller.")] private PlayerController playerController;
     [SerializeField, Tooltip("The player input actions asset.")] private InputActionAsset inputActions;
-
+    [SerializeField, Tooltip("The menu ray interactors.")] private GameObject[] rayInteractors;
     [SerializeField, Tooltip("The gameobject that shows the player HUD.")] private GameObject playerHUD;
     private Canvas wristCanvas; //The canvas that shows the wrist menu
     private InputAction menu;   //The action that activates the menu
@@ -47,5 +48,19 @@ public class WristUIController : MonoBehaviour
     {
         wristCanvas.enabled = showMenu;
         playerHUD.SetActive(showMenu);
+        playerController.SetCombat(!showMenu);
+        foreach (var interactor in rayInteractors)
+            interactor.SetActive(showMenu);
+    }
+
+    /// <summary>
+    /// Quits the application
+    /// </summary>
+    public void QuitGame()
+    {
+        Application.Quit();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 }
