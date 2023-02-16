@@ -77,7 +77,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         // Spawns network players when you join a room on any other scene besides the main menu.
         else
         {
-            if (PhotonNetwork.IsMasterClient)
+            if (PlayerController.photonView.IsMine)
             {
                 SpawnNetworkPlayer();
             }
@@ -127,7 +127,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
             // Spawns a Network Player in other people's scenes.
             else
             {
-                if (PhotonNetwork.IsMasterClient)
+                if (PlayerController.photonView.IsMine)
                 {
                     SpawnNetworkPlayer();
                 }
