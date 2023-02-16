@@ -56,6 +56,7 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             }
             if(rayToHitDistance < realDistance&&grappleCooldown)
             {
+                Debug.Log(checkSaw.collider.name);
                 HookInstance.transform.position = checkSaw.point;
             }
         }
