@@ -36,7 +36,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     {
         //We want to connect to the Unity server at the beginning of the game.
         ConnectAndGiveDavidYourIPAddress();
-        PlayerController.instance.transform.SetParent(init.transform);
+        //PlayerController.instance.transform.SetParent(init.transform);
     }
 
     public void ConnectAndGiveDavidYourIPAddress()
