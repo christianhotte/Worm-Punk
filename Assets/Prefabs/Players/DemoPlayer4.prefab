@@ -4695,6 +4695,7 @@ MonoBehaviour:
   maxPossibleHandSpeed: 10
   minPossibleHandSpeed: 1
   maxBladeReductSpeed: 1
+  explosiveForce: 5
   deployMotionCurve:
     serializedVersion: 2
     m_Curve: []
@@ -6303,8 +6304,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3178438073289734660}
     - target: {fileID: 7912056491496164354, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
+      propertyPath: blockRadius
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7912056491496164354, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
       propertyPath: energySpeed
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7912056491496164354, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
+      propertyPath: explosiveForce
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7912056491496164354, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
       propertyPath: bulletSpredPoint
@@ -6333,6 +6342,10 @@ PrefabInstance:
     - target: {fileID: 7912056491496164354, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
       propertyPath: maxBladeReductSpeed
       value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7912056491496164354, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
+      propertyPath: energyCurrentScale.x
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7912056491496164354, guid: d085e09ee068b2b4ba3b3cfe8d2dd454, type: 3}
       propertyPath: maxPossibleHandSpeed
