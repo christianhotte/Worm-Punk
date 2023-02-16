@@ -5,10 +5,11 @@ using UnityEngine;
 public class HookDetector : MonoBehaviour
 {
     public Rigidbody hookrb;
+    private GameObject hookHit;
     public RocketBoost RBScript;
     public Transform hookLead;
-    public float hookSpeed = 3;
-    public bool flying = false;
+    public float hookSpeed = 3, pullSpeed = 20;
+    public bool flying = false,pullin=false;
     public LineRenderer cable;
 
     // Start is called before the first frame update
@@ -42,12 +43,29 @@ public class HookDetector : MonoBehaviour
            // this.transform.position = Vector3.MoveTowards(this.transform.position, hookLead.transform.position, hookSpeed);
 
         }
+        if (pullin)
+        {
+            this.transform.position = hookHit.transform.position;
+            hookHit.transform.position = Vector3.MoveTowards(hookHit.transform.position, RBScript.player.transform.position,pullSpeed);
+
+            if (RBScript.realDistance > 2)
+            {
+                pullin = false;
+            }
+        }
        
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.tag != "Blade")
+        if(collision.collider.tag == "Pullable")
+        {
+            this.transform.position = collision.transform.position;
+            hookHit = collision.gameObject;
+            pullin = true;
+
+        }
+        else if (collision.collider.tag != "Blade")
         {
             hookrb.isKinematic = true;
             flying = false;

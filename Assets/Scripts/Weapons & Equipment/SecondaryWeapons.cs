@@ -4,7 +4,8 @@ using UnityEngine;
 using Unity.XR.CoreUtils;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
-
+using Photon;
+using Photon.Pun;
 public class SecondaryWeapons : PlayerEquipment
 {
     public GameObject blade,hand,ProjectilePrefab,energyBlade,rightGun;
@@ -286,4 +287,14 @@ public class SecondaryWeapons : PlayerEquipment
         energyBlade.transform.localScale = energyBladeStartSize;
         stabbin = false;
     }
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    NetworkPlayer targetPlayer = other.GetComponentInParent<NetworkPlayer>();     //Try to get network player from hit collider
+    //    if (targetPlayer == null) targetPlayer = other.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
+    //    if (targetPlayer != null)
+    //    {
+    //        other.GetComponent<NetworkPlayer>().photonView.RPC("RPC_Hit", RpcTarget.All, 5);
+    //        sawAud.PlayOneShot(punchSound);
+    //    }
+    //}
 }
