@@ -55,7 +55,7 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         Debug.Log(playersReady.ToString() + "/" + PhotonNetwork.PlayerList.Length.ToString() + " players ready.");
 
         // If all players are ready, load the game scene
-        if (playersReady >= playersNeededToStart && PhotonNetwork.IsMasterClient)
+        if (playersReady == playersNeededToStart && PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.LoadLevel(sceneToLoad);
         }
