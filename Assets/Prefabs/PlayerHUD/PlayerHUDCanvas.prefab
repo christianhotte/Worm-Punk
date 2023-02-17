@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6200475504672158443}
   - component: {fileID: 604294397862303552}
   - component: {fileID: 3383653745330954744}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: BackButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,7 +143,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5298811277358576676}
   - component: {fileID: 5128941360072811002}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: AudioSettings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -197,7 +197,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2627516951837913712}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: SettingsMain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -235,7 +235,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6083958902217038982}
   - component: {fileID: 7577790244173428841}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: MuteToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -335,7 +335,7 @@ GameObject:
   - component: {fileID: 1010636382867119814}
   - component: {fileID: 3716101915744414237}
   - component: {fileID: 6280210484322871653}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: ControlsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -471,7 +471,7 @@ GameObject:
   - component: {fileID: 3333209111266649608}
   - component: {fileID: 8957025854922135577}
   - component: {fileID: 8667275388639051417}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: PlayerHUDCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -629,7 +629,7 @@ GameObject:
   - component: {fileID: 7622583481709936798}
   - component: {fileID: 7164558051096518038}
   - component: {fileID: 2844117032731173150}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: BackButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -761,7 +761,7 @@ GameObject:
   - component: {fileID: 512497886638338880}
   - component: {fileID: 1297802875000682409}
   - component: {fileID: 6415464028965936025}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -893,7 +893,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5242173186600989645}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: ControlsSettings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -931,7 +931,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7001384768686644569}
   - component: {fileID: 7915643324830916060}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -996,7 +996,7 @@ GameObject:
   - component: {fileID: 1734922210961737163}
   - component: {fileID: 1396279591167986112}
   - component: {fileID: 7732862318922093811}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: GameplayButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1128,7 +1128,7 @@ GameObject:
   - component: {fileID: 7948995997197197293}
   - component: {fileID: 2738110164586237855}
   - component: {fileID: 7979151282950571612}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1204,7 +1204,7 @@ GameObject:
   - component: {fileID: 7529094171387865790}
   - component: {fileID: 5580448333672993716}
   - component: {fileID: 616070199354015078}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1284,7 +1284,7 @@ GameObject:
   - component: {fileID: 5131286211858004906}
   - component: {fileID: 6752388563870117645}
   - component: {fileID: 7949595837656297344}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: AudioButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1416,7 +1416,7 @@ GameObject:
   - component: {fileID: 9195585635026534644}
   - component: {fileID: 4365890129789762073}
   - component: {fileID: 9075732916671095020}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: SettingsText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1548,7 +1548,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4595229709806905041}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1592,7 +1592,7 @@ GameObject:
   - component: {fileID: 7791948996104554075}
   - component: {fileID: 5333982099128221686}
   - component: {fileID: 1769038930065021468}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: BackButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1723,7 +1723,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1730448953444811880}
   - component: {fileID: 4609944133493974786}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: PlayerHUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1773,7 +1773,7 @@ GameObject:
   - component: {fileID: 8846287072878848583}
   - component: {fileID: 8856719267187985037}
   - component: {fileID: 8943261194570651066}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1907,7 +1907,7 @@ GameObject:
   - component: {fileID: 1707562575087428708}
   - component: {fileID: 7888258396291466837}
   - component: {fileID: 3683075010990526070}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2041,7 +2041,7 @@ GameObject:
   - component: {fileID: 6177983441940281869}
   - component: {fileID: 5921638972378681296}
   - component: {fileID: 6731144495249167859}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: MuteMicChatLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2173,7 +2173,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2008511616982373154}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: GameplaySettings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2212,7 +2212,7 @@ GameObject:
   - component: {fileID: 4212601632185598844}
   - component: {fileID: 4473930138575468271}
   - component: {fileID: 6385979505368074826}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2346,7 +2346,7 @@ GameObject:
   - component: {fileID: 2975989954854534529}
   - component: {fileID: 3346222942927037290}
   - component: {fileID: 6005079409056660534}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: AudioText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2480,7 +2480,7 @@ GameObject:
   - component: {fileID: 1061584454996921090}
   - component: {fileID: 5080332938629421964}
   - component: {fileID: 4745475063225196623}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Checkmark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2555,7 +2555,7 @@ GameObject:
   - component: {fileID: 4833859123301265783}
   - component: {fileID: 1559053365733161666}
   - component: {fileID: 5408885293938349080}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: ControlsText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2689,7 +2689,7 @@ GameObject:
   - component: {fileID: 1861036808011873668}
   - component: {fileID: 5436826444105513871}
   - component: {fileID: 7986199951163358089}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: EventSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2773,7 +2773,7 @@ GameObject:
   - component: {fileID: 5996188460727273181}
   - component: {fileID: 252863518357867454}
   - component: {fileID: 6511407077960584005}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2906,7 +2906,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3236861218299855601}
   - component: {fileID: 1342969209150807843}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2969,7 +2969,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7307441645416324730}
   - component: {fileID: 8783217399512071931}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Buttons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3035,7 +3035,7 @@ GameObject:
   - component: {fileID: 4260716056602564707}
   - component: {fileID: 2958541327018471914}
   - component: {fileID: 2540099773903577860}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: UICamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3087,7 +3087,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 32
+    m_Bits: 2147483648
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: c8622ad3e6f42f64d81575593a36d7d2, type: 2}
   m_TargetDisplay: 0
@@ -3142,7 +3142,7 @@ GameObject:
   - component: {fileID: 7642875837786934967}
   - component: {fileID: 6095238969394867}
   - component: {fileID: 320407335094249353}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: GameplayText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3276,7 +3276,7 @@ GameObject:
   - component: {fileID: 4579189632744160928}
   - component: {fileID: 6869606991889507229}
   - component: {fileID: 5309739905095709476}
-  m_Layer: 5
+  m_Layer: 31
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3406,9 +3406,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4595229709806905041}
     m_Modifications:
+    - target: {fileID: 167813031248266321, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 1610481148226905097, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 2221802627110051782, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_text
       value: Master Volume
+      objectReference: {fileID: 0}
+    - target: {fileID: 2448964261714872544, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
       objectReference: {fileID: 0}
     - target: {fileID: 3876594217320982961, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_Pivot.x
@@ -3494,6 +3506,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4253165910101559032, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 4514215347193722678, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -3550,9 +3566,25 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 5494020224777007740, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 7174850089696134698, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 7275068487024508079, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 7366967501271666568, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_Name
       value: MasterVolume
+      objectReference: {fileID: 0}
+    - target: {fileID: 7366967501271666568, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
@@ -3579,9 +3611,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4595229709806905041}
     m_Modifications:
+    - target: {fileID: 167813031248266321, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 1610481148226905097, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 2221802627110051782, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_text
       value: SFX Volume
+      objectReference: {fileID: 0}
+    - target: {fileID: 2448964261714872544, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
       objectReference: {fileID: 0}
     - target: {fileID: 3876594217320982961, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_Pivot.x
@@ -3667,6 +3711,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4253165910101559032, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 4514215347193722678, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -3723,9 +3771,25 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 5494020224777007740, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 7174850089696134698, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 7275068487024508079, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 7366967501271666568, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_Name
       value: SFXVolume
+      objectReference: {fileID: 0}
+    - target: {fileID: 7366967501271666568, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
@@ -3752,9 +3816,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4595229709806905041}
     m_Modifications:
+    - target: {fileID: 167813031248266321, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 1610481148226905097, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 2221802627110051782, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_text
       value: Voice Chat Volume
+      objectReference: {fileID: 0}
+    - target: {fileID: 2448964261714872544, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
       objectReference: {fileID: 0}
     - target: {fileID: 3876594217320982961, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_Pivot.x
@@ -3840,6 +3916,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4253165910101559032, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 4514215347193722678, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -3896,9 +3976,25 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 5494020224777007740, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 7174850089696134698, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 7275068487024508079, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 7366967501271666568, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_Name
       value: VoiceChatVolume
+      objectReference: {fileID: 0}
+    - target: {fileID: 7366967501271666568, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
@@ -3925,9 +4021,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4595229709806905041}
     m_Modifications:
+    - target: {fileID: 167813031248266321, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 1610481148226905097, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 2221802627110051782, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_text
       value: Music Volume
+      objectReference: {fileID: 0}
+    - target: {fileID: 2448964261714872544, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
       objectReference: {fileID: 0}
     - target: {fileID: 3876594217320982961, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_Pivot.x
@@ -4013,6 +4121,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4253165910101559032, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 4514215347193722678, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -4069,9 +4181,25 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 5494020224777007740, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 7174850089696134698, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 7275068487024508079, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 7366967501271666568, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
       propertyPath: m_Name
       value: MusicVolume
+      objectReference: {fileID: 0}
+    - target: {fileID: 7366967501271666568, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
+      propertyPath: m_Layer
+      value: 31
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 594dfcb1dc6beb245906ae572c80bd19, type: 3}
