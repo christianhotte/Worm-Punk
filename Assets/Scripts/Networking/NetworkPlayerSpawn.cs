@@ -60,10 +60,10 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         //StartCoroutine(CheckForDebugging());
 
         // Spawns the network player in the tube scene.
-        if (loadedScene.name == networkSceneName)
+        /*if (loadedScene.name == networkSceneName)
         {
             SpawnNetworkPlayer();
-        }
+        }*/
     }
 
     // When someone joins a room, we spawn the player.
@@ -75,7 +75,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         // The network players should never spawn in the main menu
         Scene scene = SceneManager.GetActiveScene();
 
-        SpawnNetworkPlayer();
+        //SpawnNetworkPlayer();
 
         /*if (scene.name == mainMenuScene)
         {
@@ -94,7 +94,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     {
         Debug.Log("A player has left the room.");
         base.OnLeftRoom();
-        if (clientNetworkPlayer != null) PhotonNetwork.Destroy(clientNetworkPlayer.gameObject);
+        DeSpawnNetworkPlayer();
     }
 
     // Spawns the Network Player.
@@ -106,6 +106,10 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         DontDestroyOnLoad(clientNetworkPlayer);
         /*else
             clientNetworkPlayer.transform.SetParent(init.transform);*/
+    }
+    public void DeSpawnNetworkPlayer()
+    {
+        if (clientNetworkPlayer != null) PhotonNetwork.Destroy(clientNetworkPlayer.gameObject);
     }
 
     // If we want to play without having to start from the Main Menu scene...

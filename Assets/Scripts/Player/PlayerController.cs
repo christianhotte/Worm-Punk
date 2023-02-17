@@ -40,6 +40,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Tooltip("Enables constant settings checks in order to test changes.")]                                private bool debugUpdateSettings;
     [SerializeField, Tooltip("Enables usage of SpawnManager system to automatically position player upon instantiation.")] private bool useSpawnPoint = true;
     [SerializeField, Tooltip("Click to snap camera back to center of player rigidbody (ignoring height).")]                private bool debugCenterCamera;
+    [SerializeField, Tooltip("Manually isntantiate a network player.")]                                                    private bool debugSpawnNetworkPlayer;
+    [SerializeField, Tooltip("Manually destroy client network player.")]                                                   private bool debugDeSpawnNetworkPlayer;
 
     //Runtime Variables:
     private float currentHealth;  //How much health player currently has
@@ -111,6 +113,16 @@ public class PlayerController : MonoBehaviour
     {
         if (debugUpdateSettings && Application.isEditor) //Debug settings updates are enabled (only necessary while running in Unity Editor)
         {
+            if (debugSpawnNetworkPlayer)
+            {
+                debugSpawnNetworkPlayer = false;
+                NetworkPlayerSpawn.instance.SpawnNetworkPlayer();
+            }
+            if (debugDeSpawnNetworkPlayer)
+            {
+                debugDeSpawnNetworkPlayer = false;
+                NetworkPlayerSpawn.instance.DeSpawnNetworkPlayer();
+            }
             if (debugCenterCamera) //Camera is being manually centered
             {
                 debugCenterCamera = false; //Immediately unpress button
