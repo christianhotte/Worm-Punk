@@ -121,8 +121,7 @@ public class NetworkPlayer : MonoBehaviour
 
     private void SetRig()
     {
-        if(XROrigin == null)
-            XROrigin = GameObject.Find("XR Origin");
+        XROrigin = GameObject.Find("XR Origin");
 
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
