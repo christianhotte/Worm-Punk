@@ -617,3 +617,4 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   playerHUD: {fileID: 0}
+  playerHUDController: {fileID: 0}

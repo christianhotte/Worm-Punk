@@ -56,11 +56,12 @@ public class SecondaryWeapons : PlayerEquipment
             GameObject[] bullethits = GameObject.FindGameObjectsWithTag("Bullet");
             foreach (var hit in bullethits)
             {
-                float bulletDistance = Vector3.Distance(stowedTip.position, hit.transform.position);
+                float bulletDistance = Vector3.Distance(bladeTip.position, hit.transform.position);
                 projScript = hit.gameObject.GetComponent<Projectile>();
                 if (bulletDistance <= blockRadius&&shotsHeld<shotCap)
                 {
-                    Debug.Log(bulletDistance);
+                    // Debug.Log(bulletDistance);
+                    if (projScript.originPlayerID == PlayerController.photonView.ViewID) return;
                     //grindin = true;
                     Destroy(hit);
                     shotsHeld++;
