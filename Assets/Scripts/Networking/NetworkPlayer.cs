@@ -60,6 +60,8 @@ public class NetworkPlayer : MonoBehaviour
     {
         if (scene.name == "MainMenu") ChangeVisibility(false);
         else ChangeVisibility(true);
+
+        SetRig();
     }
 
     private void ChangeVisibility(bool makeEnabled)

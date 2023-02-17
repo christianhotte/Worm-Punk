@@ -30,18 +30,6 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         //init = FindObjectOfType<GameManager>().gameObject;
         
         // If it's the main menu scene, then we are throwing the DemoPlayer into the DontDestroyOnLoad
-        Scene scene = SceneManager.GetActiveScene();
-        if (scene.name == mainMenuScene)
-        {
-            //demoPlayer = GameObject.Find("DemoPlayer4");
-            GameObject XROrigin = GameObject.Find("DemoPlayer4");
-            if (XROrigin != null)
-            {
-                // Takes the parent object (DemoPlayer) instead of just the XROrigin
-                DontDestroyOnLoad(XROrigin.transform.parent.gameObject);
-            }
-            //demoPlayer.transform.SetParent(init.transform);
-        }
         
         mainMenuScene = "MainMenu";
         SceneManager.sceneLoaded += OnSceneLoaded; // Subscribes to event manager
