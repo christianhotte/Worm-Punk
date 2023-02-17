@@ -52,6 +52,8 @@ public class NetworkPlayer : MonoBehaviour
         }
         if (SceneManager.GetActiveScene().name == "MainMenu") ChangeVisibility(false);
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        DontDestroyOnLoad(gameObject);
     }
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)

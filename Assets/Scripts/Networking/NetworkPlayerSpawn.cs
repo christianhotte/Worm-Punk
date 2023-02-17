@@ -103,7 +103,6 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         //Spawn network player:
         clientNetworkPlayer = PhotonNetwork.Instantiate(networkPlayerName, Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
         if (clientNetworkPlayer == null) Debug.LogError("Tried to spawn network player prefab that doesn't have NetworkPlayer component!");  //Indicate problem if relevant
-        DontDestroyOnLoad(clientNetworkPlayer);
         /*else
             clientNetworkPlayer.transform.SetParent(init.transform);*/
     }
