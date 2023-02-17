@@ -214,6 +214,7 @@ public class SecondaryWeapons : PlayerEquipment
         //  bladeRB.velocity += blade.transform.forward*-deploySpeed;
         blade.transform.localRotation = bladeDeployed.transform.localRotation;
         deployed = true;
+        sawAud.PlayOneShot(chainsawDeploy);
         
         StartCoroutine(StartCooldown());
 
@@ -225,6 +226,7 @@ public class SecondaryWeapons : PlayerEquipment
 
        // blade.transform.position = bladeSheethed.transform.position;
         deployed = false;
+        sawAud.PlayOneShot(chainsawSheethe);
         //blade.transform.localRotation = bladeSheethed.transform.localRotation;
         StartCoroutine(StartCooldown());
         if (shotsHeld > 0)
