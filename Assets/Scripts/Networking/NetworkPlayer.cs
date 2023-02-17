@@ -49,15 +49,25 @@ public class NetworkPlayer : MonoBehaviour
 
             LocalPlayerSettings(PlayerSettings.Instance.charData, false);
             SyncData();
+
+            foreach (Renderer r in transform.GetComponentsInChildren<Renderer>()) r.enabled = false;
         }
-        if (SceneManager.GetActiveScene().name == "MainMenu") ChangeVisibility(false);
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        DontDestroyOnLoad(gameObject);
     }
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "MainMenu") ChangeVisibility(false);
-        else ChangeVisibility(true);
+        //Update network visibility:
+        if (scene.name == "MainMenu") { photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered); }
+        else { photonView.RPC("RPC_MakeVisible", RpcTarget.OthersBuffered); }
+
+        //Update client collisions:
+        bool inMenuScenes = scene.name == "NetworkLockerRoom" || scene.name == "MainMenu";
+        foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = !inMenuScenes;
+
+        if (photonView.IsMine) SetRig();
     }
 
     private void ChangeVisibility(bool makeEnabled)
@@ -70,7 +80,12 @@ public class NetworkPlayer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetRig();
+        if (SceneManager.GetActiveScene().name == "MainMenu")
+        {
+            photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered);
+        }
+        if (photonView.IsMine) SetRig();
+
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
         foreach (Player p in allPlayers)
@@ -83,12 +98,15 @@ public class NetworkPlayer : MonoBehaviour
         }
 
         //Ignore collisions:
+        bool inMenuScenes = SceneManager.GetActiveScene().name == "NetworkLockerRoom" || SceneManager.GetActiveScene().name == "MainMenu";
         foreach (Collider collider in GetComponentsInChildren<Collider>())
         {
             foreach (Collider otherCollider in XROrigin.transform.parent.GetComponentsInChildren<Collider>())
             {
                 Physics.IgnoreCollision(collider, otherCollider);
             }
+
+            collider.enabled = !inMenuScenes;
         }
 
         //Hide client renderers:
@@ -103,8 +121,7 @@ public class NetworkPlayer : MonoBehaviour
 
     private void SetRig()
     {
-        if(XROrigin == null)
-            XROrigin = GameObject.Find("XR Origin");
+        XROrigin = GameObject.Find("XR Origin");
 
         headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
         leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
@@ -163,6 +180,21 @@ public class NetworkPlayer : MonoBehaviour
     public void RPC_HitEnemy()
     {
         if (photonView.IsMine) player.HitEnemy(); //Pass enemy hit onto player
+    }
+    [PunRPC]
+    public void RPC_ChangeVisibility()
+    {
+        print("why");
+    }
+    [PunRPC]
+    public void RPC_MakeVisible()
+    {
+        ChangeVisibility(true);
+    }
+    [PunRPC]
+    public void RPC_MakeInvisible()
+    {
+        ChangeVisibility(false);
     }
 
     private void OnDestroy()
