@@ -33,10 +33,10 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         playersNeededToStart--;
 
         // The room becomes open to let more people come in.
-       /* if (playersNeededToStart < PhotonNetwork.CurrentRoom.MaxPlayers)
+        if (playersNeededToStart < 6)
         {
             PhotonNetwork.CurrentRoom.IsOpen = true;
-        }*/
+        }
     }
 
     // Once the level is pulled to signify that the player is ready...

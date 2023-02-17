@@ -58,4 +58,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkSceneName: NetworkLockerRoom
+  playerPrefabName: DemoPlayer4
   networkPlayerName: NewNetworkPlayer
