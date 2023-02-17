@@ -878,7 +878,7 @@
             "id": "e239ddb2-3558-415e-9145-6392d0ea8288",
             "actions": [
                 {
-                    "name": "New action",
+                    "name": "RightStickPress",
                     "type": "Button",
                     "id": "72412fa1-0b62-4598-8e4c-1f1aaac39552",
                     "expectedControlType": "Button",
@@ -891,11 +891,11 @@
                 {
                     "name": "",
                     "id": "5122a146-7a9b-41a8-8ac7-f8e684f52e91",
-                    "path": "",
+                    "path": "<XRController>{RightHand}/thumbstickClicked",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "New action",
+                    "groups": "Generic XR Controller",
+                    "action": "RightStickPress",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
