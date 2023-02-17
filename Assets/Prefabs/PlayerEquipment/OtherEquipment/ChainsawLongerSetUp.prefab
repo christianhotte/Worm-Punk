@@ -639,7 +639,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1277818383771032511}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 221.94, y: 16.29, z: 5.73}
@@ -734,7 +734,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1277818383773839509}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1.0000001, y: 2.27, z: 1}
@@ -1837,6 +1837,7 @@ MonoBehaviour:
   hand: {fileID: 0}
   ProjectilePrefab: {fileID: 5990455804588303578, guid: 0fd9d1413feab904b9d3dbcef74de6a9, type: 3}
   energyBlade: {fileID: 1277818383773839509}
+  rightGun: {fileID: 0}
   StoredShots:
   - {fileID: 7405809409200039739}
   - {fileID: 1997833202755268010}
@@ -1867,6 +1868,7 @@ MonoBehaviour:
   maxPossibleHandSpeed: 10
   minPossibleHandSpeed: 1
   maxBladeReductSpeed: 1
+  explosiveForce: 5
   deployMotionCurve:
     serializedVersion: 2
     m_Curve: []
