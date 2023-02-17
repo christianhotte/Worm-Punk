@@ -183,9 +183,20 @@ public class NetworkPlayer : MonoBehaviour
         if (photonView.IsMine) player.HitEnemy(); //Pass enemy hit onto player
     }
     [PunRPC]
-    public void RPC_MakeVisible() { ChangeVisibility(true); }
+    public void RPC_ChangeVisibility()
+    {
+        print("why");
+    }
     [PunRPC]
-    public void RPC_MakeInvisible() { ChangeVisibility(false); }
+    public void RPC_MakeVisible()
+    {
+        ChangeVisibility(true);
+    }
+    [PunRPC]
+    public void RPC_MakeInvisible()
+    {
+        ChangeVisibility(false);
+    }
 
     private void OnDestroy()
     {
