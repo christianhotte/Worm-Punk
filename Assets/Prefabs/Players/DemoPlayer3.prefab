@@ -1412,7 +1412,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5063f0b2eca72f46ae82a8a4b78d43c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerController: {fileID: 0}
   inputActions: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  rayInteractors: []
   playerHUD: {fileID: 1952724849646180581}
 --- !u!1 &2563601188072008208
 GameObject:
@@ -2241,6 +2243,7 @@ MonoBehaviour:
   UseMaterial: {fileID: 2100000, guid: 4e6f0d991f575844193fbe0a05d53405, type: 2}
   UseMaterialLayering: 0
   UseCamera: {fileID: 0}
+  isInteractable: 0
 --- !u!1 &4513251602663304654
 GameObject:
   m_ObjectHideFlags: 0

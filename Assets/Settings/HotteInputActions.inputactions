@@ -1333,11 +1333,33 @@
                 },
                 {
                     "name": "",
+                    "id": "e791c583-d7a0-4a28-ba89-b5dbeb15009b",
+                    "path": "<XRController>{LeftHand}/joystick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "Navigate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "fc8a4072-2198-432e-a3c9-a33b350c0b6a",
                     "path": "*/{Submit}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ed3c1f61-84a1-41c3-8dd4-44af70117629",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
                     "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1355,11 +1377,33 @@
                 },
                 {
                     "name": "",
+                    "id": "f82cc06d-6a6e-46bb-b9ea-679d556838eb",
+                    "path": "<XRController>{RightHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "d2794d51-0872-49f6-8203-1fd7d8b2f893",
                     "path": "<Touchscreen>/touch*/click",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5f8026bd-1d9e-4dc1-9349-d545d7227d34",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
                     "action": "Click",
                     "isComposite": false,
                     "isPartOfComposite": false
