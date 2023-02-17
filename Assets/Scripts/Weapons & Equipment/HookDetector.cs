@@ -58,7 +58,11 @@ public class HookDetector : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.collider.tag == "Pullable")
+        if(collision.gameObject.layer == 11)
+        {
+            return;
+        }
+        else if(collision.collider.tag == "Pullable")
         {
             Debug.Log("triedtopull");
             this.transform.position = collision.transform.position;
@@ -70,7 +74,7 @@ public class HookDetector : MonoBehaviour
         {
             hookrb.isKinematic = true;
             flying = false;
-            Debug.Log("hit object " + collision.collider.name + " on Layer " + collision.collider.gameObject.layer);
+            //Debug.Log("hit object " + collision.collider.name + " on Layer " + collision.collider.gameObject.layer);
             RBScript.grappleCooldown = false;
             RBScript.HookHit();
 

@@ -1014,9 +1014,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthSettings: {fileID: 11400000, guid: 6d24db3effe67fb47a10bfaa9621390b, type: 2}
+  maxHeadDistance: 0
   targetHitSound: {fileID: 0}
   debugUpdateSettings: 0
   useSpawnPoint: 1
+  debugCenterCamera: 0
 --- !u!114 &4754151018597248020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2797,6 +2799,8 @@ MonoBehaviour:
   HookModel: {fileID: 8604787722161136775, guid: 15c372677a043224e8b147844ff4887c, type: 3}
   HookInstance: {fileID: 0}
   Player: {fileID: 1952950443538666959}
+  lineCheckModel: {fileID: 8604787722161136775, guid: 67059559582812a4186d1484ec15ccc8, type: 3}
+  lineCheckInstance: {fileID: 0}
   rayHitPoint: {x: 0, y: 0, z: 0}
   rocketTipStart: {x: 0, y: 0, z: 0}
   rocketPower: 40
@@ -2810,11 +2814,14 @@ MonoBehaviour:
   grapplinWall: 0
   shootinHook: 0
   Pullin: 0
+  checkinLine: 0
   hitType: 0
   Rocket: {fileID: 0}
   hookScript: {fileID: 0}
   cable: {fileID: 0}
   SawScript: {fileID: 0}
+  grapAud: {fileID: 0}
+  hookHit: {fileID: 0}
   sidePullStrength: 18
   fowardPullStrength: 30
 --- !u!120 &7419191319035572227
