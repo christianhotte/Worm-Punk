@@ -55,6 +55,7 @@ MonoBehaviour:
   - LoadPlayerSettings
   - RPC_MakeInvisible
   - RPC_MakeVisible
+  - RPC_ChangeVisibility
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
