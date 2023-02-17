@@ -31,6 +31,10 @@ public class LeverController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //If there is an active level transition, don't do anything
+        if (GameManager.Instance != null && GameManager.Instance.levelTransitionActive)
+            return;
+
         //If the lever is not locked, check its angle
         if (!isLocked)
         {
@@ -62,7 +66,7 @@ public class LeverController : MonoBehaviour
                 if (hingeJointState != HingeJointState.Min)
                 {
                     Debug.Log(transform.name + "Minimum Limit Reached.");
-                    OnMaxLimitReached.Invoke();
+                    OnMinLimitReached.Invoke();
 
                     //Move the hinge to the lower limit
                     hinge.transform.localEulerAngles = new Vector3(hinge.limits.max, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z);

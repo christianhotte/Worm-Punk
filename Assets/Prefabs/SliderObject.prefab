@@ -130,7 +130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boundLeft: {fileID: 3332131642004319562}
   boundRight: {fileID: 3332131642018560210}
-  outputRange: {x: 0, y: 100}
+  outputRange: {x: 0, y: 1}
   startValue: 0
   leftHandModel: {fileID: 0}
   rightHandModel: {fileID: 0}
@@ -461,7 +461,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_InteractionLayers:
-    m_Bits: 2
+    m_Bits: 4294967295
   m_DistanceCalculationMode: 1
   m_SelectMode: 0
   m_CustomReticle: {fileID: 0}

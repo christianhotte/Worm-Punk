@@ -6,11 +6,9 @@ using UnityEngine.XR.Interaction.Toolkit;
 [RequireComponent(typeof(PlayerController))]
 public class PlayerSetup : MonoBehaviour
 {
-    private PlayerController currentPlayer => GetComponent<PlayerController>(); //The player controller
-
-    public void SetPlayer(CharacterData charData)
+    public void SetPlayer()
     {
-        SetColor(charData.testColor);
+        SetColor(PlayerSettings.Instance.charData.testColor);
     }
 
     /// <summary>
@@ -23,14 +21,14 @@ public class PlayerSetup : MonoBehaviour
         {
             if (controller.GetComponentInChildren<MeshRenderer>() != null)
             {
-                Debug.Log("Setting Color...");
+                Debug.Log("Setting Color To " + playerColor.ToString() + " ...");
                 controller.GetComponentInChildren<MeshRenderer>().material.color = playerColor;
             }
         }
 
         foreach(var player in FindObjectsOfType<SkinnedMeshRenderer>())
         {
-            Debug.Log("Setting Player Color...");
+            Debug.Log("Setting Player Color To " + playerColor.ToString() + " ...");
             player.material.color = playerColor;
         }
     }

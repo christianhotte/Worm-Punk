@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4057593c6c161b4fad6eecbd31a8799, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  joinRoomOnLoad: 1
 --- !u!114 &1121253887837515577
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56,3 +57,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9934210c4c8822c4387e8dde05d786bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkSceneName: NetworkLockerRoom
+  networkPlayerName: NewNetworkPlayer

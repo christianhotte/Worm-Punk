@@ -13,11 +13,12 @@ TagManager:
   - PlayerHand
   - Wall
   - Blade
+  - Pullable
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - PlayerWeapon
@@ -26,6 +27,7 @@ TagManager:
   - Hitbox
   - Blade
   - Hook
+  - EnergyBlade
   - 
   - 
   - 
@@ -44,8 +46,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - HUD
   m_SortingLayers:
   - name: Default
     uniqueID: 0
