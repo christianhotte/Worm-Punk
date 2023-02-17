@@ -134,6 +134,9 @@ public class PlayerController : MonoBehaviour
     }
     private void OnDestroy()
     {
+        //Cleanup:
+        instance = null; //Clear reference on player destruction
+
         //Event unsubscription:
         inputMap.actionTriggered -= OnInputTriggered; //Unsubscribe from generic input event
         SceneManager.sceneLoaded -= OnSceneLoaded;    //Unsubscribe from scene loaded event
