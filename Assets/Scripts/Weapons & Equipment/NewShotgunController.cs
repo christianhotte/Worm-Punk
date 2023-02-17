@@ -106,12 +106,13 @@ public class NewShotgunController : PlayerEquipment
     /// <summary>
     /// Shoots the gun (instantiates projectiles in network if possible).
     /// </summary>
-    public void Fire()
+    public Projectile Fire()
     {
         //Validation:
-        if (loadedShots <= 0) { DryFire(); return; } //Dry-fire if weapon is out of shots
-        if (breachOpen) { DryFire(); return; }       //Dry-fire if weapon breach is open
-        if (locked) return;                          //Return if locked by another weapon
+        Projectile projectile = null;                           //Initialize reference to projectile
+        if (loadedShots <= 0) { DryFire(); return projectile; } //Dry-fire if weapon is out of shots
+        if (breachOpen) { DryFire(); return projectile; }       //Dry-fire if weapon breach is open
+        if (locked) return projectile;                          //Return if locked by another weapon
         //Initialization:
         Transform currentBarrel = barrels[currentBarrelIndex]; //Get reference to active barrel
 
@@ -124,9 +125,8 @@ public class NewShotgunController : PlayerEquipment
         //Instantiate projectile(s):
         if (networkedGun == null || debugFireLocal) //Weapon is in local fire mode
         {
-            Projectile projectile = ((GameObject)Instantiate(Resources.Load("Projectiles/" + gunSettings.projectileResourceName))).GetComponent<Projectile>(); //Instantiate projectile
-            //projectile.localOnly = true;                                                                                                                     //Indicate that projectile is only being fired on local game version
-            projectile.Fire(currentBarrel);                                                                                                                    //Initialize projectile
+            projectile = ((GameObject)Instantiate(Resources.Load("Projectiles/" + gunSettings.projectileResourceName))).GetComponent<Projectile>(); //Instantiate projectile
+            projectile.FireDumb(currentBarrel);                                                                                                     //Initialize projectile
         }
         else networkedGun.LocalFire(currentBarrel); //Fire weapon on the network
 
@@ -139,6 +139,7 @@ public class NewShotgunController : PlayerEquipment
             if (currentBarrelIndex >= barrels.Length) currentBarrelIndex = 0; //Overflow barrel index if relevant
         }
         loadedShots = Mathf.Max(loadedShots - 1, 0); //Spend one shot (floor at zero)
+        return projectile;
     }
     /// <summary>
     /// Opens weapon breach and ejects shells.

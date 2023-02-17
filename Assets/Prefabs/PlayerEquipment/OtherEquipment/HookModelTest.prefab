@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 4850147602584200056}
   - component: {fileID: 3209681311462046370}
   - component: {fileID: -831620323005618180}
-  - component: {fileID: -4288256483455043937}
+  - component: {fileID: 2504525814486849480}
   m_Layer: 11
   m_Name: HookModelTest
   m_TagString: Wall
@@ -210,7 +210,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 2
---- !u!114 &-4288256483455043937
+--- !u!114 &2504525814486849480
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -224,7 +224,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hookrb: {fileID: 0}
   RBScript: {fileID: 0}
-  hookLead: {fileID: 7508983563828799152}
-  hookSpeed: 300
+  hookLead: {fileID: 0}
+  hookSpeed: 200
+  pullSpeed: 20
   flying: 0
+  pullin: 0
   cable: {fileID: 0}
