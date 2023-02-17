@@ -50,7 +50,6 @@ public class NetworkPlayer : MonoBehaviour
             LocalPlayerSettings(PlayerSettings.Instance.charData, false);
             SyncData();
         }
-        if (SceneManager.GetActiveScene().name == "MainMenu") ChangeVisibility(false);
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         DontDestroyOnLoad(gameObject);
@@ -58,10 +57,10 @@ public class NetworkPlayer : MonoBehaviour
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "MainMenu") ChangeVisibility(false);
-        else ChangeVisibility(true);
+        if (scene.name == "MainMenu") photonView.RPC("RPC_ChangeVisiblity", RpcTarget.AllBuffered, false);
+        else photonView.RPC("RPC_ChangeVisiblity", RpcTarget.AllBuffered, true);
 
-        SetRig();
+        if (photonView.IsMine) SetRig();
     }
 
     private void ChangeVisibility(bool makeEnabled)
@@ -74,7 +73,9 @@ public class NetworkPlayer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetRig();
+        if (SceneManager.GetActiveScene().name == "MainMenu") photonView.RPC("RPC_ChangeVisiblity", RpcTarget.AllBuffered, false);
+        if (photonView.IsMine) SetRig();
+
         // Gets the player list
         allPlayers = PhotonNetwork.PlayerList;
         foreach (Player p in allPlayers)
@@ -167,6 +168,11 @@ public class NetworkPlayer : MonoBehaviour
     public void RPC_HitEnemy()
     {
         if (photonView.IsMine) player.HitEnemy(); //Pass enemy hit onto player
+    }
+    [PunRPC]
+    public void RPC_ChangeVisibility(bool isVisible)
+    {
+        ChangeVisibility(isVisible);
     }
 
     private void OnDestroy()
