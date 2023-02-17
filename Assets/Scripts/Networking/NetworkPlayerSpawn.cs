@@ -13,8 +13,8 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     
     private NetworkPlayer clientNetworkPlayer; //Instance of local client's network player in scene
     [SerializeField] private string networkSceneName = "NetworkLockerRoom";
-    private GameObject init;
-    private GameObject demoPlayer;
+    //private GameObject init;
+    //private GameObject demoPlayer;
 
     private string mainMenuScene;
 
@@ -27,14 +27,20 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         //Initialization:
         if (instance == null) { instance = this; } else { Debug.LogError("Tried to load two NetworkPlayerSpawn scripts in the same scene!"); Destroy(this); } //Singleton-ize this script
 
-        init = FindObjectOfType<GameManager>().gameObject;
+        //init = FindObjectOfType<GameManager>().gameObject;
         
         // If it's the main menu scene, then we are throwing the DemoPlayer into the DontDestroyOnLoad
         Scene scene = SceneManager.GetActiveScene();
         if (scene.name == mainMenuScene)
         {
-            demoPlayer = GameObject.Find("DemoPlayer3");
-            demoPlayer.transform.SetParent(init.transform);
+            //demoPlayer = GameObject.Find("DemoPlayer4");
+            GameObject XROrigin = GameObject.Find("DemoPlayer4");
+            if (XROrigin != null)
+            {
+                // Takes the parent object (DemoPlayer) instead of just the XROrigin
+                DontDestroyOnLoad(XROrigin.transform.parent.gameObject);
+            }
+            //demoPlayer.transform.SetParent(init.transform);
         }
         
         mainMenuScene = "MainMenu";
@@ -97,8 +103,9 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         //Spawn network player:
         clientNetworkPlayer = PhotonNetwork.Instantiate(networkPlayerName, Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
         if (clientNetworkPlayer == null) Debug.LogError("Tried to spawn network player prefab that doesn't have NetworkPlayer component!");  //Indicate problem if relevant
-        else
-            clientNetworkPlayer.transform.SetParent(init.transform);
+        DontDestroyOnLoad(clientNetworkPlayer);
+        /*else
+            clientNetworkPlayer.transform.SetParent(init.transform);*/
     }
 
     // If we want to play without having to start from the Main Menu scene...
