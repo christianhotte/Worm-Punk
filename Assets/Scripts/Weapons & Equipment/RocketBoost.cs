@@ -6,15 +6,18 @@ using UnityEngine.InputSystem;
 public class RocketBoost : PlayerEquipment  //renametograpple
 {
     public Transform rocketTip,rocketTipReset,hookedPos,hookStartPos;
-    public GameObject HookModel,HookInstance,Player;
+    public GameObject HookModel,HookInstance,Player,lineCheckModel,lineCheckInstance;
     public Vector3 rayHitPoint, rocketTipStart;
     public float rocketPower=20,grappleDistance=10,releasePower=5,realDistance=0,hookSpeed=5, rayToHitDistance;
-    public bool Grapplin = false,grappleCooldown=true,grapplinWall=false,shootinHook=false,Pullin=false;
+    public bool Grapplin = false,grappleCooldown=true,grapplinWall=false,shootinHook=false,Pullin=false,checkinLine=false;
     public int hitType = 0;
     public MeshRenderer Rocket;
     public HookDetector hookScript;
     public LineRenderer cable;
     public SecondaryWeapons SawScript;
+    private HookLineChecker HLC;
+    public AudioSource grapAud;
+    public AudioSource hookHit;
     [Space()]
     public float sidePullStrength = 5f, fowardPullStrength = 10;
 
@@ -27,18 +30,40 @@ public class RocketBoost : PlayerEquipment  //renametograpple
         base.Awake();
        
     }
+    private protected override void FixedUpdate()
+    {
 
+       
+        base.FixedUpdate();
+    }
     // Update is called once per frame
     private protected override void Update()
     {
         // if(realDistance!= null) Debug.Log(realDistance);
 
+        
+
+        if (shootinHook)
+        {
+            if (HookInstance != null) //Put this here to MissingReferenceException error
+            {
+                if (!checkinLine)
+                {
+                    //checkinLine = true;
+                    //lineCheckInstance = Instantiate(lineCheckModel);
+                    //HLC = lineCheckInstance.GetComponent<HookLineChecker>();
+                    //HLC.GrapScrip = this.GetComponent<RocketBoost>();
+                    //lineCheckInstance.transform.position = hookStartPos.position;
+                }
+            }
+
+        }
         if (HookInstance != null)
         {
             realDistance = Vector3.Distance(rocketTip.position, HookInstance.transform.position); // gets distance to the hit
             rayToHitDistance = Vector3.Distance(rocketTip.position, HookInstance.transform.position);
             RaycastHit checkSaw;
-            var sawRay = Physics.Raycast(rocketTip.position, rocketTip.forward, out checkSaw,9999999, ~LayerMask.GetMask("PlayerWeapon","Player","Bullet","EnergyBlade","Hitbox"));
+            var sawRay = Physics.Raycast(rocketTip.position, rocketTip.forward, out checkSaw, 9999999, ~LayerMask.GetMask("PlayerWeapon", "Player", "Bullet", "EnergyBlade", "Hitbox"));
             rayToHitDistance = 999;
 
             if (checkSaw.collider == null) return;
@@ -54,34 +79,13 @@ public class RocketBoost : PlayerEquipment  //renametograpple
                     GrappleStop();
                 }
             }
-            if(rayToHitDistance < realDistance&&grappleCooldown)
+            if (rayToHitDistance < realDistance && grappleCooldown)
             {
                 Debug.Log(checkSaw.collider.name);
                 HookInstance.transform.position = checkSaw.point;
             }
         }
-
-        if (shootinHook)
-        {
-            //Rocket.enabled = false;
-            if (HookInstance != null) //Put this here to MissingReferenceException error
-            {
-                // HookInstance.transform.LookAt(rayHitPoint);
-              //  HookInstance.transform.LookAt(hookScript.hookLead);
-              //  hookScript = HookInstance.GetComponent<HookDetector>();
-               // HookInstance.transform.position = Vector3.MoveTowards(HookInstance.transform.position, hookScript.hookLead.transform.position, hookSpeed);
-                //HookInstance.transform.position = Vector3.MoveTowards(HookInstance.transform.position, rayHitPoint, hookSpeed);
-                //if (this.gameObject.GetComponent<LineRenderer>() != null)
-                //{
-
-                //    cable.SetPosition(0, rocketTip.transform.position);
-                //    cable.SetPosition(1, HookInstance.transform.position);
-                //}
-            }
-
-        }
-
-        if (Grapplin&&!grappleCooldown)
+        if (Grapplin && !grappleCooldown)
         {
             Vector3 newHandPos = player.xrOrigin.transform.InverseTransformPoint(targetTransform.position);
             Vector3 diff = hitHandPos - newHandPos;
@@ -93,16 +97,18 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             newPlayerVelocity += diff.normalized * (sidePullAmt * sidePullStrength);
             playerBody.velocity = newPlayerVelocity;//move the player
         }
-        if (!grappleCooldown && realDistance < 2.5&&grapplinWall)
+        if (!grappleCooldown && realDistance < 2.5 && grapplinWall)
         {
             playerBody.velocity = (rocketTip.up * releasePower); //the bounce after grapple is released
             GrappleStop();
         }
         else if (!grappleCooldown && realDistance < 2.5 && !grapplinWall)
         {
-           // playerBody.velocity = (rocketTip.forward * releasePower); //the bounce after grapple is released
+            // playerBody.velocity = (rocketTip.forward * releasePower); //the bounce after grapple is released
             GrappleStop();
         }
+
+
         base.Update();
     }
 
@@ -148,12 +154,12 @@ public class RocketBoost : PlayerEquipment  //renametograpple
            // rayHitPoint = hit.point;
             // StartCoroutine(GrappleLaunch());
             
-            cable = this.gameObject.AddComponent<LineRenderer>();
-            cable.startColor = Color.black;
-            cable.endColor = Color.black;
-            cable.material = new Material(Shader.Find("Sprites/Default"));
-            cable.startWidth = 0.01f;
-            cable.endWidth = 0.01f;
+            //cable = this.gameObject.AddComponent<LineRenderer>();
+            //cable.startColor = Color.black;
+            //cable.endColor = Color.black;
+            //cable.material = new Material(Shader.Find("Sprites/Default"));
+            //cable.startWidth = 0.01f;
+            //cable.endWidth = 0.01f;
             Grapplin = true;
             shootinHook = true;
             if (hit.collider == null) return;
@@ -171,6 +177,7 @@ public class RocketBoost : PlayerEquipment  //renametograpple
     public void HookHit()
     {
         hitHandPos = player.xrOrigin.transform.InverseTransformPoint(targetTransform.position);
+        shootinHook = false;
     }
     public void GrappleStop()
     {

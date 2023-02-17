@@ -893,6 +893,63 @@ MonoBehaviour:
   Version: 1
   owner: {fileID: 1929405246}
   helperSurfaces: []
+--- !u!1001 &289384286
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1952950442865560246, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_RootOrder
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952950442865560246, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -6872
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952950442865560246, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952950442865560246, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952950442865560246, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952950442865560246, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952950442865560246, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952950442865560246, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952950442865560246, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952950442865560246, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952950442865560246, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952950442865560247, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
+      propertyPath: m_Name
+      value: DemoPlayer4
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 025bfdd5bc85e7b4bb34fc9540a7189f, type: 3}
 --- !u!43 &486858960
 Mesh:
   m_ObjectHideFlags: 0
@@ -2403,6 +2460,10 @@ PrefabInstance:
     - target: {fileID: 8290651122862171407, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
       propertyPath: m_Name
       value: DemoPlayer3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8290651122862171407, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f654307f8bb1fff49a440e1d6bdc523e, type: 3}
@@ -6261,8 +6322,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthSettings: {fileID: 0}
+  maxHeadDistance: 0
+  targetHitSound: {fileID: 0}
   debugUpdateSettings: 0
   useSpawnPoint: 1
+  debugCenterCamera: 0
 --- !u!114 &4345303908910992737
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6838,17 +6902,22 @@ MonoBehaviour:
   debugUpdateSettings: 0
   blade: {fileID: 5276987456485641276}
   hand: {fileID: 79432218008259198}
+  ProjectilePrefab: {fileID: 0}
+  energyBlade: {fileID: 0}
+  rightGun: {fileID: 0}
+  StoredShots: []
   playerRB: {fileID: 3899098772216020862}
-  bladeRB: {fileID: 5276987456485641277}
   headpos: {fileID: 79432217940086962}
   attachedHand: {fileID: 0}
   bladeSheethed: {fileID: 5276987458361069876}
   bladeDeployed: {fileID: 5276987457194719986}
   bladeTip: {fileID: 5276987458398625173}
-  rocketTip: {fileID: 0}
-  ShotgunBarrelTip: {fileID: 4345303906983923913}
   stowedTip: {fileID: 1876528393}
   rayStartPoint: {fileID: 0}
+  bulletSpredPoint: {fileID: 0}
+  bladeImpulsePosition: {fileID: 0}
+  EnergyBladeStowed: {fileID: 0}
+  EnergyBladeExtended: {fileID: 0}
   activationTime: 0.2
   activationSpeed: 1.225
   timeAtSpeed: 0
@@ -6858,6 +6927,12 @@ MonoBehaviour:
   blockRadius: 10
   sawDistance: 0
   rayHitDistance: 0
+  maxSpreadAngle: 4
+  energySpeed: 5
+  maxPossibleHandSpeed: 10
+  minPossibleHandSpeed: 1
+  maxBladeReductSpeed: 1
+  explosiveForce: 5
   deployMotionCurve:
     serializedVersion: 2
     m_Curve: []
@@ -6888,10 +6963,21 @@ MonoBehaviour:
   deflectin: 0
   prevHandPos: {x: 0, y: 0, z: 0}
   tipPos: {x: 0, y: 0, z: 0}
+  storedScale: {x: 0, y: 0, z: 0}
+  energyBladeBaseScale: {x: 0, y: 0, z: 0}
+  energyTargetScale: {x: 0, y: 0, z: 0}
+  energyCurrentScale: {x: 0, y: 0, z: 0}
+  energyBladeStartSize: {x: 0, y: 0, z: 0}
   gripThreshold: 1
   projScript: {fileID: 0}
+  shotsHeld: 0
+  shotCap: 3
+  shotsToFire: 0
+  shotsCharged: 0
   sawAud: {fileID: 0}
   punchSound: {fileID: 0}
+  chainsawDeploy: {fileID: 0}
+  chainsawSheethe: {fileID: 0}
 --- !u!23 &5276987457194719984
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7350,6 +7436,9 @@ MonoBehaviour:
   hookStartPos: {fileID: 8846520014619030985}
   HookModel: {fileID: 8604787722161136775, guid: 15c372677a043224e8b147844ff4887c, type: 3}
   HookInstance: {fileID: 0}
+  Player: {fileID: 0}
+  lineCheckModel: {fileID: 0}
+  lineCheckInstance: {fileID: 0}
   rayHitPoint: {x: 0, y: 0, z: 0}
   rocketTipStart: {x: 0, y: 0, z: 0}
   rocketPower: 20
@@ -7362,11 +7451,15 @@ MonoBehaviour:
   grappleCooldown: 1
   grapplinWall: 0
   shootinHook: 0
+  Pullin: 0
+  checkinLine: 0
   hitType: 0
   Rocket: {fileID: 5276987458290609391}
   hookScript: {fileID: 0}
   cable: {fileID: 0}
   SawScript: {fileID: 0}
+  grapAud: {fileID: 0}
+  hookHit: {fileID: 0}
   sidePullStrength: 5
   fowardPullStrength: 10
 --- !u!33 &5276987458290609390
