@@ -63,7 +63,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         // The network players should never spawn in the main menu
         Scene scene = SceneManager.GetActiveScene();
 
-        //SpawnNetworkPlayer();
+        SpawnNetworkPlayer();
 
         /*if (scene.name == mainMenuScene)
         {

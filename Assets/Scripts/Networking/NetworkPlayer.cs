@@ -49,6 +49,8 @@ public class NetworkPlayer : MonoBehaviour
 
             LocalPlayerSettings(PlayerSettings.Instance.charData, false);
             SyncData();
+
+            foreach (Renderer r in transform.GetComponentsInChildren<Renderer>()) r.enabled = false;
         }
         SceneManager.sceneLoaded += OnSceneLoaded;
 
@@ -57,8 +59,13 @@ public class NetworkPlayer : MonoBehaviour
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "MainMenu") photonView.RPC("RPC_MakeInvisible", RpcTarget.AllBuffered);
-        else photonView.RPC("RPC_MakeVisible", RpcTarget.AllBuffered);
+        //Update network visibility:
+        if (scene.name == "MainMenu") { photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered); }
+        else { photonView.RPC("RPC_MakeVisible", RpcTarget.OthersBuffered); }
+
+        //Update client collisions:
+        bool inMenuScenes = scene.name == "NetworkLockerRoom" || scene.name == "MainMenu";
+        foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = !inMenuScenes;
 
         if (photonView.IsMine) SetRig();
     }
@@ -73,7 +80,10 @@ public class NetworkPlayer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (SceneManager.GetActiveScene().name == "MainMenu") photonView.RPC("RPC_MakeInvisible", RpcTarget.AllBuffered);
+        if (SceneManager.GetActiveScene().name == "MainMenu")
+        {
+            photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered);
+        }
         if (photonView.IsMine) SetRig();
 
         // Gets the player list
@@ -88,12 +98,15 @@ public class NetworkPlayer : MonoBehaviour
         }
 
         //Ignore collisions:
+        bool inMenuScenes = SceneManager.GetActiveScene().name == "NetworkLockerRoom" || SceneManager.GetActiveScene().name == "MainMenu";
         foreach (Collider collider in GetComponentsInChildren<Collider>())
         {
             foreach (Collider otherCollider in XROrigin.transform.parent.GetComponentsInChildren<Collider>())
             {
                 Physics.IgnoreCollision(collider, otherCollider);
             }
+
+            collider.enabled = !inMenuScenes;
         }
 
         //Hide client renderers:
