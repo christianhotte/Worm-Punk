@@ -20,6 +20,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     [SerializeField, Tooltip("Sound projectile makes when it's homing in on a player.")]                        private AudioClip homingSound;
 
     //Runtime Variables:
+    private bool dumbFired;      //Indicates that this projectile was fired by a non-player
     internal int originPlayerID; //PhotonID of player which last fired this projectile
     private Vector3 velocity;    //Speed and direction at which projectile is traveling
     private Transform target;    //Transform which projectile is currently homing toward
@@ -192,7 +193,7 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Check for hit:
-        if (photonView.IsMine) //Only check for hits on local projectile
+        if (photonView.IsMine || dumbFired) //Only check for hits on local projectile
         {
             if (Physics.Linecast(transform.position, newPosition, out RaycastHit hitInfo, ~settings.ignoreLayers)) //Do a simple linecast, only ignoring designated layers
             {
@@ -213,9 +214,9 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Perform move:
-        transform.position = newPosition;                                                                //Move projectile to target position
-        transform.rotation = Quaternion.LookRotation(velocity);                                          //Rotate projectile to align with current velocity
-        if (photonView.IsMine) { if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); } //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
+        transform.position = newPosition;                                                                             //Move projectile to target position
+        transform.rotation = Quaternion.LookRotation(velocity);                                                       //Rotate projectile to align with current velocity
+        if (photonView.IsMine || dumbFired) { if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); } //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
     }
 
     //FUNCTIONALITY METHODS:
@@ -228,7 +229,14 @@ public class Projectile : MonoBehaviourPunCallbacks
         target = newTarget;              //Set potential target as chosen target
         prevTargetPos = target.position; //Initialize target position tracker
 
+        //Effects:
+        if (homingMat != null) GetComponentInChildren<Renderer>().material = homingMat; //Change color to indicate that it has successfully locked on to target
+        audioSource.loop = true;                                                        //Make audiosource loop
+        audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
+        audioSource.Play();                                                             //Play homing sound on loop
+
         //Have other projectiles acquire target:
+        if (dumbFired) return;
         if (!target.TryGetComponent(out PhotonView targetView)) targetView = target.GetComponentInParent<PhotonView>(); //Try to get photonView from target
         if (targetView != null) //Target has a photon view component
         {
@@ -249,12 +257,6 @@ public class Projectile : MonoBehaviourPunCallbacks
             }
         }
         photonView.RPC("RPC_Move", RpcTarget.Others, transform.position); //Sync up position and velocity between all versions of networked projectile
-
-        //Effects:
-        if (homingMat != null) GetComponentInChildren<Renderer>().material = homingMat; //Change color to indicate that it has successfully locked on to target
-        audioSource.loop = true;                                                        //Make audiosource loop
-        audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
-        audioSource.Play();                                                             //Play homing sound on loop
     }
     /// <summary>
     /// Makes projectile lose its current target.
@@ -266,8 +268,8 @@ public class Projectile : MonoBehaviourPunCallbacks
         audioSource.Stop();                                    //Stop playing homing sound
 
         //Cleanup:
-        target = null;                                      //Clear active target
-        photonView.RPC("RPC_LostTarget", RpcTarget.Others); //Indicate to all other projectiles that target has been lost
+        target = null;                                                      //Clear active target
+        if (!dumbFired) photonView.RPC("RPC_LostTarget", RpcTarget.Others); //Indicate to all other projectiles that target has been lost
     }
 
     //INPUT METHODS:
@@ -301,8 +303,16 @@ public class Projectile : MonoBehaviourPunCallbacks
 
         //Cleanup:
         print("Projectile Fired!");
-        transform.position = targetPosition;                                                         //Move to initial position
-        if (photonView.IsMine && settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
+        transform.position = targetPosition;                                                                        //Move to initial position
+        if ((photonView.IsMine || dumbFired) && settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
+    }
+    /// <summary>
+    /// Safely fires projectile with no player reference.
+    /// </summary>
+    public void FireDumb(Transform barrel)
+    {
+        dumbFired = true; //Indicate that projectile was fired without player
+        Fire(barrel);     //Do normal firing procedure
     }
 
     //REMOTE METHODS:
@@ -385,8 +395,8 @@ public class Projectile : MonoBehaviourPunCallbacks
         if (targetPlayer == null) targetPlayer = hitInfo.collider.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
         if (targetPlayer != null) //Hit object was a player
         {
-            targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);                                  //Indicate to player that it has been hit
-            if (originPlayerID != 0) PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
+            targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);                                                //Indicate to player that it has been hit
+            if (!dumbFired && originPlayerID != 0) PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
         }
         else //Hit object is not a player
         {
@@ -406,6 +416,13 @@ public class Projectile : MonoBehaviourPunCallbacks
     }
     private void Delete()
     {
-        if (photonView.IsMine || photonView.ViewID == 0) PhotonNetwork.Destroy(gameObject);
+        if (!dumbFired)
+        {
+            if (photonView.IsMine || photonView.ViewID == 0) PhotonNetwork.Destroy(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }
