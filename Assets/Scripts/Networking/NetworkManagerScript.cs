@@ -13,8 +13,10 @@ being called when we are connected to the server, or someone joins the server/ro
 public class NetworkManagerScript : MonoBehaviourPunCallbacks
 {
     public static NetworkManagerScript instance;
-
+    
     public bool joinRoomOnLoad = true;
+
+    private GameObject init;
 
     // On awake function
     private void Awake()
@@ -26,6 +28,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         }
         else
             Destroy(gameObject);
+        init = FindObjectOfType<GameManager>().gameObject;
     }
 
     // Start is called before the first frame update
@@ -33,6 +36,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     {
         //We want to connect to the Unity server at the beginning of the game.
         ConnectAndGiveDavidYourIPAddress();
+        //PlayerController.instance.transform.SetParent(init.transform);
     }
 
     public void ConnectAndGiveDavidYourIPAddress()
@@ -75,8 +79,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
 
         Debug.Log("Joined a lobby.");
         base.OnJoinedLobby();
-        PhotonNetwork.NickName = "Player " + Random.Range(0, 1000).ToString("0000");
-        PlayerSettings.Instance.charData.playerName = PhotonNetwork.NickName;
+        SetPlayerNickname("Player " + Random.Range(0, 1000).ToString("0000"));
 
         // Setting up the room options
         if (joinRoomOnLoad && !PhotonNetwork.InRoom)
@@ -96,7 +99,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         roomOptions.IsVisible = true; // The player is able to see the room
         roomOptions.IsOpen = true; // The room is open.
         roomOptions.EmptyRoomTtl = 0; // Leave the room open for 0 milliseconds after the room is empty
-        roomOptions.MaxPlayers = 10;
+        roomOptions.MaxPlayers = 6;
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
     }
 

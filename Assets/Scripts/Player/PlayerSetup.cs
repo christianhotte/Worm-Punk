@@ -6,9 +6,9 @@ using UnityEngine.XR.Interaction.Toolkit;
 [RequireComponent(typeof(PlayerController))]
 public class PlayerSetup : MonoBehaviour
 {
-    public void SetPlayer(CharacterData charData)
+    public void SetPlayer()
     {
-        SetColor(charData.testColor);
+        SetColor(PlayerSettings.Instance.charData.testColor);
     }
 
     /// <summary>

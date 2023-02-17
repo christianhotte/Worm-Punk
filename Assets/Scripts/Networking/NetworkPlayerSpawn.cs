@@ -51,7 +51,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     public void OnSceneLoaded(Scene loadedScene, LoadSceneMode mode)
     {
         // Checks for debugging if you have debugging checked off. Throw a AutoJoinRoom script on something.
-        StartCoroutine(CheckForDebugging());
+        //StartCoroutine(CheckForDebugging());
 
         // Spawns the network player in the tube scene.
         if (loadedScene.name == networkSceneName)
@@ -68,13 +68,16 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
 
         // The network players should never spawn in the main menu
         Scene scene = SceneManager.GetActiveScene();
-        if (scene.name == mainMenuScene)
+
+        SpawnNetworkPlayer();
+
+        /*if (scene.name == mainMenuScene)
         {
             return;
         }
 
         // Spawns network players when you join a room on any other scene besides the main menu.
-        /*else
+        else
         {
             SpawnNetworkPlayer();
         }*/
@@ -102,7 +105,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     IEnumerator CheckForDebugging()
     {
         // Waits for the Network Manager Script to check for joinRoomOnLoad
-        yield return new WaitForSeconds(3f); // Seconds
+        while (!PhotonNetwork.InRoom) yield return null; //Wait until system is connected to network
 
         // If we are debugging, then we can just test without having to start from the main menu.
         if (NetworkManagerScript.instance.joinRoomOnLoad == true)
