@@ -71,17 +71,15 @@ public class SecondaryWeapons : PlayerEquipment
             }
         }
         tipPos = bladeTip.transform.position;
-        Collider[] hits = Physics.OverlapSphere(tipPos, grindRange);
+        Collider[] hits = Physics.OverlapSphere(tipPos, grindRange, ~LayerMask.GetMask("PlayerWeapon", "Player", "Bullet", "EnergyBlade","Blade", "Hitbox"));
         grindin = false;
         foreach (var hit in hits)
         {
 
-            if (hit.gameObject.tag != "Player"&&hit.tag!="Blade"&&hit.tag != "Bullet"&&hit.gameObject.tag != "Barrel")
-            {
-               // Debug.Log(hit.name);
+               Debug.Log(hit.name);
                 grindin = true;
                 break;
-            }
+            
         }
         if (deployed)
         {
