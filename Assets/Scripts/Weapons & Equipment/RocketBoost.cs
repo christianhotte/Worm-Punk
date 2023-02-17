@@ -6,10 +6,10 @@ using UnityEngine.InputSystem;
 public class RocketBoost : PlayerEquipment  //renametograpple
 {
     public Transform rocketTip,rocketTipReset,hookedPos,hookStartPos;
-    public GameObject HookModel,HookInstance;
+    public GameObject HookModel,HookInstance,Player;
     public Vector3 rayHitPoint, rocketTipStart;
     public float rocketPower=20,grappleDistance=10,releasePower=5,realDistance=0,hookSpeed=5, rayToHitDistance;
-    public bool Grapplin = false,grappleCooldown=true,grapplinWall=false,shootinHook=false;
+    public bool Grapplin = false,grappleCooldown=true,grapplinWall=false,shootinHook=false,Pullin=false;
     public int hitType = 0;
     public MeshRenderer Rocket;
     public HookDetector hookScript;
@@ -38,7 +38,7 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             realDistance = Vector3.Distance(rocketTip.position, HookInstance.transform.position); // gets distance to the hit
             rayToHitDistance = Vector3.Distance(rocketTip.position, HookInstance.transform.position);
             RaycastHit checkSaw;
-            var sawRay = Physics.Raycast(rocketTip.position, rocketTip.forward, out checkSaw,9999999, ~LayerMask.GetMask("PlayerWeapon"));
+            var sawRay = Physics.Raycast(rocketTip.position, rocketTip.forward, out checkSaw,9999999, ~LayerMask.GetMask("PlayerWeapon","Player"));
             rayToHitDistance = 999;
 
             if (checkSaw.collider == null) return;
@@ -56,6 +56,7 @@ public class RocketBoost : PlayerEquipment  //renametograpple
             }
             if(rayToHitDistance < realDistance&&grappleCooldown)
             {
+                Debug.Log(checkSaw.collider.name);
                 HookInstance.transform.position = checkSaw.point;
             }
         }

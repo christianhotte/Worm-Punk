@@ -12,6 +12,7 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
     //Objects & Components:
     internal NewShotgunController clientGun; //Client weapon associated with this networked weapon (NOTE: this reference is only present on the local client version of this script)
     internal string projectileResourceName;  //Name of projectile to be fired in Resources folder
+    private AudioSource audioSource;         //Audio source component on this remote shotgun
 
     //Runtime Variables:
     private Handedness handedness; //Which hand this shotgun is associated with
@@ -23,6 +24,9 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
         if (transform.parent.name.Contains("Left") || transform.parent.name.Contains("left")) handedness = Handedness.Left;                                                     //Indicate left-handedness
         else if (transform.parent.name.Contains("Right") || transform.parent.name.Contains("right")) handedness = Handedness.Right;                                             //Indicate right-handedness
         else { Debug.LogWarning("RemoteShotgunController " + name + " could not determine handedness, make sure it's parent object has the word Right or Left in its name."); } //Post error if handedness could not be determined
+
+        //Get objects & components:
+        if (!TryGetComponent(out audioSource)) audioSource = gameObject.AddComponent<AudioSource>(); //Make sure gun has audioSource
     }
     private void Start()
     {
@@ -52,8 +56,12 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
     /// </summary>
     public void LocalFire(Transform barrel)
     {
-        //Validity checks:
-        if (!this.photonView.IsMine) return; //Ignore if this method is not being called on this client
+        //Initialization:
+        if (!this.photonView.IsMine) //This is a remote weapon
+        {
+            audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Default_Shotgun_Sound")); //Play sound on remote clients
+            return;                                                                             //Ignore if this method is not being called on this client
+        }
 
         //Launch projectile:
         Projectile projectile = PhotonNetwork.Instantiate(projectileResourceName, barrel.position, barrel.rotation).GetComponent<Projectile>(); //Instantiate projectile across network

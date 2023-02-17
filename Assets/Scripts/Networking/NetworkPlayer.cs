@@ -28,6 +28,7 @@ public class NetworkPlayer : MonoBehaviour
     // Gets a list of all of the players on the network
     Player[] allPlayers;
     int myNumberInRoom;
+    private bool disabled = false;
 
     //Player Data
     private PlayerSetup playerSetup;    //The player's setup component
@@ -46,9 +47,24 @@ public class NetworkPlayer : MonoBehaviour
             PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
             SceneManager.sceneLoaded += SettingsOnLoad;
 
-            LocalPlayerSettings(playerSetup.GetCharacterData(), false);
+            LocalPlayerSettings(PlayerSettings.Instance.charData, false);
             SyncData();
         }
+        if (SceneManager.GetActiveScene().name == "MainMenu") ChangeVisibility(false);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "MainMenu") ChangeVisibility(false);
+        else ChangeVisibility(true);
+    }
+
+    private void ChangeVisibility(bool makeEnabled)
+    {
+        disabled = !makeEnabled;
+        foreach (Renderer r in transform.GetComponentsInChildren<Renderer>()) r.enabled = makeEnabled;
+        foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = makeEnabled;
     }
 
     // Start is called before the first frame update
@@ -102,21 +118,25 @@ public class NetworkPlayer : MonoBehaviour
     /// <param name="mode">The mode in which the scene was loaded in.</param>
     private void SettingsOnLoad(Scene scene, LoadSceneMode mode)
     {
-        LoadPlayerSettings(playerSetup.CharDataToString());
+        Debug.Log("Function called on load...");
+        //LoadPlayerSettings(playerSetup.CharDataToString());
     }
 
     private void SyncData()
     {
         Debug.Log("Syncing Player Data...");
-        string characterData = playerSetup.CharDataToString();
-        photonView.RPC("LoadPlayerSettings", RpcTarget.OthersBuffered, characterData);
+        string characterData = PlayerSettings.Instance.CharDataToString();
+        photonView.RPC("LoadPlayerSettings", RpcTarget.AllBuffered, characterData);
     }
 
     [PunRPC]
     public void LoadPlayerSettings(string data)
     {
-        Debug.Log("Loading Player Settings...");
-        LocalPlayerSettings(JsonUtility.FromJson<CharacterData>(data), true);
+        if (photonView.IsMine)
+        {
+            Debug.Log("Loading Player Settings...");
+            LocalPlayerSettings(JsonUtility.FromJson<CharacterData>(data), true);
+        }
     }
 
     private void LocalPlayerSettings(CharacterData charData, bool isOnNetwork)

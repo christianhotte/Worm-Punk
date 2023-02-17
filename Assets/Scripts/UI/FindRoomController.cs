@@ -60,7 +60,6 @@ public class FindRoomController : MonoBehaviour
         else
         {
             ShowRoomList(false);
-            slider.gameObject.SetActive(false);
             return;
         }
 
@@ -70,10 +69,7 @@ public class FindRoomController : MonoBehaviour
         if (listedRooms.Length > 1)
         {
             menuItemGlobalHeight = Mathf.Abs(listedRooms[1].GetComponent<RectTransform>().position.y - listedRooms[0].GetComponent<RectTransform>().position.y);
-            slider.gameObject.SetActive(false);
         }
-        else if (!slider.gameObject.activeInHierarchy)
-            slider.gameObject.SetActive(true);
 
         int counter = 1;
         foreach (var rooms in listedRooms)

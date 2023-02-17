@@ -26,6 +26,7 @@ public class NewShotgunController : PlayerEquipment
     private float breachOpenTime = 0;   //Time breach has been open for (zero if breach is closed)
     private bool triggerPulled = false; //Whether or not the trigger is currently pulled
     private float doubleFireWindow = 0; //Above zero means that weapon has just been fired and firing another weapon will cause a double fire
+    internal bool locked = false;       //Lets the other equipment disable the guns
 
     //RUNTIME METHODS:
     private protected override void Awake()
@@ -110,7 +111,7 @@ public class NewShotgunController : PlayerEquipment
         //Validation:
         if (loadedShots <= 0) { DryFire(); return; } //Dry-fire if weapon is out of shots
         if (breachOpen) { DryFire(); return; }       //Dry-fire if weapon breach is open
-
+        if (locked) return;                          //Return if locked by another weapon
         //Initialization:
         Transform currentBarrel = barrels[currentBarrelIndex]; //Get reference to active barrel
 
@@ -145,7 +146,7 @@ public class NewShotgunController : PlayerEquipment
     public void Eject()
     {
         //Validity checks:
-        if (breachOpen) //Breach is already open
+        if (breachOpen||locked) //Breach is already open or gun is locked
         {
             //SOUND EFFECT
             return; //Ignore everything else
