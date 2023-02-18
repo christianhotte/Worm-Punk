@@ -20,11 +20,13 @@ public class Projectile : MonoBehaviourPunCallbacks
     [SerializeField, Tooltip("Sound projectile makes when it's homing in on a player.")]                        private AudioClip homingSound;
 
     //Runtime Variables:
-    private bool dumbFired;      //Indicates that this projectile was fired by a non-player
-    internal int originPlayerID; //PhotonID of player which last fired this projectile
-    private Vector3 velocity;    //Speed and direction at which projectile is traveling
-    private Transform target;    //Transform which projectile is currently homing toward
-    private float totalDistance; //Total travel distance covered by this projectile
+    private bool dumbFired;          //Indicates that this projectile was fired by a non-player
+    private float estimatedLifeTime; //Approximate projectile lifetime calculated based on velocity and range
+    internal int originPlayerID;     //PhotonID of player which last fired this projectile
+    private Vector3 velocity;        //Speed and direction at which projectile is traveling
+    private Transform target;        //Transform which projectile is currently homing toward
+    private float totalDistance;     //Total travel distance covered by this projectile
+    private float timeAlive;         //How much time this projectile has been alive for
 
     private Vector3 prevTargetPos; //Previous position of target, used for velocity prediction
     private Material origMat;      //Original material projectile had when spawned
@@ -86,7 +88,6 @@ public class Projectile : MonoBehaviourPunCallbacks
                 Vector3 targetSep = potentialTarget.position - transform.position; //Get distance and direction from projectile to target
                 float targetDist = targetSep.magnitude;                            //Distance from projectile to target
                 float targetAngle = Vector3.Angle(targetSep, transform.forward);   //Get angle between target direction and projectile movement direction
-                print("TargPos: " + potentialTarget.position + " | ProjPos: " + transform.position);
                 if (targetAngle > settings.targetDesignationAngle.y)               //Angle to potential target is so steep that projectile will likely never hit
                 {
                     potentialTargets.RemoveAt(x); //Remove this target from list of potential targets
@@ -214,9 +215,16 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Perform move:
-        transform.position = newPosition;                                                                             //Move projectile to target position
-        transform.rotation = Quaternion.LookRotation(velocity);                                                       //Rotate projectile to align with current velocity
-        if (photonView.IsMine || dumbFired) { if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); } //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
+        transform.position = newPosition;                       //Move projectile to target position
+        transform.rotation = Quaternion.LookRotation(velocity); //Rotate projectile to align with current velocity
+
+        //Burnout check:
+        if (photonView.IsMine || dumbFired) ////Only check if projectile is authoritative version
+        {
+            timeAlive += Time.fixedDeltaTime;                                     //Update time tracker
+            if (timeAlive > estimatedLifeTime) BurnOut();                         //Burn projectile out if it has been alive for too long
+            if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); //Destroy projectile if it has reached its maximum range
+        }
     }
 
     //FUNCTIONALITY METHODS:
@@ -302,9 +310,13 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Cleanup:
-        print("Projectile Fired!");
-        transform.position = targetPosition;                                                                        //Move to initial position
-        if ((photonView.IsMine || dumbFired) && settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
+        if (printDebug) print("Projectile Fired!"); //Print debug signal if called for
+        transform.position = targetPosition;        //Move to initial position
+        if (photonView.IsMine || dumbFired) //This is the authoritative version of the projectile
+        {
+            if (settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition if projectile does homing
+            estimatedLifeTime = settings.range / settings.initialVelocity;          //Calculate approximate lifetime based on range and velocity
+        }
     }
     /// <summary>
     /// Safely fires projectile with no player reference.

@@ -18,9 +18,9 @@ MonoBehaviour:
   range: 150
   barrelGap: 0.7
   drop: 0
-  homingStrength: 75
-  targetDesignationAngle: {x: 18, y: 70}
-  targetingDistance: 60
+  homingStrength: 250
+  targetDesignationAngle: {x: 7.5, y: 90}
+  targetingDistance: 50
   LOSTargeting: 0
   alwaysLookForTarget: 1
   predictionStrength: 0.65

@@ -20,6 +20,7 @@ public class ShotgunSettings : ScriptableObject
     [Header("Gunfeel:")]
     [Range(0, 1), Tooltip("How far back the player has to pull the trigger before it fires.")]             public float triggerThreshold = 1;
     [Tooltip("Amount of upward recoil force applied to weapon rigidbody when firing (mostly aesthetic).")] public float recoilTorque;
+    [Tooltip("Strength of force used to close breach when swinging guns vertically.")]                     public float closerForce;
     [Header("Sounds:")]
     [Tooltip("SFX for when weapon is fired")]  public AudioClip fireSound;
     [Tooltip("SFX for when breach is opened")] public AudioClip ejectSound;

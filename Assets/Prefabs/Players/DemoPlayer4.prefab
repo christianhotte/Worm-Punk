@@ -1002,10 +1002,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthSettings: {fileID: 11400000, guid: 6d24db3effe67fb47a10bfaa9621390b, type: 2}
   maxHeadDistance: 0
-  targetHitSound: {fileID: 0}
+  targetHitSound: {fileID: 8300000, guid: 531eac65f6344cf478fc990cb0396400, type: 3}
   debugUpdateSettings: 0
   useSpawnPoint: 1
   debugCenterCamera: 0
+  debugSpawnNetworkPlayer: 0
+  debugDeSpawnNetworkPlayer: 0
 --- !u!114 &4754151018597248020
 MonoBehaviour:
   m_ObjectHideFlags: 0

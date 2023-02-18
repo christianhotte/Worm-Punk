@@ -13,6 +13,8 @@ public class NewShotgunController : PlayerEquipment
     internal RemoteShotgunController networkedGun; //Remote weapon script used to fire guns on the network
     internal NewShotgunController otherGun;        //Shotgun in the player's other hand
 
+    private ParticleSystem shotParticles; //Particle system which activates each time weapon is fired
+
     //Settings:
     [SerializeField, Tooltip("Transforms representing position and direction of weapon barrels.")] private Transform[] barrels;
     [Tooltip("Settings object which determines general weapon behavior.")]                         public ShotgunSettings gunSettings;
@@ -34,6 +36,7 @@ public class NewShotgunController : PlayerEquipment
         //Validation & component get:
         if (barrels.Length == 0) Debug.LogWarning("Shotgun " + " has no assigned barrel transforms!");                                                                        //Warn player if no barrels have been assigned to shotgun
         breakJoint = GetComponentInChildren<ConfigurableJoint>(); if (breakJoint == null) { Debug.LogWarning("Shotgun does not have Configurable Joint for break action!"); } //Get configurable break joint (before spawning another one in base method)
+        shotParticles = GetComponentInChildren<ParticleSystem>();                                                                                                             //Get particle system from children (fix this if multiple systems end up getting added)
         base.Awake();                                                                                                                                                         //Run base awake method
 
         //Check settings:
@@ -67,6 +70,14 @@ public class NewShotgunController : PlayerEquipment
             if (breachOpenTime >= gunSettings.cooldownTime) Reload();                              //Reload weapon once cooldown time has been reached
         }
         if (doubleFireWindow > 0) doubleFireWindow = Mathf.Max(doubleFireWindow - Time.deltaTime, 0); //Decrement time tracker and floor at zero
+
+        //Check for swing-closing:
+        if (breachOpen) //Weapon breach is currently open
+        {
+            //NOTE: Make sure this works
+            float closeForce = gunSettings.closerForce * Time.deltaTime * Vector3.Project(RelativeVelocity, targetTransform.up).magnitude;                                      //Get base force to apply to hinge
+            breakJoint.GetComponent<Rigidbody>().AddForceAtPosition(barrels[currentBarrelIndex].up * closeForce, barrels[currentBarrelIndex].position, ForceMode.Acceleration); //Apply upward torque to hinged part
+        }
     }
 
     //INPUT METHODS:
@@ -129,6 +140,10 @@ public class NewShotgunController : PlayerEquipment
             projectile.FireDumb(currentBarrel);                                                                                                     //Initialize projectile
         }
         else networkedGun.LocalFire(currentBarrel); //Fire weapon on the network
+
+        //Other effects:
+        shotParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); //Reset particle system
+        shotParticles.Play();                                                      //Play particle effect
 
         //Cleanup:
         doubleFireWindow = gunSettings.doubleFireTime; //Open double fire window so that other weapon can check for it

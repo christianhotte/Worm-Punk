@@ -25,7 +25,7 @@ public class PlayerEquipment : MonoBehaviour
     //Settings:
     [Header("Settings:")]
     [SerializeField, Tooltip("Settings defining this equipment's physical joint behavior.")] private EquipmentJointSettings jointSettings;
-    [SerializeField, Tooltip("Enables constant joint updates for testing purposes.")] private protected bool debugUpdateSettings;
+    [SerializeField, Tooltip("Enables constant joint updates for testing purposes.")]        private protected bool debugUpdateSettings;
 
     //Runtime Variables:
     /// <summary>
@@ -36,6 +36,33 @@ public class PlayerEquipment : MonoBehaviour
     /// Equipment in stasis will do nothing and check nothing until it is re-equipped to a player.
     /// </summary>
     internal bool inStasis = false;
+
+    private List<Vector3> relPosMem = new List<Vector3>(); //List of remembered relative positions (taken at FixedUpdate) used to calculate current relative velocity (newest entries are first)
+
+    //Utility Variables:
+    /// <summary>
+    /// Current position of transform target relative to player body.
+    /// </summary>
+    private protected Vector3 RelativePosition
+    {
+        get
+        {
+            if (playerBody == null) return Vector3.zero;                                      //Return nothing if equipment is not attached to a real player
+            else return playerBody.transform.InverseTransformPoint(targetTransform.position); //Use inverse transform point to determine the position of the weapon relative to its player body
+        }
+    }
+    /// <summary>
+    /// Current velocity (in units per second) of transform target relative to player body.
+    /// </summary>
+    private protected Vector3 RelativeVelocity
+    {
+        get
+        {
+            if (relPosMem.Count < 1) return Vector3.zero;                                                          //Return nothing if there is no positional memory to go off of
+            else if (relPosMem.Count == 1) return (RelativePosition - relPosMem[0]) / Time.fixedDeltaTime;         //Return difference between single memory entry and current relative position if necessary
+            else return (relPosMem[0] - relPosMem[relPosMem.Count - 1]) / (Time.fixedDeltaTime * relPosMem.Count); //Return difference between newest and oldest entries over time if more than two positions are in memory
+        }
+    }
 
     //RUNTIME METHODS:
     private protected virtual void Awake()
@@ -131,6 +158,11 @@ public class PlayerEquipment : MonoBehaviour
     }
     private protected virtual void FixedUpdate()
     {
+        //Update position memory:
+        relPosMem.Insert(0, RelativePosition);                                                       //Add current relative position to beginning of memory list
+        if (relPosMem.Count > jointSettings.positionMemory) relPosMem.RemoveAt(relPosMem.Count - 1); //Keep list size constrained to designated amount (removing oldest entries)
+
+        //Cleanup:
         PerformFollowerUpdate(); //Update follower transform
     }
     private protected virtual void OnPreRender()
