@@ -22,6 +22,6 @@ MonoBehaviour:
   triggerThreshold: 0.9
   recoilTorque: 100
   closerForce: 10
-  fireSound: {fileID: 8300000, guid: d6ff731213e1def46a4a587f12f7ee3c, type: 3}
+  fireSound: {fileID: 8300000, guid: 6f40f3a5777ecd341b528bef3ca42e8c, type: 3}
   ejectSound: {fileID: 8300000, guid: 48624e662f82de94b88110c4e8d90ed6, type: 3}
-  lockSound: {fileID: 8300000, guid: 48aeda10bd3473b4f855cc0764932914, type: 3}
+  lockSound: {fileID: 8300000, guid: 3e15122a331d49f4986d8d3ec8a4883d, type: 3}

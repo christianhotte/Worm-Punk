@@ -60,14 +60,12 @@ public class NetworkPlayer : MonoBehaviour
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         //Update network visibility:
-        if (scene.name == "MainMenu") { photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered); }
+        if (scene.name == NetworkManagerScript.instance.mainMenuScene) { photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered); }
         else { photonView.RPC("RPC_MakeVisible", RpcTarget.OthersBuffered); }
-
-        //Update client collisions:
-        bool inMenuScenes = scene.name == "NetworkLockerRoom" || scene.name == "MainMenu";
-        foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = !inMenuScenes;
-
-        if (photonView.IsMine) SetRig();
+        
+        //Cleanup:
+        foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = !NetworkManagerScript.IsInMenuScene; //Disable colliders if networkPlayer is in a menu scene
+        if (photonView.IsMine) SetRig();                                                                                       //Re-apply rig to new scene's PlayerController
     }
 
     private void ChangeVisibility(bool makeEnabled)

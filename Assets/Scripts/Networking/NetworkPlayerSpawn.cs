@@ -13,10 +13,6 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     
     private NetworkPlayer clientNetworkPlayer; //Instance of local client's network player in scene
     [SerializeField] private string networkSceneName = "NetworkLockerRoom";
-    //private GameObject init;
-    //private GameObject demoPlayer;
-
-    private string mainMenuScene;
 
     //Settings:
     [Header("Resource References:")]
@@ -30,8 +26,6 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
         //init = FindObjectOfType<GameManager>().gameObject;
         
         // If it's the main menu scene, then we are throwing the DemoPlayer into the DontDestroyOnLoad
-        
-        mainMenuScene = "MainMenu";
         SceneManager.sceneLoaded += OnSceneLoaded; // Subscribes to event manager
     }
 
@@ -100,7 +94,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     }
 
     // If we want to play without having to start from the Main Menu scene...
-    IEnumerator CheckForDebugging()
+    /*IEnumerator CheckForDebugging()
     {
         // Waits for the Network Manager Script to check for joinRoomOnLoad
         while (!PhotonNetwork.InRoom) yield return null; //Wait until system is connected to network
@@ -127,5 +121,5 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
                 SpawnNetworkPlayer();
             }
         }
-    }
+    }*/
 }
