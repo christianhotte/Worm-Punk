@@ -142,6 +142,8 @@ public class NewShotgunController : PlayerEquipment
         else networkedGun.LocalFire(currentBarrel); //Fire weapon on the network
 
         //Other effects:
+        SendHapticImpulse(gunSettings.fireHaptics);                                //Play haptic impulse
+        if (player != null) player.ShakeScreen(gunSettings.fireScreenShake);       //Shake screen (gently)
         shotParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); //Reset particle system
         shotParticles.Play();                                                      //Play particle effect
 
@@ -177,6 +179,7 @@ public class NewShotgunController : PlayerEquipment
 
         //Cleanup:
         if (gunSettings.ejectSound != null) audioSource.PlayOneShot(gunSettings.ejectSound); //Play sound effect
+        SendHapticImpulse(gunSettings.ejectHaptics);                                         //Play haptic impulse
         breachOpen = true;                                                                   //Indicate that breach is now open
     }
     /// <summary>
@@ -196,6 +199,7 @@ public class NewShotgunController : PlayerEquipment
 
         //Cleanup:
         if (gunSettings.lockSound != null) audioSource.PlayOneShot(gunSettings.lockSound); //Play sound effect
+        SendHapticImpulse(gunSettings.closeHaptics);                                       //Play haptic impulse
         breachOpenTime = 0;                                                                //Reset breach open time tracker
         breachOpen = false;                                                                //Indicate that breach is now closed
     }

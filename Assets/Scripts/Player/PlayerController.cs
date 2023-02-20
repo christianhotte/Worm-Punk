@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour
     private AudioSource audioSource;           //Main player audio source
     private Transform camOffset;               //Object used to offset camera position in case of weirdness
     private InputActionMap inputMap;           //Input map which player uses
+    private ScreenShakeVR screenShaker;        //Component used to safely shake player's screen without causing nausea
 
     //Settings:
     [Header("Settings:")]
@@ -75,6 +76,7 @@ public class PlayerController : MonoBehaviour
         bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>();                                                                                                          //Get renderer component for player's physical body
         camOffset = cam.transform.parent;                                                                                                                                      //Get camera offset object
         inputMap = GetComponent<PlayerInput>().actions.FindActionMap("XRI Generic Interaction");                                                                               //Get generic input map from PlayerInput component
+        screenShaker = cam.GetComponent<ScreenShakeVR>();                                                                                                                      //Get screenshaker script from camera object
 
         ActionBasedController[] hands = GetComponentsInChildren<ActionBasedController>();                                    //Get both hands in player object
         if (hands[0].name.Contains("Left") || hands[0].name.Contains("left")) { leftHand = hands[0]; rightHand = hands[1]; } //First found component is on left hand
@@ -255,6 +257,14 @@ public class PlayerController : MonoBehaviour
         currentHealth = healthSettings.defaultHealth; //Reset to max health
         print("Player Killed!");
     }
+    /// <summary>
+    /// Safely shakes the player's eyeballs.
+    /// </summary>
+    public void ShakeScreen(float intensity, float time) { screenShaker.Shake(intensity, time); }
+    /// <summary>
+    /// Safely shakes the player's eyeballs, but this time with a convenient vector.
+    /// </summary>
+    public void ShakeScreen(Vector2 shakeSettings) { screenShaker.Shake(shakeSettings.x, shakeSettings.y); }
 
     //UTILITY METHODS:
     public bool InCombat() => inCombat;

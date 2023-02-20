@@ -21,6 +21,11 @@ public class ShotgunSettings : ScriptableObject
     [Range(0, 1), Tooltip("How far back the player has to pull the trigger before it fires.")]             public float triggerThreshold = 1;
     [Tooltip("Amount of upward recoil force applied to weapon rigidbody when firing (mostly aesthetic).")] public float recoilTorque;
     [Tooltip("Strength of force used to close breach when swinging guns vertically.")]                     public float closerForce;
+    [Header("Effects:")]
+    [Tooltip("Settings for configuring the vibration player feels when firing.")]             public PlayerEquipment.HapticData fireHaptics;
+    [Tooltip("Settings for configuring the vibration player feels when ejecting shells.")]    public PlayerEquipment.HapticData ejectHaptics;
+    [Tooltip("Settings for configuring the vibration player feels when closing the breach.")] public PlayerEquipment.HapticData closeHaptics;
+    [Tooltip("Magnitude (x) and duration (y) of screenshake event when weapon is fired.")]    public Vector2 fireScreenShake;
     [Header("Sounds:")]
     [Tooltip("SFX for when weapon is fired")]  public AudioClip fireSound;
     [Tooltip("SFX for when breach is opened")] public AudioClip ejectSound;

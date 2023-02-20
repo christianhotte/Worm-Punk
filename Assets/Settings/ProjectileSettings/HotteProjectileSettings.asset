@@ -53,7 +53,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  targetDesignationAngle: {x: 15, y: 90}
+  targetDesignationAngle: {x: 15, y: 60}
   targetAngleCurve:
     serializedVersion: 2
     m_Curve:

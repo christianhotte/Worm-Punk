@@ -11,6 +11,18 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class PlayerEquipment : MonoBehaviour
 {
+    //Classes, Enums & Structs:
+    /// <summary>
+    /// Describes a complex haptic event used by PlayerEquipment.
+    /// </summary>
+    [System.Serializable]
+    public struct HapticData
+    {
+        [Range(0, 1), Tooltip("Base intensity of haptic impulse.")]                   public float amplitude;
+        [Min(0), Tooltip("Total length (in seconds) of haptic impulse.")]             public float duration;
+        [Tooltip("Curve used to modulate magnitude throughout duration of impulse.")] public AnimationCurve behaviorCurve;
+    }
+
     //Objects & Components:
     internal PlayerController player;       //Player currently controlling this equipment
     private Transform basePlayerTransform;  //Master player object which all player equipment (and XR Origin) is under
@@ -327,5 +339,10 @@ public class PlayerEquipment : MonoBehaviour
             }
         }
     }
-    public void SendHapticImpulse(Vector2 impulseProperties) { SendHapticImpulse(impulseProperties.x, impulseProperties.y); }
+    public void SendHapticImpulse(Vector2 properties) { SendHapticImpulse(properties.x, properties.y); }
+    public void SendHapticImpulse(HapticData properties)
+    {
+        if (properties.behaviorCurve.keys.Length == 0) SendHapticImpulse(properties.amplitude, properties.duration); //Use simpler impulse method if no curve is given
+        StartCoroutine(HapticEvent(properties.behaviorCurve, properties.amplitude, properties.duration));            //Use coroutine to deploy more complex haptic impulses
+    }
 }
