@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
+using RootMotion.FinalIK;
 
 /// <summary>
 /// Manages overall player stats and abilities.
@@ -17,17 +18,20 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Singleton instance of player controller.")]                                    public static PlayerController instance;
     [Tooltip("Singleton instance of this client's photonNetwork (on their NetworkPlayer).")] public static PhotonView photonView;
 
-    [Tooltip("XROrigin component attached to player instance in scene.")]                    internal XROrigin xrOrigin;
-    [Tooltip("Rigidbody for player's body (the part that flies around).")]                   internal Rigidbody bodyRb;
-    [Tooltip("Controller component for player's left hand.")]                                internal ActionBasedController leftHand;
-    [Tooltip("Controller component for player's right hand.")]                               internal ActionBasedController rightHand;
-    [Tooltip("Equipment which is currently attached to the player")]                         internal List<PlayerEquipment> attachedEquipment = new List<PlayerEquipment>();
+    [Tooltip("XROrigin component attached to player instance in scene.")]  internal XROrigin xrOrigin;
+    [Tooltip("Rigidbody for player's body (the part that flies around).")] internal Rigidbody bodyRb;
+    [Tooltip("Settings application script for this player.")]              internal PlayerSetup playerSetup;
+    [Tooltip("Transform for object in player containing body VRIK rig.")]  internal Transform modelParent;
+    [Tooltip("Controller component for player's left hand.")]              internal ActionBasedController leftHand;
+    [Tooltip("Controller component for player's right hand.")]             internal ActionBasedController rightHand;
+    [Tooltip("Equipment which is currently attached to the player")]       internal List<PlayerEquipment> attachedEquipment = new List<PlayerEquipment>();
 
-    private Camera cam;              //Main player camera
-    internal PlayerInput input;      //Input manager component used by player to send messages to hands and such
-    private AudioSource audioSource; //Main player audio source
-    private Transform camOffset;     //Object used to offset camera position in case of weirdness
-    private InputActionMap inputMap; //Input map which player uses
+    internal Camera cam;                       //Primary camera for VR rendering, located on player head
+    internal PlayerInput input;                //Input manager component used by player to send messages to hands and such
+    internal SkinnedMeshRenderer bodyRenderer; //Mesh renderer for player's physical worm body
+    private AudioSource audioSource;           //Main player audio source
+    private Transform camOffset;               //Object used to offset camera position in case of weirdness
+    private InputActionMap inputMap;           //Input map which player uses
 
     //Settings:
     [Header("Settings:")]
@@ -56,12 +60,19 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         //Check validity / get objects & components:
-        if (instance == null) { instance = this; } else { Debug.LogError("Tried to spawn a second instance of PlayerController in scene."); Destroy(gameObject); }             //Singleton-ize player object
+        //if (instance == null) { instance = this; } else { Debug.LogError("Tried to spawn a second instance of PlayerController in scene."); Destroy(gameObject); }             //Singleton-ize player object
+        if (instance != null) { print("Replacing player " + instance.gameObject.name + " with player " + gameObject.name + " from previous scene"); } instance = this;         //Use newest instance of PlayerController script as authoritative version, and indicate when an old playerController script is being replaced
+
+        if (instance == null) print("oog!!!");
+
         if (!TryGetComponent(out input)) { Debug.LogError("PlayerController could not find PlayerInput component!"); Destroy(gameObject); }                                    //Make sure player input component is present on same object
         xrOrigin = GetComponentInChildren<XROrigin>(); if (xrOrigin == null) { Debug.LogError("PlayerController could not find XROrigin in children."); Destroy(gameObject); } //Make sure XROrigin is present inside player
         bodyRb = xrOrigin.GetComponent<Rigidbody>(); if (bodyRb == null) { Debug.LogError("PlayerController could not find Rigidbody on XR Origin."); Destroy(gameObject); }   //Make sure player has a rigidbody on origin
+        playerSetup = GetComponent<PlayerSetup>(); if (playerSetup == null) playerSetup = gameObject.AddComponent<PlayerSetup>();                                              //Make sure player has a settings configuration component
         cam = GetComponentInChildren<Camera>(); if (cam == null) { Debug.LogError("PlayerController could not find camera in children."); Destroy(gameObject); }               //Make sure system has camera
         audioSource = cam.GetComponent<AudioSource>(); if (audioSource == null) audioSource = cam.gameObject.AddComponent<AudioSource>();                                      //Make sure system has an audio source
+        modelParent = GetComponentInChildren<VRIK>().transform;                                                                                                                //Get transform of model containing VRIK rig
+        bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>();                                                                                                          //Get renderer component for player's physical body
         camOffset = cam.transform.parent;                                                                                                                                      //Get camera offset object
         inputMap = GetComponent<PlayerInput>().actions.FindActionMap("XRI Generic Interaction");                                                                               //Get generic input map from PlayerInput component
 
@@ -91,14 +102,18 @@ public class PlayerController : MonoBehaviour
     }
     private void Start()
     {
-        //Move to spawnpoint:
-        if (SpawnManager.instance != null && useSpawnPoint) //Spawn manager is present in scene
-        {
-            Transform spawnpoint = SpawnManager.instance.GetSpawnPoint(); //Get spawnpoint from spawnpoint manager
-            xrOrigin.transform.position = spawnpoint.position;            //Move spawned player to target position
-        }
-        CenterCamera(); //Make sure player camera is in dead center of rigidbody
+        //Late setup:
+        playerSetup.ApplyAllSettings(); //Make sure settings are all updated on this player instance
+        CenterCamera();                 //Make sure player camera is in dead center of rigidbody
 
+        //Move to spawnpoint:
+        if (SpawnManager.current != null && useSpawnPoint) //Spawn manager is present in scene
+        {
+            Transform spawnpoint = SpawnManager.current.GetRandomSpawnPoint(); //Get spawnpoint from spawnpoint manager
+            xrOrigin.transform.position = spawnpoint.position;           //Move spawned player to target position
+        }
+
+        //Hide equipment in menus:
         if (GameManager.Instance.InMenu())
         {
             inMenu = true;
@@ -154,6 +169,15 @@ public class PlayerController : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;    //Unsubscribe from scene loaded event
     }
 
+    //FUNCTIONALITY METHODS:
+    /// <summary>
+    /// Applies current PlayerSettings to this player and synchronizes them across the network.
+    /// </summary>
+    public void ApplyAndSyncSettings()
+    {
+        playerSetup.ApplyAllSettings();                                              //Apply all settings to this player
+        if (photonView != null) photonView.GetComponent<NetworkPlayer>().SyncData(); //Sync settings data across the network (if able)
+    }
     /// <summary>
     /// Uses camera offset to snap camera back to center of rigidbody.
     /// </summary>
@@ -223,9 +247,9 @@ public class PlayerController : MonoBehaviour
         //TEMP DEATH SEQUENCE:
         audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Temp_Death_Sound"));
         bodyRb.velocity = Vector3.zero; //Reset player velocity
-        if (SpawnManager.instance != null && useSpawnPoint) //Spawn manager is present in scene
+        if (SpawnManager.current != null && useSpawnPoint) //Spawn manager is present in scene
         {
-            Transform spawnpoint = SpawnManager.instance.GetSpawnPoint(); //Get spawnpoint from spawnpoint manager
+            Transform spawnpoint = SpawnManager.current.GetRandomSpawnPoint(); //Get spawnpoint from spawnpoint manager
             xrOrigin.transform.position = spawnpoint.position;            //Move spawned player to target position
         }
         currentHealth = healthSettings.defaultHealth; //Reset to max health

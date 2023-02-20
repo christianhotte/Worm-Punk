@@ -26,22 +26,6 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     //Runtime Variables:
 
 
-    //Utility Variables:
-    /// <summary>
-    /// True if player is currently in a menu (non-combat) scene.
-    /// </summary>
-    public static bool IsInMenuScene
-    {
-        get
-        {
-            string scene = SceneManager.GetActiveScene().name; //Get name of currently-active scene
-            if (scene == instance.mainMenuScene || //Player is currently in main menu scene
-                scene == instance.roomScene)       //Player is currently in locker room scene
-            { return true; }   //Indicate that player is in fact in a menu scene
-            else return false; //Indicate that player is not in a named menu scene
-        }
-    }
-
     //RUNTIME METHODS:
     private void Awake()
     {

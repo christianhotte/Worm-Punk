@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 
 // Script was used from https://youtu.be/KHWuTBmT1oI?t=1186
 
+/// <summary>
+/// DEPRECATED. All functionality should now be implemented in NetworkManagerScript.
+/// </summary>
 public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
 {
     //Objects & Components:

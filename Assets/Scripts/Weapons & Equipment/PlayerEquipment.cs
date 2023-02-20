@@ -191,7 +191,9 @@ public class PlayerEquipment : MonoBehaviour
     /// </summary>
     public void UnEquip()
     {
-
+        //Cleanup:
+        if (player != null) player.attachedEquipment.Remove(this); //Remove this item from player's running list of attached equipment
+        inStasis = true;                                           //Indicate that equipment is now safely in stasis and will not messily try to update itself
     }
     /// <summary>
     /// Updates position of rigidbody follower to match position of target.
