@@ -205,7 +205,7 @@ public class Projectile : MonoBehaviourPunCallbacks
             if (settings.radius > 0) //Projectile has a radius
             {
                 //if (Physics.SphereCast(transform.position + (velocity.normalized * settings.radius), settings.radius, velocity, out hitInfo, travelDistance - (settings.radius * 2), settings.radiusIgnoreLayers)) //Do a spherecast with exact length of linecast
-                if (Physics.SphereCast(transform.position, settings.radius, velocity, out hitInfo, travelDistance, settings.radiusIgnoreLayers)) //Do a spherecast with exact length of linecast (simpler, over-extends slightly)
+                if (Physics.SphereCast(transform.position, settings.radius, velocity, out hitInfo, travelDistance, ~settings.radiusIgnoreLayers)) //Do a spherecast with exact length of linecast (simpler, over-extends slightly)
                 {
                     totalDistance -= velocity.magnitude - hitInfo.distance; //Update totalDistance to reflect actual distance traveled at exact point of contact
                     HitObject(hitInfo);                                     //Trigger hit procedure
@@ -409,6 +409,11 @@ public class Projectile : MonoBehaviourPunCallbacks
         {
             targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);                                                //Indicate to player that it has been hit
             if (!dumbFired && originPlayerID != 0) PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
+            if (settings.knockback > 0) //Projectile has player knockback
+            {
+                Vector3 knockback = transform.forward * settings.knockback;          //Get value by which to launch hit player
+                targetPlayer.photonView.RPC("RPC_Launch", RpcTarget.All, knockback); //Add force to player rigidbody based on knockback amount
+            }
         }
         else //Hit object is not a player
         {
@@ -416,7 +421,11 @@ public class Projectile : MonoBehaviourPunCallbacks
             if (targetObject != null) targetObject.IsHit(settings.damage);         //Indicate to targetable that it has been hit
         }
 
+        //Effects:
+        if (hitInfo.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle")) Instantiate(settings.explosionPrefab, transform.position, transform.rotation); //Instantiate an explosion when hitting a wall
+
         //Cleanup:
+        print("Projectile hit " + hitInfo.collider.name);
         Delete(); //Destroy projectile
     }
     /// <summary>
@@ -424,6 +433,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     /// </summary>
     private protected virtual void BurnOut()
     {
+        Instantiate(settings.explosionPrefab, transform.position, transform.rotation); //Instantiate an explosion at burnout point
         Delete();
     }
     private void Delete()

@@ -178,6 +178,14 @@ public class NetworkPlayer : MonoBehaviour
         if (photonView.IsMine) PlayerController.instance.IsHit(damage); //Inflict damage upon local player
     }
     /// <summary>
+    /// Launches this player with given amount of force.
+    /// </summary>
+    [PunRPC]
+    public void RPC_Launch(Vector3 force)
+    {
+        if (photonView.IsMine) PlayerController.instance.bodyRb.AddForce(force, ForceMode.VelocityChange); //Apply launch force to client rigidbody
+    }
+    /// <summary>
     /// Indicates that this player has successfully hit an enemy with a projecile.
     /// </summary>
     [PunRPC]

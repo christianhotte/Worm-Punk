@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: HotteProjectileSettings
   m_EditorClassIdentifier: 
   damage: 1
-  knockback: 0
+  knockback: 40
+  explosionPrefab: {fileID: 5470892112642989696, guid: a01fa86dc420545488942b0fe674d939, type: 3}
   initialVelocity: 150
   range: 150
   barrelGap: 0.7
@@ -27,12 +28,12 @@ MonoBehaviour:
   angleDistancePreference: 0.4
   targetingIgnoreLayers:
     serializedVersion: 2
-    m_Bits: 736
+    m_Bits: 4832
   ignoreLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 5184
   radiusIgnoreLayers:
     serializedVersion: 2
-    m_Bits: 320
+    m_Bits: 5440
   dumbTargetAquisitionRadius: 1
   radius: 0.6

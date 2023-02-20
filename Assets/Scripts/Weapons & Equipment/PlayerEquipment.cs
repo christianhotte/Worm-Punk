@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.XR.CoreUtils;
+using UnityEngine.XR;
 using CustomEnums;
 using UnityEngine.InputSystem;
 
@@ -32,6 +33,7 @@ public class PlayerEquipment : MonoBehaviour
     /// Which hand this equipment is associated with (if any).
     /// </summary>
     internal Handedness handedness = Handedness.None;
+    private InputDeviceRole deviceRole = InputDeviceRole.Generic; //This equipment's equivalent device role (used to determine haptic feedback targets)
     /// <summary>
     /// Equipment in stasis will do nothing and check nothing until it is re-equipped to a player.
     /// </summary>
@@ -64,6 +66,38 @@ public class PlayerEquipment : MonoBehaviour
         }
     }
 
+    //EVENTS & COROUTINES:
+    /// <summary>
+    /// Plays a haptic sequence using an AnimationCurve to modify amplitude over time.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator HapticEvent(AnimationCurve hapticCurve, float maxAmplitude, float fullDuration)
+    {
+        //Validity checks:
+        if (fullDuration <= 0) { Debug.LogWarning("Tried to play haptic event with duration " + fullDuration + " . This is too small."); yield break; } //Do not run if duration is zero
+
+        //Get valid devices:
+        List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>(); //Initialize list to store input devices
+        #pragma warning disable CS0618                                                     //Disable obsolescence warning
+        UnityEngine.XR.InputDevices.GetDevicesWithRole(deviceRole, devices);               //Find all input devices counted as right hand
+        #pragma warning restore CS0618                                                     //Re-enable obsolescence warning
+        for (int x = 0; x < devices.Count;) //Iterate through list of input devices (manually indexing iterator)
+        {
+            var device = devices[x];                                                                                                       //Get current device
+            if (device.TryGetHapticCapabilities(out HapticCapabilities capabilities)) if (capabilities.supportsImpulse) { x++; continue; } //Skip devices which are good to go
+            devices.RemoveAt(x);                                                                                                           //Remove incompatible devices from list
+        }
+
+        //Play haptic event over time:
+        for (float timePassed = 0; timePassed <= fullDuration; timePassed += Time.fixedDeltaTime) //Iterate over time for full duration of haptic event
+        {
+            float currentInterpolant = timePassed / fullDuration;                                               //Get interpolant based on current progression of time
+            float currentAmplitude = hapticCurve.Evaluate(currentInterpolant) * maxAmplitude;                   //Use given curve to get an amplitude value
+            foreach (var device in devices) device.SendHapticImpulse(0, currentAmplitude, Time.fixedDeltaTime); //Send a brief haptic pulse at current amplitude (duration is only until next update)
+            yield return new WaitForFixedUpdate();                                                              //Wait for next fixed update
+        }
+    }
+
     //RUNTIME METHODS:
     private protected virtual void Awake()
     {
@@ -89,11 +123,13 @@ public class PlayerEquipment : MonoBehaviour
             {
                 inputMap = playerInput.actions.FindActionMap("XRI LeftHand Interaction"); //Get left hand input map
                 handedness = Handedness.Left;                                             //Indicate left-handedness
+                deviceRole = InputDeviceRole.LeftHanded;                                  //Indicate that equipment uses left-handed devices
             }
             else if (targetTransform.name.Contains("Right") || targetTransform.name.Contains("right")) //Equipment is being attached to the right hand/side
             {
                 inputMap = playerInput.actions.FindActionMap("XRI RightHand Interaction"); //Get right hand input map
                 handedness = Handedness.Right;                                             //Indicate right-handedness
+                deviceRole = InputDeviceRole.RightHanded;                                  //Indicate that equipment uses right-handed devices
             }
             else //Equipment is not being attached to an identifiable side
             {
@@ -272,4 +308,24 @@ public class PlayerEquipment : MonoBehaviour
         joint.angularXDrive = drive;                             //Apply setting to angular X drive
         joint.angularYZDrive = drive;                            //Apply setting to angular YZ drive
     }
+    /// <summary>
+    /// Sends a haptic impulse to this equipment's associated controller.
+    /// </summary>
+    /// <param name="amplitude">Strength of vibration (between 0 and 1).</param>
+    /// <param name="duration">Duration of vibration (in seconds).</param>
+    public void SendHapticImpulse(float amplitude, float duration)
+    {
+        List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>(); //Initialize list to store input devices
+        #pragma warning disable CS0618                                                     //Disable obsolescence warning
+        UnityEngine.XR.InputDevices.GetDevicesWithRole(deviceRole, devices);               //Find all input devices counted as right hand
+        #pragma warning restore CS0618                                                     //Re-enable obsolescence warning
+        foreach (var device in devices) //Iterate through list of devices identified as right hand
+        {
+            if (device.TryGetHapticCapabilities(out HapticCapabilities capabilities)) //Device has haptic capabilities
+            {
+                if (capabilities.supportsImpulse) device.SendHapticImpulse(0, amplitude, duration); //Send impulse if supported by device
+            }
+        }
+    }
+    public void SendHapticImpulse(Vector2 impulseProperties) { SendHapticImpulse(impulseProperties.x, impulseProperties.y); }
 }

@@ -256,8 +256,7 @@ public class PlayerController : MonoBehaviour
         print("Player Killed!");
     }
 
-    //FUNCTIONALITY METHODS:
-
+    //UTILITY METHODS:
     public bool InCombat() => inCombat;
     public bool InMenu() => inMenu;
     public void SetCombat(bool combat)
