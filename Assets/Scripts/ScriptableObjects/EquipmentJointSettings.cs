@@ -22,5 +22,6 @@ public class EquipmentJointSettings : ScriptableObject
     [Min(0), Tooltip("Strength of spring force keeping equipment at target rotation")] public float angularDrive = 500f;
     [Min(0), Tooltip("Increase to dampen effect of angular spring drive")]             public float angularDriveDamper = 3f;
     [Header("Misc Properties:")]
+    [Tooltip("Base maximum angular speed of weapon rigidbody (affects weapon swinginess).")]                               public float maxAngularSpeed = 15;
     [Min(1), Tooltip("Number of fixed updates to keep in position memory for smoothing the results of RelativeVelocity.")] public int positionMemory = 10;
 }

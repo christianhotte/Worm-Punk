@@ -20,7 +20,13 @@ public class ShotgunSettings : ScriptableObject
     [Header("Gunfeel:")]
     [Range(0, 1), Tooltip("How far back the player has to pull the trigger before it fires.")]             public float triggerThreshold = 1;
     [Tooltip("Amount of upward recoil force applied to weapon rigidbody when firing (mostly aesthetic).")] public float recoilTorque;
+    [Min(0), Tooltip("Maximum angular speed during recoil phase (allows weapon to be more wiggly.")]       public float recoilAngularSpeed;
     [Tooltip("Strength of force used to close breach when swinging guns vertically.")]                     public float closerForce;
+    [Min(0), Tooltip("Length of linear recoil weapon goes through when fired.")]                           public float recoilDistance;
+    [Min(0.01f), Tooltip("Amout of time (in seconds) gun spends in linear recoil phase.")]                 public float recoilTime;
+    [Tooltip("Describes linear recoil motion over time.")]                                                 public AnimationCurve recoilCurve;
+    [Min(1), Tooltip("Maximum scale multiplier weapon reaches during recoil phase.")]                      public float recoilScale = 1;
+    [Tooltip("Describes scale modulation throughout recoil phase.")]                                       public AnimationCurve recoilScaleCurve;
     [Header("Effects:")]
     [Tooltip("Settings for configuring the vibration player feels when firing.")]             public PlayerEquipment.HapticData fireHaptics;
     [Tooltip("Settings for configuring the vibration player feels when ejecting shells.")]    public PlayerEquipment.HapticData ejectHaptics;

@@ -37,7 +37,7 @@ public class PlayerEquipment : MonoBehaviour
 
     //Settings:
     [Header("Settings:")]
-    [SerializeField, Tooltip("Settings defining this equipment's physical joint behavior.")] private EquipmentJointSettings jointSettings;
+    [SerializeField, Tooltip("Settings defining this equipment's physical joint behavior.")] private protected EquipmentJointSettings jointSettings;
     [SerializeField, Tooltip("Enables constant joint updates for testing purposes.")]        private protected bool debugUpdateSettings;
 
     //Runtime Variables:
@@ -52,6 +52,7 @@ public class PlayerEquipment : MonoBehaviour
     internal bool inStasis = false;
 
     private List<Vector3> relPosMem = new List<Vector3>(); //List of remembered relative positions (taken at FixedUpdate) used to calculate current relative velocity (newest entries are first)
+    private protected Vector3 currentAddOffset;            //Additional follower offset used by certain types of equipment for additional animations
 
     //Utility Variables:
     /// <summary>
@@ -172,6 +173,7 @@ public class PlayerEquipment : MonoBehaviour
         rb.isKinematic = false;                                                                                       //Make sure rigidbody is not kinematic
         rb.interpolation = RigidbodyInterpolation.Interpolate;                                                        //Enable interpolation
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;                                         //Enable continuous dynamic collisions
+        rb.maxAngularVelocity = jointSettings.maxAngularSpeed;                                                        //Set base max rotation value
 
         //Check for settings:
         if (jointSettings == null) //No joint settings were provided
@@ -257,6 +259,10 @@ public class PlayerEquipment : MonoBehaviour
         if (jointSettings.offset != Vector3.zero) //Target offset mode is enabled by settings
         {
             targetPos += transform.rotation * jointSettings.offset; //Apply offset to target position (orient offset to current object orientation)
+        }
+        if (currentAddOffset != Vector3.zero) //Target offset is being used by the equipment
+        {
+            targetPos += transform.rotation * currentAddOffset; //Apply offset to target position (orient offset to current object orientation)
         }
 
         //Apply follower transforms:

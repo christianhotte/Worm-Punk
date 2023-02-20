@@ -29,6 +29,34 @@ public class NewShotgunController : PlayerEquipment
     private bool triggerPulled = false; //Whether or not the trigger is currently pulled
     private float doubleFireWindow = 0; //Above zero means that weapon has just been fired and firing another weapon will cause a double fire
     internal bool locked = false;       //Lets the other equipment disable the guns
+    private Vector3 baseScale;          //Initial scale of weapon
+
+    //Events & Coroutines:
+    /// <summary>
+    /// Weapon recoil procedure (triggers a number of effects throughout recoil phase).
+    /// </summary>
+    public IEnumerator DoRecoil()
+    {
+        //Initialize:
+        rb.maxAngularVelocity = gunSettings.recoilAngularSpeed;        //Make weapon very swingy for recoil
+        Vector3 maxOffset = gunSettings.recoilDistance * Vector3.back; //Get greatest offset value which weapon will reach during recoil phase
+        Vector3 maxScale = gunSettings.recoilScale * baseScale;        //Get greatest scale value which weapon will reach during recoil phase
+
+        //Move weapon:
+        for (float totalTime = 0; totalTime < gunSettings.recoilTime; totalTime += Time.fixedDeltaTime) //Iterate once each fixed update for duration of recoil phase
+        {
+            float timeValue = totalTime / gunSettings.recoilTime;                                                         //Get value representing progression through recoil phase
+            rb.maxAngularVelocity = Mathf.Lerp(gunSettings.recoilAngularSpeed, jointSettings.maxAngularSpeed, timeValue); //Adjust max angular speed back to normal throughout phase
+            currentAddOffset = Vector3.Lerp(Vector3.zero, maxOffset, gunSettings.recoilCurve.Evaluate(timeValue));        //Modify follower offset so that weapon is moved backwards/forwards
+            transform.localScale = Vector3.Lerp(baseScale, maxScale, gunSettings.recoilScaleCurve.Evaluate(timeValue));   //Adjust scale based on settings and curve
+            yield return new WaitForFixedUpdate();                                                                        //Wait for next update
+        }
+
+        //Cleanup:
+        rb.maxAngularVelocity = jointSettings.maxAngularSpeed; //Set angular speed cap back to default
+        currentAddOffset = Vector3.zero;                       //Return system to base position
+        transform.localScale = baseScale;                      //Reset weapon to base scale
+    }
 
     //RUNTIME METHODS:
     private protected override void Awake()
@@ -46,6 +74,9 @@ public class NewShotgunController : PlayerEquipment
             gunSettings = (ShotgunSettings)Resources.Load("DefaultSettings/DefaultShotgunSettings"); //Use default settings from Resources
         }
         loadedShots = gunSettings.maxLoadedShots; //Fully load weapon on start
+
+        //Get runtime variables:
+        baseScale = transform.localScale; //Get base scale
     }
     private void Start()
     {
@@ -146,6 +177,7 @@ public class NewShotgunController : PlayerEquipment
         if (player != null) player.ShakeScreen(gunSettings.fireScreenShake);       //Shake screen (gently)
         shotParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); //Reset particle system
         shotParticles.Play();                                                      //Play particle effect
+        StartCoroutine(DoRecoil());                                                //Begin recoil phase
 
         //Cleanup:
         doubleFireWindow = gunSettings.doubleFireTime; //Open double fire window so that other weapon can check for it
