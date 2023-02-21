@@ -393,16 +393,15 @@ public class Projectile : MonoBehaviourPunCallbacks
     {
         PhotonView targetView = PhotonNetwork.GetPhotonView(targetViewID);                                                        //Get photonView from ID
         if (!targetView.TryGetComponent(out Targetable targetable)) targetable = targetView.GetComponentInChildren<Targetable>(); //Get targetable script from photonView
-        if (targetable != null)
+        if (targetable != null) //Target has been successfully acquired
         {
             target = targetable.targetPoint;                                                //Get target from script
             if (homingMat != null) GetComponentInChildren<Renderer>().material = homingMat; //Change color to indicate that it has successfully locked on to target
             audioSource.loop = true;                                                        //Make audiosource loop
             audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
             audioSource.Play();                                                             //Play homing sound on loop
+            print("Target Remotely Acquired: " + targetable.name);                          //Indicate to local user that a remote projectile has successfully acquired a target
         }
-
-        if (targetable != null) print("Target Remotely Acquired: " + targetable.name);
     }
     /// <summary>
     /// Attempts to acquire stationary, non-networked target based on position.
@@ -414,18 +413,17 @@ public class Projectile : MonoBehaviourPunCallbacks
         foreach (Collider collider in checkColliders) //Iterate through colliders found by targeting solution
         {
             if (!collider.TryGetComponent(out Targetable targetable)) targetable = collider.GetComponentInParent<Targetable>(); //Try very hard to get targetable controller from collider
-            if (targetable != null)
+            if (targetable != null) //Target has been successfully acquired
             {
                 target = targetable.targetPoint;                                                //Lock onto target
-
                 if (homingMat != null) GetComponentInChildren<Renderer>().material = homingMat; //Change color to indicate that it has successfully locked on to target
                 audioSource.loop = true;                                                        //Make audiosource loop
                 audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
                 audioSource.Play();                                                             //Play homing sound on loop
+                print("Dumb target acquisition successful!");                                   //Indicate to local user that a remote projectile has successfully acquired a target
                 break;                                                                          //Ignore everything else (risky)
             }
         }
-        if (target != null) print("Dumb target acquisition successful!");
     }
     /// <summary>
     /// Causes remote projectile to clear target field.

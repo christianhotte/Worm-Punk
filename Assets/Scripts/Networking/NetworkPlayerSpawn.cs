@@ -15,7 +15,7 @@ public class NetworkPlayerSpawn : MonoBehaviourPunCallbacks
     public static NetworkPlayerSpawn instance; //Singleton instance of this script in scene
     
     private NetworkPlayer clientNetworkPlayer; //Instance of local client's network player in scene
-    [SerializeField] private string networkSceneName = "NetworkLockerRoom";
+    //[SerializeField] private string networkSceneName = "NetworkLockerRoom";
 
     //Settings:
     [Header("Resource References:")]

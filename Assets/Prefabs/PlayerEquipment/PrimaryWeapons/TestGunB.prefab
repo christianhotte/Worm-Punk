@@ -465,11 +465,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jointSettings: {fileID: 11400000, guid: 5093f50b96876fb4cae52422dcb85e6f, type: 2}
+  canMoveHandRig: 1
   debugUpdateSettings: 0
   barrels:
   - {fileID: 6739765718685924980}
   - {fileID: 158747479579887327}
-  gunSettings: {fileID: 11400000, guid: db175be0a6438d54384e7cded3b44f02, type: 2}
+  gunSettings: {fileID: 11400000, guid: a67e86658891862479cdbb1b7d327b2c, type: 2}
   debugFireLocal: 0
 --- !u!82 &1227148531296601667
 AudioSource:
@@ -1380,6 +1381,10 @@ PrefabInstance:
     - target: {fileID: 8023787923476898023, guid: 35a6978279f31d3478a7a9cbe5c24379, type: 3}
       propertyPath: m_Name
       value: MuzzleParticles
+      objectReference: {fileID: 0}
+    - target: {fileID: 8023787923476898023, guid: 35a6978279f31d3478a7a9cbe5c24379, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 35a6978279f31d3478a7a9cbe5c24379, type: 3}

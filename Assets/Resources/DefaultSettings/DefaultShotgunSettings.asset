@@ -18,13 +18,13 @@ MonoBehaviour:
   cooldownTime: 0.05
   doubleFireTime: 0.15
   doubleFireBoost: 2.1
-  fireVelocity: 30
+  fireVelocity: 28
   triggerThreshold: 0.9
-  recoilTorque: 23
+  recoilTorque: 13
   recoilAngularSpeed: 30
-  closerForce: 10
-  recoilDistance: 0.25
-  recoilTime: 0.18
+  closerForce: 100
+  recoilDistance: 0.17
+  recoilTime: 0.165
   recoilCurve:
     serializedVersion: 2
     m_Curve:
@@ -38,13 +38,22 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.0679328
     - serializedVersion: 3
-      time: 0.5
+      time: 0.21499999
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
+      inSlope: -0.054398235
+      outSlope: -0.054398235
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
+      outWeight: 0.07169122
+    - serializedVersion: 3
+      time: 0.79999995
+      value: 0
+      inSlope: -0.035635542
+      outSlope: 0
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0.1507659
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
@@ -58,7 +67,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  recoilScale: 1.3
+  recoilScale: 1.4
   recoilScaleCurve:
     serializedVersion: 2
     m_Curve:
@@ -94,10 +103,19 @@ MonoBehaviour:
     m_RotationOrder: 4
   fireHaptics:
     amplitude: 1
-    duration: 0.15
+    duration: 0.14
     behaviorCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -119,7 +137,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  fireScreenShake: {x: 1, y: 0.5}
-  fireSound: {fileID: 8300000, guid: 6f40f3a5777ecd341b528bef3ca42e8c, type: 3}
+  fireScreenShake: {x: 5, y: 0.5}
+  fireSound: {fileID: 8300000, guid: 0f44c6052aae7c84b90ae2cdc4c1196a, type: 3}
   ejectSound: {fileID: 8300000, guid: 48624e662f82de94b88110c4e8d90ed6, type: 3}
   lockSound: {fileID: 8300000, guid: 3e15122a331d49f4986d8d3ec8a4883d, type: 3}

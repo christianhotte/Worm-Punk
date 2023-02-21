@@ -22,4 +22,5 @@ MonoBehaviour:
   linearDrive: 50
   angularDrive: 500
   angularDriveDamper: 3
-  positionMemory: 5
+  maxAngularSpeed: 10
+  positionMemory: 10

@@ -141,7 +141,7 @@ public class NetworkPlayer : MonoBehaviour
         headTarget = attachedPlayer.cam.transform;            //Get head from player using camera component reference
         leftHandTarget = attachedPlayer.leftHand.transform;   //Get left hand from player script (since it has already automatically collected the reference)
         rightHandTarget = attachedPlayer.rightHand.transform; //Get right hand from player script (since it has already automatically collected the reference)
-        modelTarget = attachedPlayer.modelParent;             //Get base model transform from player script
+        modelTarget = attachedPlayer.bodyRig.transform;       //Get base model transform from player script
     }
 
     /// <summary>

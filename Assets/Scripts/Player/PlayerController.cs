@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("XROrigin component attached to player instance in scene.")]  internal XROrigin xrOrigin;
     [Tooltip("Rigidbody for player's body (the part that flies around).")] internal Rigidbody bodyRb;
     [Tooltip("Settings application script for this player.")]              internal PlayerSetup playerSetup;
-    [Tooltip("Transform for object in player containing body VRIK rig.")]  internal Transform modelParent;
+    [Tooltip("VR rig for player body.")]                                   internal VRIK bodyRig;
     [Tooltip("Controller component for player's left hand.")]              internal ActionBasedController leftHand;
     [Tooltip("Controller component for player's right hand.")]             internal ActionBasedController rightHand;
     [Tooltip("Equipment which is currently attached to the player")]       internal List<PlayerEquipment> attachedEquipment = new List<PlayerEquipment>();
@@ -53,6 +53,7 @@ public class PlayerController : MonoBehaviour
     private bool inCombat;        //Whether the player is actively in combat
     private bool inMenu;          //Whether the player is actively in a menu scene
     private float timeUntilRegen; //Time (in seconds) until health regeneration can begin
+    private bool centeredInScene; //Made false whenever player loads into a scene, triggers camera centering in the first update
 
     private GameObject[] weapons;   //A list of active weapons on the player
     private GameObject[] tools;     //A list of active tools on the player
@@ -72,7 +73,7 @@ public class PlayerController : MonoBehaviour
         playerSetup = GetComponent<PlayerSetup>(); if (playerSetup == null) playerSetup = gameObject.AddComponent<PlayerSetup>();                                              //Make sure player has a settings configuration component
         cam = GetComponentInChildren<Camera>(); if (cam == null) { Debug.LogError("PlayerController could not find camera in children."); Destroy(gameObject); }               //Make sure system has camera
         audioSource = cam.GetComponent<AudioSource>(); if (audioSource == null) audioSource = cam.gameObject.AddComponent<AudioSource>();                                      //Make sure system has an audio source
-        modelParent = GetComponentInChildren<VRIK>().transform;                                                                                                                //Get transform of model containing VRIK rig
+        bodyRig = GetComponentInChildren<VRIK>(); if (bodyRig == null) { Debug.LogWarning("PlayerController could not find VRIK rig in children."); }                          //Make sure system has access to VR rig component
         bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>();                                                                                                          //Get renderer component for player's physical body
         camOffset = cam.transform.parent;                                                                                                                                      //Get camera offset object
         inputMap = GetComponent<PlayerInput>().actions.FindActionMap("XRI Generic Interaction");                                                                               //Get generic input map from PlayerInput component
@@ -106,7 +107,6 @@ public class PlayerController : MonoBehaviour
     {
         //Late setup:
         playerSetup.ApplyAllSettings(); //Make sure settings are all updated on this player instance
-        CenterCamera();                 //Make sure player camera is in dead center of rigidbody
 
         //Move to spawnpoint:
         if (SpawnManager.current != null && useSpawnPoint) //Spawn manager is present in scene
@@ -128,6 +128,13 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
+        //Make sure player is centered:
+        if (!centeredInScene) //Player has not been centered in this scene yet
+        {
+            centeredInScene = true; //Indicate that player has been centered
+            CenterCamera();         //Make sure player camera is in dead center of rigidbody
+        }
+
         if (debugUpdateSettings && Application.isEditor) //Debug settings updates are enabled (only necessary while running in Unity Editor)
         {
             if (debugSpawnNetworkPlayer)

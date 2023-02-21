@@ -13,15 +13,20 @@ public class ShotgunSettings : ScriptableObject
     [Min(1), Tooltip("Maximum number of shots which can be loaded into weapon (not necessarily equal to number of barrels).")]               public int maxLoadedShots = 2;
     [Range(0, 90), Tooltip("Angle which barrels snap to when breach is open.")]                                                              public float breakAngle = 45;
     [Min(0), Tooltip("How much time weapon needs to be left open for in order for it to be reloaded.")]                                      public float cooldownTime = 0.7f;
-    [Min(0), Tooltip("If both shotguns are fired within this amount of time, player will get a speed boost.")]                               public float doubleFireTime = 0.25f;
-    [Min(1), Tooltip("Fire velocity multiplier used when shotguns are double-fired.")]                                                       public float doubleFireBoost = 1.8f;
+    [Min(0), Tooltip("DEPRECATED: If both shotguns are fired within this amount of time, player will get a speed boost.")]                   public float doubleFireTime = 0.25f;
+    [Min(1), Tooltip("DEPRECATED: Fire velocity multiplier used when shotguns are double-fired.")]                                           public float doubleFireBoost = 1.8f;
     [Header("Locomotion:")]
-    [Min(0), Tooltip("Magnitude of velocity imparted on player when weapon is fired (primary locomotion setting).")] public float fireVelocity;
+    [Min(0), Tooltip("Magnitude of velocity imparted on player when weapon is fired (primary locomotion setting).")]                  public float fireVelocity;
+    [Min(1), Tooltip("If player fires within this angle of their current velocity, shot will add velocity instead of replacing it.")] public float additiveVelocityMaxAngle;
+    [Range(0, 1), Tooltip("Multiplier applied to velocity addition when player is firing multiple times in the same direction.")]     public float additiveVelocityMultiplier;
+    [Tooltip("Modulates additive velocity multiplier depending on how aligned shot is with current velocity.")]                       public AnimationCurve additiveVelocityCurve;
     [Header("Gunfeel:")]
-    [Range(0, 1), Tooltip("How far back the player has to pull the trigger before it fires.")]             public float triggerThreshold = 1;
+    [Range(0, 1), Tooltip("How far back the player has to pull the trigger before it fires.")]     public float triggerThreshold = 1;
+    [Min(0), Tooltip("Strength of force used to close breach when swinging guns vertically.")]     public float closerForce;
+    [Min(0), Tooltip("Time to wait after opening breach before allowing swing-close assistance.")] public float swingCloseWait;
+    [Space()]
     [Tooltip("Amount of upward recoil force applied to weapon rigidbody when firing (mostly aesthetic).")] public float recoilTorque;
     [Min(0), Tooltip("Maximum angular speed during recoil phase (allows weapon to be more wiggly.")]       public float recoilAngularSpeed;
-    [Tooltip("Strength of force used to close breach when swinging guns vertically.")]                     public float closerForce;
     [Min(0), Tooltip("Length of linear recoil weapon goes through when fired.")]                           public float recoilDistance;
     [Min(0.01f), Tooltip("Amout of time (in seconds) gun spends in linear recoil phase.")]                 public float recoilTime;
     [Tooltip("Describes linear recoil motion over time.")]                                                 public AnimationCurve recoilCurve;

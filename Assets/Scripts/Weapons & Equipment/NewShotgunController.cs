@@ -38,18 +38,22 @@ public class NewShotgunController : PlayerEquipment
     public IEnumerator DoRecoil()
     {
         //Initialize:
-        rb.maxAngularVelocity = gunSettings.recoilAngularSpeed;        //Make weapon very swingy for recoil
         Vector3 maxOffset = gunSettings.recoilDistance * Vector3.back; //Get greatest offset value which weapon will reach during recoil phase
         Vector3 maxScale = gunSettings.recoilScale * baseScale;        //Get greatest scale value which weapon will reach during recoil phase
 
-        //Move weapon:
+        //Apply recoil torque:
+        rb.maxAngularVelocity = gunSettings.recoilAngularSpeed;                                                               //Make weapon very swingy for recoil
+        Transform currentBarrel = barrels[currentBarrelIndex];                                                                //Get transform of current barrel
+        rb.AddForceAtPosition(currentBarrel.up * gunSettings.recoilTorque, currentBarrel.position, ForceMode.VelocityChange); //Apply upward torque to weapon at end of barrel
+
+        //Linear recoil & scaling procedure:
         for (float totalTime = 0; totalTime < gunSettings.recoilTime; totalTime += Time.fixedDeltaTime) //Iterate once each fixed update for duration of recoil phase
         {
-            float timeValue = totalTime / gunSettings.recoilTime;                                                         //Get value representing progression through recoil phase
-            rb.maxAngularVelocity = Mathf.Lerp(gunSettings.recoilAngularSpeed, jointSettings.maxAngularSpeed, timeValue); //Adjust max angular speed back to normal throughout phase
-            currentAddOffset = Vector3.Lerp(Vector3.zero, maxOffset, gunSettings.recoilCurve.Evaluate(timeValue));        //Modify follower offset so that weapon is moved backwards/forwards
-            transform.localScale = Vector3.Lerp(baseScale, maxScale, gunSettings.recoilScaleCurve.Evaluate(timeValue));   //Adjust scale based on settings and curve
-            yield return new WaitForFixedUpdate();                                                                        //Wait for next update
+            float timeValue = totalTime / gunSettings.recoilTime;                                                                  //Get value representing progression through recoil phase
+            rb.maxAngularVelocity = Mathf.LerpUnclamped(gunSettings.recoilAngularSpeed, jointSettings.maxAngularSpeed, timeValue); //Adjust max angular speed back to normal throughout phase
+            currentAddOffset = Vector3.LerpUnclamped(Vector3.zero, maxOffset, gunSettings.recoilCurve.Evaluate(timeValue));        //Modify follower offset so that weapon is moved backwards/forwards
+            transform.localScale = Vector3.LerpUnclamped(baseScale, maxScale, gunSettings.recoilScaleCurve.Evaluate(timeValue));   //Adjust scale based on settings and curve
+            yield return new WaitForFixedUpdate();                                                                                 //Wait for next fixed update
         }
 
         //Cleanup:
@@ -73,10 +77,10 @@ public class NewShotgunController : PlayerEquipment
             Debug.Log("Weapon " + name + " is missing Gun Settings, using system defaults.");        //Log warning in case someone forgot
             gunSettings = (ShotgunSettings)Resources.Load("DefaultSettings/DefaultShotgunSettings"); //Use default settings from Resources
         }
-        loadedShots = gunSettings.maxLoadedShots; //Fully load weapon on start
 
-        //Get runtime variables:
-        baseScale = transform.localScale; //Get base scale
+        //Setup runtime variables:
+        loadedShots = gunSettings.maxLoadedShots; //Fully load weapon on start
+        baseScale = transform.localScale;         //Get base scale
     }
     private void Start()
     {
@@ -95,19 +99,24 @@ public class NewShotgunController : PlayerEquipment
         base.Update(); //Run base update method
 
         //Update timers:
-        if (breachOpen && loadedShots < gunSettings.maxLoadedShots) //Breach is currently open and weapon has not been loaded
+        if (breachOpen) //Breach is currently open
         {
-            breachOpenTime = Mathf.Min(breachOpenTime + Time.deltaTime, gunSettings.cooldownTime); //Increment time tracker and max out at cooldown time
-            if (breachOpenTime >= gunSettings.cooldownTime) Reload();                              //Reload weapon once cooldown time has been reached
+            breachOpenTime += Time.deltaTime;                                                                     //Increment breach time tracker
+            if (loadedShots < gunSettings.maxLoadedShots && breachOpenTime >= gunSettings.cooldownTime) Reload(); //Reload weapon once cooldown time has been reached
         }
         if (doubleFireWindow > 0) doubleFireWindow = Mathf.Max(doubleFireWindow - Time.deltaTime, 0); //Decrement time tracker and floor at zero
 
-        //Check for swing-closing:
-        if (breachOpen) //Weapon breach is currently open
+        //Perform swing-closing:
+        if (breachOpen && breachOpenTime >= gunSettings.swingCloseWait) //Breach is currently open and swing warmup time has been passed
         {
-            //NOTE: Make sure this works
-            float closeForce = gunSettings.closerForce * Time.deltaTime * Vector3.Project(RelativeVelocity, targetTransform.up).magnitude;                                      //Get base force to apply to hinge
-            breakJoint.GetComponent<Rigidbody>().AddForceAtPosition(barrels[currentBarrelIndex].up * closeForce, barrels[currentBarrelIndex].position, ForceMode.Acceleration); //Apply upward torque to hinged part
+            Vector3 currentHandVel = RelativeVelocity;             //Get current velocity of hand relative to body
+            Transform currentBarrel = barrels[currentBarrelIndex]; //Get transform for active barrel
+            if (Vector3.Angle(currentBarrel.up, currentHandVel) < 90) //Make sure player is swinging weapon upward (down is too easy)
+            {
+                currentHandVel = Vector3.Project(RelativeVelocity, currentBarrel.up);                                                        //Constrain value of currentHandVel to just velocity along upward axis
+                Vector3 closeForce = currentHandVel.sqrMagnitude * gunSettings.closerForce * 100 * Time.deltaTime * breakJoint.transform.up; //Apply relevant multipliers to get force to apply to end of barrel
+                breakJoint.GetComponent<Rigidbody>().AddForceAtPosition(closeForce, currentBarrel.position, ForceMode.Force);                //Exert closing force on jointed barrel assembly
+            }
         }
     }
 
@@ -150,19 +159,12 @@ public class NewShotgunController : PlayerEquipment
     /// </summary>
     public Projectile Fire()
     {
-        //Validation:
+        //Validation & initialization:
         Projectile projectile = null;                           //Initialize reference to projectile
         if (loadedShots <= 0) { DryFire(); return projectile; } //Dry-fire if weapon is out of shots
         if (breachOpen) { DryFire(); return projectile; }       //Dry-fire if weapon breach is open
         if (locked) return projectile;                          //Return if locked by another weapon
-        //Initialization:
-        Transform currentBarrel = barrels[currentBarrelIndex]; //Get reference to active barrel
-
-        //Rigidbody effects:
-        float effectiveFireVel = gunSettings.fireVelocity;                                                             //Store fire velocity so it can be optionally modified
-        if (otherGun != null && otherGun.doubleFireWindow > 0) effectiveFireVel *= gunSettings.doubleFireBoost;        //Apply boost if player is firing both weapons simultaneously
-        if (player != null) player.bodyRb.velocity = -currentBarrel.forward * effectiveFireVel;                        //Launch player based on current barrel facing direction
-        rb.AddForceAtPosition(currentBarrel.up * gunSettings.recoilTorque, currentBarrel.position, ForceMode.Impulse); //Apply upward torque to weapon at end of barrel
+        Transform currentBarrel = barrels[currentBarrelIndex];  //Get reference to active barrel
 
         //Instantiate projectile(s):
         if (networkedGun == null || debugFireLocal) //Weapon is in local fire mode
@@ -172,12 +174,34 @@ public class NewShotgunController : PlayerEquipment
         }
         else networkedGun.LocalFire(currentBarrel); //Fire weapon on the network
 
-        //Other effects:
-        SendHapticImpulse(gunSettings.fireHaptics);                                //Play haptic impulse
-        if (player != null) player.ShakeScreen(gunSettings.fireScreenShake);       //Shake screen (gently)
-        shotParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); //Reset particle system
-        shotParticles.Play();                                                      //Play particle effect
-        StartCoroutine(DoRecoil());                                                //Begin recoil phase
+        //Effects:
+        if (shotParticles != null) //Player has shot particle system (particles need to be shot before recoil scaling occurs)
+        {
+            //NOTE: Re-tool this system to spawn a prefab effect which lingers in the air
+            shotParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); //Reset particle system
+            shotParticles.Play();                                                      //Play particle effect
+        }
+        StartCoroutine(DoRecoil()); //Begin recoil phase
+        if (player != null) //Effects which need a playerController
+        {
+            //Direct player feedback:
+            SendHapticImpulse(gunSettings.fireHaptics);      //Play haptic impulse
+            player.ShakeScreen(gunSettings.fireScreenShake); //Shake screen (gently)
+
+            //Player launching
+            float effectiveFireVel = gunSettings.fireVelocity;                                                      //Store fire velocity so it can be optionally modified
+            if (otherGun != null && otherGun.doubleFireWindow > 0) effectiveFireVel *= gunSettings.doubleFireBoost; //Apply boost if player is firing both weapons simultaneously
+            Vector3 newVelocity = -currentBarrel.forward * effectiveFireVel;                                        //Store new velocity for player (always directly away from barrel that fired latest shot)
+            float velocityAngleDelta = Vector3.Angle(newVelocity, player.bodyRb.velocity);                          //Get angle between current velocity and new velocity
+            if (velocityAngleDelta <= gunSettings.additiveVelocityMaxAngle) //Player is firing to push themself in the direction they are generally already going
+            {
+                float velAngleInterpolant = 1 - (velocityAngleDelta / gunSettings.additiveVelocityMaxAngle); //Get interpolant value for closeness of velocity angles
+                float addVel = gunSettings.additiveVelocityCurve.Evaluate(velAngleInterpolant);              //Get multiplier for component of new player velocity
+                addVel *= effectiveFireVel * gunSettings.additiveVelocityMultiplier;                         //Apply both multipliers to base velocity magnitude
+                newVelocity = newVelocity.normalized * (player.bodyRb.velocity.magnitude + addVel);          //Keep exact direction of new velocity but use existing speed and add some previous speed
+            }
+            player.bodyRb.velocity = newVelocity; //Launch player instantaneously (no acceleration)
+        }
 
         //Cleanup:
         doubleFireWindow = gunSettings.doubleFireTime; //Open double fire window so that other weapon can check for it
