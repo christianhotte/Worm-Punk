@@ -107,12 +107,9 @@ public class NetworkPlayer : MonoBehaviour
         {
             //Local scene setup:
             RigToActivePlayer(); //Re-apply rig to new scene's PlayerController
-        }
-        else //Remote player has been loaded into a new scene
-        {
-            //Remote scene setup:
-            if (scene.name == NetworkManagerScript.instance.mainMenuScene) { ChangeVisibility(false); } //Make sure remote player avatars are invisible and untouchable in main menu scene
-            else { ChangeVisibility(true); }                                                            //Allow remote player avatars to be visible and touchable in non-menu scenes (with some exceptions)
+
+            if (scene.name == NetworkManagerScript.instance.mainMenuScene) { photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered); } //Hide all remote players when entering main menu
+            else if (scene.name == NetworkManagerScript.instance.roomScene) { photonView.RPC("RPC_MakeVisible", RpcTarget.OthersBuffered); }  //Show all remote players when entering locker room
         }
 
         //Generic scene load checks:
