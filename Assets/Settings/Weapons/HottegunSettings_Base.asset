@@ -19,8 +19,8 @@ MonoBehaviour:
   doubleFireTime: 0.15
   doubleFireBoost: 1
   fireVelocity: 27
-  additiveVelocityMaxAngle: 60
-  additiveVelocityMultiplier: 0.5
+  additiveVelocityMaxAngle: 65
+  additiveVelocityMultiplier: 0.55
   additiveVelocityCurve:
     serializedVersion: 2
     m_Curve:
