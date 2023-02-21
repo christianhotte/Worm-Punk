@@ -2,39 +2,47 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
 
-public class SpawnManager2 : MonoBehaviour
+public class SpawnManager2 : MonoBehaviourPunCallbacks
 {
-    public Transform[] spawnPoints; // An array of spawn points for the players
+    [SerializeField] private Transform[] spawnPoints;
 
-    private int nextSpawnPointIndex = 0; // Index of the next spawn point to use
+    private GameObject demoPlayer;
 
-    // Start is called before the first frame update
+    // Called on the first frame.
     void Start()
     {
-        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        demoPlayer = GameObject.Find("DemoPlayer4");
+        if (demoPlayer == null)
         {
-            // Spawn the players when the game starts
-            SpawnPlayer();
+            Debug.LogError("DemoPlayer4 not found in scene.");
+            return;
         }
+
+        if (!PhotonNetwork.IsConnectedAndReady)
+        {
+            Debug.LogError("Photon network is not connected and ready.");
+            return;
+        }
+
+        MoveDemoPlayerToSpawnPoint();
     }
 
-    private void SpawnPlayer()
+    // Moves the local demo player to a spawn point.
+    private void MoveDemoPlayerToSpawnPoint()
     {
-        // Get the position and rotation of the next spawn point
-        Transform spawnPoint = spawnPoints[nextSpawnPointIndex];
-        Vector3 spawnPosition = spawnPoint.position;
-        Quaternion spawnRotation = spawnPoint.rotation;
+        if (spawnPoints == null || spawnPoints.Length == 0)
+        {
+            Debug.LogError("Spawn points not set.");
+            return;
+        }
 
-        // Spawn the Network Player at the spawn point
-        //PhotonNetwork.Instantiate("NetworkPlayer", spawnPosition, spawnRotation);
+        int spawnPointIndex = PhotonNetwork.LocalPlayer.ActorNumber;
+        Debug.Log("Actor Number: " + spawnPointIndex);
+        Transform spawnPoint = spawnPoints[spawnPointIndex];
 
-        // Move the demo player to the spawn point
-        GameObject demoPlayer = GameObject.Find("DemoPlayer4");
-        demoPlayer.transform.position = spawnPosition;
-        demoPlayer.transform.rotation = spawnRotation;
-
-        // Update the next spawn point index
-        nextSpawnPointIndex = (nextSpawnPointIndex + 1) % spawnPoints.Length;
+        demoPlayer.transform.position = spawnPoint.position;
+        //demoPlayer.transform.rotation = spawnPoint.rotation;
     }
 }

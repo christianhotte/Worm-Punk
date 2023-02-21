@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class WormHoleTrigger : MonoBehaviour
 {
-    private float wormEnterRange;
+    public float wormEnterRange=2;
     public Transform entrancePos;
     private GameObject playerOBJ;
     private WormHole WHS;
     // Start is called before the first frame update
     void Start()
     {
-        wormEnterRange = 2;
         WHS = gameObject.GetComponentInParent<WormHole>();
     }
 
@@ -27,6 +26,7 @@ public class WormHoleTrigger : MonoBehaviour
                 {
                     playerOBJ = hit.gameObject;
                     StartCoroutine(WHS.StartWormhole(this.gameObject, playerOBJ));
+                    
 
                     break;
                 }

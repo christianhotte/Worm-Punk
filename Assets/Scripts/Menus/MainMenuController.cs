@@ -39,6 +39,7 @@ public class MainMenuController : MonoBehaviour
     /// <param name="speed">The number of seconds it takes to move from the main area to the lobby area.</param>
     public void TransportToLobby(float speed)
     {
+        NetworkManagerScript.instance.JoinLobby();
         StartCoroutine(MovePlayerInMenu(MenuArea.LOBBY, speed));
     }
 
