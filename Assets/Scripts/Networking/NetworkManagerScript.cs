@@ -100,7 +100,8 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
 
         Debug.Log("Joined a lobby.");
         base.OnJoinedLobby();
-        SetPlayerNickname("Player " + Random.Range(0, 1000).ToString("0000"));
+
+        GenerateRandomNickname();
 
         // Setting up the room options
         if (joinRoomOnLoad && !PhotonNetwork.InRoom)
@@ -108,6 +109,21 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
             OnCreateRoom("Dev. Test Room");
         }
     }
+
+    //List of random adjectives and nouns to name random players
+    private string[] wormAdjectives = { "Unfortunate", "Sad", "Desolate", "Slimy", "Grotesque", "Manic", "Slippery", "Moist", "Lugubrious", "Tubular", "Flaccid", "Erratic", "Animalistic" };
+    private string[] wormNouns = { "Worm", "Invertebrate", "Earth Creature", "Specimen", "Grub", "Wormling", "Nightcrawler", "Crawler", "Larva", "Wiggler", "Maggot", "Creepy-Crawlie", "Parasite" };
+
+    /// <summary>
+    /// Generates a random nickname for the player.
+    /// </summary>
+    private void GenerateRandomNickname()
+    {
+        Random.InitState(System.DateTime.Now.Millisecond);  //Seeds the randomizer
+        string currentWormName = wormAdjectives[Random.Range(0, wormAdjectives.Length)] + " " + wormNouns[Random.Range(0, wormNouns.Length)];
+        SetPlayerNickname(currentWormName + " #" + Random.Range(0, 1000).ToString("0000"));
+    }
+
     public override void OnCreatedRoom()
     {
         LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
