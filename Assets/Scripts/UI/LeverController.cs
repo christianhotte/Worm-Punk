@@ -12,6 +12,9 @@ public class LeverController : MonoBehaviour
     private HingeJoint hinge;
 
     [SerializeField, Tooltip("If true, the lever locks when a limit is reached.")] private bool lockOnMinimumLimit, lockOnMaximumLimit;
+    [SerializeField, Tooltip("If true, the lever snaps to each limit.")] private bool snapToLimit;
+    [SerializeField, Tooltip("The speed in seconds in which the lever moves automatically.")] private float snapMovementSpeed = 0.5f;
+    private bool leverAutomaticallyMoving = false;  //Checks to see if the lever is moving by itself
     private bool isLocked = false;  //Checks to see if the lever is locked in place
 
     [SerializeField, Tooltip("The minimum numerical value of the lever.")] private float minimumValue = -1f;
@@ -93,6 +96,52 @@ public class LeverController : MonoBehaviour
             OnValueChanged.Invoke(currentValue);
             previousValue = currentValue;
         }
+        //If the value is not changing, check to see where to snap the lever to if applicable
+        else if (snapToLimit && !leverAutomaticallyMoving)
+        {
+            //If the lever has not reached a limit
+            if (hingeJointState == HingeJointState.None)
+            {
+                float currentDistance = (hinge.limits.max - hinge.angle) / (hinge.limits.max - hinge.limits.min);   //Get the current distance of the lever
+                //If the lever is less than halfway, move to the minimum limit
+                if (currentDistance < 0.5f)
+                {
+                    StartCoroutine(MoveLeverToLimit(new Vector3(hinge.limits.max, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z), snapMovementSpeed));
+                }
+                //Else, move to the maximum limit
+                else
+                {
+                    StartCoroutine(MoveLeverToLimit(new Vector3(hinge.limits.min + 360f, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z), snapMovementSpeed));
+                }
+            }
+        }
+    }
+
+    private IEnumerator MoveLeverToLimit(Vector3 endingPos, float speed)
+    {
+        leverAutomaticallyMoving = true;
+        LockLever(true);
+
+        //Get the starting position and ending position based on the area the lever is moving to
+        Vector3 startingPos = hinge.transform.localEulerAngles;
+        //Move the player with a lerp
+        float timeElapsed = 0;
+
+        while (timeElapsed < speed)
+        {
+            //Smooth lerp duration algorithm
+            float t = timeElapsed / speed;
+
+            hinge.transform.localEulerAngles = Vector3.Lerp(startingPos, endingPos, t);    //Lerp the lever's movement
+
+            timeElapsed += Time.deltaTime;
+
+            yield return null;
+        }
+
+        hinge.transform.localEulerAngles = endingPos;
+        leverAutomaticallyMoving = false;
+        LockLever(false);
     }
 
     /// <summary>
