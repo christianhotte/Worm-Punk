@@ -6,18 +6,25 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public static SpawnManager instance; // Creates a singleton for the script
-    //public Transform[] spawnPoints; // A list of spawn points
+    //Objects & Components:
+    /// <summary>
+    /// Newest instance of spawn manager script (most likely the only instance at any given time).
+    /// </summary>
+    public static SpawnManager current;
     public List<Transform> spawnPoints = new List<Transform>();
+
+    //Settings:
+
+    //Runtime Variables:
     private List<Transform> usedSpawnPoints = new List<Transform>();
 
-    // Start is called before the first frame update
+    //RUNTIME METHODS:
     void Awake()
     {
-        instance = this;
+        current = this; //Always set newest-loaded spawnManager script to current
     }
 
-    public Transform GetSpawnPoint()
+    public Transform GetRandomSpawnPoint()
     {
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
         usedSpawnPoints.Add(spawnPoint);
@@ -31,4 +38,12 @@ public class SpawnManager : MonoBehaviour
 
         return spawnPoint;
     }
+    /*
+    /// <summary>
+    /// Returns lowest spawn point which a player is not currently at. Returns -1 if no points are available.
+    /// </summary>
+    public int GetLowestAvailablePoint()
+    {
+
+    }*/
 }

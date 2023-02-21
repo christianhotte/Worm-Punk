@@ -6,30 +6,29 @@ using UnityEngine.XR.Interaction.Toolkit;
 [RequireComponent(typeof(PlayerController))]
 public class PlayerSetup : MonoBehaviour
 {
-    public void SetPlayer()
-    {
-        SetColor(PlayerSettings.Instance.charData.testColor);
-    }
-
+    //FUNCTIONALITY METHODS:
     /// <summary>
-    /// Set a color on the player.
+    /// Applies all settings to local player instance (using local PlayerSettings instance).
     /// </summary>
-    /// <param name="playerColor">The color given to the player.</param>
-    public void SetColor(Color playerColor)
+    public void ApplyAllSettings()
     {
-        foreach (var controller in FindObjectsOfType<ActionBasedController>())
-        {
-            if (controller.GetComponentInChildren<MeshRenderer>() != null)
-            {
-                Debug.Log("Setting Color To " + playerColor.ToString() + " ...");
-                controller.GetComponentInChildren<MeshRenderer>().material.color = playerColor;
-            }
-        }
+        SetColor(PlayerSettings.Instance.charData.testColor); //DEMO: Set player color
+    }
+    /// <summary>
+    /// DEMO FUNCTION: Set a color on the player.
+    /// </summary>
+    /// <param name="newColor">The color given to the player.</param>
+    public void SetColor(Color newColor)
+    {
+        Debug.Log("Setting Player Color To " + newColor.ToString() + " ...");
 
-        foreach(var player in FindObjectsOfType<SkinnedMeshRenderer>())
+        //Change color of player body:
+        foreach(Material mat in PlayerController.instance.bodyRenderer.materials) mat.color = newColor; //Set every material in player body to new color
+
+        //Change color of player hands (TEMP):
+        foreach (var controller in FindObjectsOfType<ActionBasedController>()) //Iterate through each hand in player
         {
-            Debug.Log("Setting Player Color To " + playerColor.ToString() + " ...");
-            player.material.color = playerColor;
+            if (controller.GetComponentInChildren<MeshRenderer>() != null) controller.GetComponentInChildren<MeshRenderer>().material.color = newColor; //Change hand color (if possible, may be deprecated)
         }
     }
 }

@@ -53,6 +53,11 @@ MonoBehaviour:
   - RPC_LostTarget
   - RPC_UpdateReadyStatus
   - LoadPlayerSettings
+  - RPC_MakeInvisible
+  - RPC_MakeVisible
+  - RPC_ChangeVisibility
+  - RPC_MovePlayerToPoint
+  - RPC_Launch
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

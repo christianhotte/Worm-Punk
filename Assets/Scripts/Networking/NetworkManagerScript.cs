@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.SceneManagement;
 
 /* Code was referenced from https://www.youtube.com/watch?v=KHWuTBmT1oI
  * https://www.youtube.com/watch?v=zPZK7C5_BQo&list=PLhsVv9Uw1WzjI8fEBjBQpTyXNZ6Yp1ZLw */
@@ -12,51 +13,73 @@ being called when we are connected to the server, or someone joins the server/ro
 
 public class NetworkManagerScript : MonoBehaviourPunCallbacks
 {
-    public static NetworkManagerScript instance;
-    
-    public bool joinRoomOnLoad = true;
+    //Objects & Components:
+    public static NetworkManagerScript instance;    //Singleton-ized instance of this script in scene
+    public static NetworkPlayer localNetworkPlayer; //Instance of local client's network player in scene
 
-    private GameObject init;
+    //Settings:
+    [Tooltip("Turn this on to force player to join room as soon as game is loaded.")] public bool joinRoomOnLoad = false;
+    [Tooltip("Name of primary menu scene.")]                                          public string mainMenuScene;
+    [Tooltip("Name of primary multiplayer room scene.")]                              public string roomScene;
+    [SerializeField, Tooltip("Name of network player prefab in Resources folder.")]   private string networkPlayerName;
 
-    // On awake function
+    //Runtime Variables:
+
+
+    //RUNTIME METHODS:
     private void Awake()
     {
-        // Creates a static reference meaning the variable is bound to the class and not the actual object in Unity; references this script.
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-            Destroy(gameObject);
-        init = FindObjectOfType<GameManager>().gameObject;
-    }
+        //Initialize:
+        if (instance == null) { instance = this; } else Destroy(gameObject); //Singleton-ize this script instance
 
-    // Start is called before the first frame update
+        //Get objects & components:
+
+    }
     void Start()
     {
-        //We want to connect to the Unity server at the beginning of the game.
-        ConnectAndGiveDavidYourIPAddress();
-        //PlayerController.instance.transform.SetParent(init.transform);
+        ConnectAndGiveDavidYourIPAddress(); //Immediately start trying to connect to master server
     }
 
+    //NETWORK FUNCTIONS:
     public void ConnectAndGiveDavidYourIPAddress()
     {
-        if (!PhotonNetwork.IsConnected)
-        {
-            ConnectToServer();
-        }
+        if (!PhotonNetwork.IsConnected) { ConnectToServer(); }
     }
-
-    // This function connects us to the server.
     void ConnectToServer()
     {
         PhotonNetwork.ConnectUsingSettings();
         Debug.Log("Trying To Connect To Server...");
     }
+    public void OnCreateRoom(string roomName)
+    {
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.IsVisible = true; // The player is able to see the room
+        roomOptions.IsOpen = true; // The room is open.
+        roomOptions.EmptyRoomTtl = 0; // Leave the room open for 0 milliseconds after the room is empty
+        roomOptions.MaxPlayers = 6;
+        PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
+    }
+    public void JoinRoom(string roomName)
+    {
+        // Joins the room on the network
+        PhotonNetwork.JoinRoom(roomName);
 
-    // If someone tries to create a room while we haven't connected to the master server, it will create an error.
+        if (PhotonNetwork.InRoom) Debug.Log("Successfully Connected To " + roomName);
+    }
+    public void LeaveRoom()
+    {
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
+        //Update room information
+        if (lobbyUI != null)
+        {
+            lobbyUI.UpdateRoomList();
+            lobbyUI.ShowLaunchButton(false);
+        }
 
-    // When you're connected to the server.
+        PhotonNetwork.LeaveRoom();
+    }
+
+    //NETWORK CALLBACKS:
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected To Server.");
@@ -65,8 +88,6 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         // Joins the lobby
         PhotonNetwork.JoinLobby();
     }
-
-    // Once a player has connected to a lobby.
     public override void OnJoinedLobby()
     {
         LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
@@ -87,22 +108,6 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
             OnCreateRoom("Dev. Test Room");
         }
     }
-
-    public void SetPlayerNickname(string name)
-    {
-        PhotonNetwork.NickName = name;
-        PlayerSettings.Instance.charData.playerName = PhotonNetwork.NickName;
-    }
-    public void OnCreateRoom(string roomName)
-    {
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.IsVisible = true; // The player is able to see the room
-        roomOptions.IsOpen = true; // The room is open.
-        roomOptions.EmptyRoomTtl = 0; // Leave the room open for 0 milliseconds after the room is empty
-        roomOptions.MaxPlayers = 6;
-        PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
-    }
-
     public override void OnCreatedRoom()
     {
         LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
@@ -113,39 +118,6 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
             lobbyUI.OpenMenu("room");
         }
     }
-
-    // The connection of the room [Also spawns a network player in NetworkPlayerSpawn]
-    public override void OnJoinedRoom()
-    {
-        Debug.Log("Joined " + PhotonNetwork.CurrentRoom.Name + " room.");
-
-        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
-
-        //If there is a lobby in the scene, display room information
-        if (lobbyUI != null)
-        {
-            lobbyUI.UpdateRoomList();
-            lobbyUI.OpenMenu("room");
-            lobbyUI.ShowLaunchButton(true);
-        }
-    }
-
-    // If the room fails to join
-    public override void OnJoinRoomFailed(short returnCode, string message)
-    {
-        Debug.LogError("Join Room Failed. Reason: " + message);
-
-        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
-
-        //If there is a lobby in the scene, display an error message
-        if (lobbyUI != null)
-        {
-            lobbyUI.UpdateErrorMessage("Join Room Failed. Reason: " + message);
-            lobbyUI.OpenMenu("error");
-        }
-    }
-
-    // We failed to create a room and we will display the error message to the player.
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
         Debug.LogError("Create Room Failed: " + returnCode);
@@ -162,8 +134,34 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
             lobbyUI.OpenMenu("error");
         }
     }
+    public override void OnJoinedRoom()
+    {
+        //Update lobby UI:
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
+        if (lobbyUI != null) //If there is a lobby in the scene, display room information
+        {
+            lobbyUI.UpdateRoomList();
+            lobbyUI.OpenMenu("room");
+            lobbyUI.ShowLaunchButton(true);
+        }
 
-    // To let us know if/when another player joins the room.
+        //Cleanup:
+        Debug.Log("Joined " + PhotonNetwork.CurrentRoom.Name + " room."); //Indicate that room has been joined
+        SpawnNetworkPlayer();                                             //Always spawn a network player instance when joining a room
+    }
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        Debug.LogError("Join Room Failed. Reason: " + message);
+
+        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
+
+        //If there is a lobby in the scene, display an error message
+        if (lobbyUI != null)
+        {
+            lobbyUI.UpdateErrorMessage("Join Room Failed. Reason: " + message);
+            lobbyUI.OpenMenu("error");
+        }
+    }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         base.OnPlayerEnteredRoom(newPlayer);
@@ -177,46 +175,18 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
             lobbyUI.UpdateRoomList();
         }
     }
-
-    // Leaves the room that a player has entered.
-    public void LeaveRoom()
-    {
-        LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
-        //Update room information
-        if (lobbyUI != null)
-        {
-            lobbyUI.UpdateRoomList();
-            lobbyUI.ShowLaunchButton(false);
-        }
-
-        PhotonNetwork.LeaveRoom();
-    }
-
-    // once the player has left the room.
     public override void OnLeftRoom()
     {
+        //Update lobby script:
         LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
-
-        //If there is a lobby in the scene, go to the title menu
         if (lobbyUI != null)
         {
             lobbyUI.OpenMenu("title");
         }
+
+        //Cleanup:
+        DeSpawnNetworkPlayer(); //De-spawn local network player whenever player leaves a room
     }
-
-    // Joins the room that a player selects 
-    public void JoinRoom(string roomName)
-    {
-        // Joins the room on the network
-        PhotonNetwork.JoinRoom(roomName);
-
-        if (PhotonNetwork.InRoom)
-        {
-            Debug.Log("Successfully Connected To " + roomName);
-        }
-    }
-
-    // Shows us the list of room info
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         //base.OnRoomListUpdate(roomList);
@@ -231,7 +201,29 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
             lobbyUI.UpdateLobbyList(roomList);
         }
     }
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.Log("Disconnected from server for reason " + cause.ToString());
+    }
 
+    //FUNCTIONALITY METHODS:
+    public void SpawnNetworkPlayer()
+    {
+        if (localNetworkPlayer != null) { Debug.LogError("Tried to spawn a second NetworkPlayer for local client."); return; }              //Abort if player already has a network player
+        localNetworkPlayer = PhotonNetwork.Instantiate(networkPlayerName, Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
+    }
+    public void DeSpawnNetworkPlayer()
+    {
+        if (localNetworkPlayer != null) PhotonNetwork.Destroy(localNetworkPlayer.gameObject); //Destroy local network player if possible
+        localNetworkPlayer = null;                                                            //Remove reference to destroyed reference player
+    }
+    public void SetPlayerNickname(string name)
+    {
+        PhotonNetwork.NickName = name;
+        PlayerSettings.Instance.charData.playerName = PhotonNetwork.NickName;
+    }
+
+    //UTILITY METHODS:
     public List<string> GetPlayerNameList()
     {
         List<string> playerNameList = new List<string>();
@@ -243,12 +235,6 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
 
         return playerNameList;
     }
-
-    public override void OnDisconnected(DisconnectCause cause)
-    {
-        Debug.Log("Disconnected from server for reason " + cause.ToString());
-    }
-
     public string GetCurrentRoom() => PhotonNetwork.CurrentRoom.Name;
     public Player[] GetPlayerList() => PhotonNetwork.PlayerList;
     public string GetLocalPlayerName() => PhotonNetwork.LocalPlayer.NickName;

@@ -13,6 +13,7 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
     internal NewShotgunController clientGun; //Client weapon associated with this networked weapon (NOTE: this reference is only present on the local client version of this script)
     internal string projectileResourceName;  //Name of projectile to be fired in Resources folder
     private AudioSource audioSource;         //Audio source component on this remote shotgun
+    private ParticleSystem shotParticles;    //Particle system which spawns muzzle debris upon firing
 
     //Runtime Variables:
     private Handedness handedness; //Which hand this shotgun is associated with
@@ -27,6 +28,7 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
 
         //Get objects & components:
         if (!TryGetComponent(out audioSource)) audioSource = gameObject.AddComponent<AudioSource>(); //Make sure gun has audioSource
+        shotParticles = GetComponentInChildren<ParticleSystem>();                                    //Get particle system in children
     }
     private void Start()
     {
@@ -57,10 +59,15 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
     public void LocalFire(Transform barrel)
     {
         //Initialization:
-        if (!this.photonView.IsMine) //This is a remote weapon
+        if (!photonView.IsMine) //This is a remote weapon
         {
             audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Default_Shotgun_Sound")); //Play sound on remote clients
-            return;                                                                             //Ignore if this method is not being called on this client
+            if (shotParticles != null) //Weapon has a particle system for muzzle debris
+            {
+                shotParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); //Reset particle system
+                shotParticles.Play();                                                      //Play particle effect
+            }
+            return; //Ignore if this method is not being called on this client
         }
 
         //Launch projectile:

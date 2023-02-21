@@ -2,21 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.XR.CoreUtils;
+using UnityEngine.XR;
 using CustomEnums;
 using UnityEngine.InputSystem;
+using RootMotion.FinalIK;
 
 /// <summary>
 /// Classes which inherit from this will be able to be attached to the player via a configurable joint.
 /// </summary>
 public class PlayerEquipment : MonoBehaviour
 {
+    //Classes, Enums & Structs:
+    /// <summary>
+    /// Describes a complex haptic event used by PlayerEquipment.
+    /// </summary>
+    [System.Serializable]
+    public struct HapticData
+    {
+        [Range(0, 1), Tooltip("Base intensity of haptic impulse.")]                   public float amplitude;
+        [Min(0), Tooltip("Total length (in seconds) of haptic impulse.")]             public float duration;
+        [Tooltip("Curve used to modulate magnitude throughout duration of impulse.")] public AnimationCurve behaviorCurve;
+    }
+
     //Objects & Components:
-    internal PlayerController player;       //Player currently controlling this equipment
-    private Transform basePlayerTransform;  //Master player object which all player equipment (and XR Origin) is under
-    private protected Transform targetTransform;      //Position and orientation for equipment joint to target (should be parent transform)
-    private Rigidbody followerBody;         //Transform for object with mimics position and orientation of target equipment joint
-    private protected Rigidbody playerBody; //Rigidbody attached to player XROrigin
-    private InputActionMap inputMap;        //Input map which this equipment will use
+    internal PlayerController player;            //Player currently controlling this equipment
+    private Transform basePlayerTransform;       //Master player object which all player equipment (and XR Origin) is under
+    private protected Transform targetTransform; //Position and orientation for equipment joint to target (should be parent transform)
+    private Rigidbody followerBody;              //Transform for object with mimics position and orientation of target equipment joint
+    private protected Rigidbody playerBody;      //Rigidbody attached to player XROrigin
+    private InputActionMap inputMap;             //Input map which this equipment will use
+    private Transform handAnchorMover;           //If this equipment is on a player hand, this transform is used to move the rig when reacting to events such as recoil
 
     private protected Rigidbody rb;            //Rigidbody component attached to this script's gameobject
     private protected AudioSource audioSource; //Audio source component for playing sounds made by this equipment
@@ -24,10 +39,15 @@ public class PlayerEquipment : MonoBehaviour
 
     //Settings:
     [Header("Settings:")]
-    [SerializeField, Tooltip("Settings defining this equipment's physical joint behavior.")] private EquipmentJointSettings jointSettings;
-    [SerializeField, Tooltip("Enables constant joint updates for testing purposes.")] private protected bool debugUpdateSettings;
+    [SerializeField, Tooltip("Settings defining this equipment's physical joint behavior.")]                                         private protected EquipmentJointSettings jointSettings;
+    [SerializeField, Tooltip("Only enable this on equipment which needs it, best practice is to have only one such piece per arm.")] private bool canMoveHandRig = false;
+    [SerializeField, Tooltip("Enables constant joint updates for testing purposes.")]                                                private protected bool debugUpdateSettings;
 
     //Runtime Variables:
+    /// <summary>
+    /// Secondary modifier to follower offset position, used for animations such as recoil which involve moving IK hands (always aligned to hand orientation).
+    /// </summary>
+    private protected Vector3 currentAddOffset;
     /// <summary>
     /// Which hand this equipment is associated with (if any).
     /// </summary>
@@ -36,6 +56,67 @@ public class PlayerEquipment : MonoBehaviour
     /// Equipment in stasis will do nothing and check nothing until it is re-equipped to a player.
     /// </summary>
     internal bool inStasis = false;
+
+    private InputDeviceRole deviceRole = InputDeviceRole.Generic; //This equipment's equivalent device role (used to determine haptic feedback targets)
+    private List<Vector3> relPosMem = new List<Vector3>();        //List of remembered relative positions (taken at FixedUpdate) used to calculate current relative velocity (newest entries are first)
+    
+
+    //Utility Variables:
+    /// <summary>
+    /// Current position of transform target relative to player body.
+    /// </summary>
+    private protected Vector3 RelativePosition
+    {
+        get
+        {
+            if (playerBody == null) return Vector3.zero;                                      //Return nothing if equipment is not attached to a real player
+            else return playerBody.transform.InverseTransformPoint(targetTransform.position); //Use inverse transform point to determine the position of the weapon relative to its player body
+        }
+    }
+    /// <summary>
+    /// Current velocity (in units per second) of transform target relative to player body.
+    /// </summary>
+    private protected Vector3 RelativeVelocity
+    {
+        get
+        {
+            if (relPosMem.Count < 1) return Vector3.zero;                                                          //Return nothing if there is no positional memory to go off of
+            else if (relPosMem.Count == 1) return (RelativePosition - relPosMem[0]) / Time.fixedDeltaTime;         //Return difference between single memory entry and current relative position if necessary
+            else return (relPosMem[0] - relPosMem[relPosMem.Count - 1]) / (Time.fixedDeltaTime * relPosMem.Count); //Return difference between newest and oldest entries over time if more than two positions are in memory
+        }
+    }
+
+    //EVENTS & COROUTINES:
+    /// <summary>
+    /// Plays a haptic sequence using an AnimationCurve to modify amplitude over time.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator HapticEvent(AnimationCurve hapticCurve, float maxAmplitude, float fullDuration)
+    {
+        //Validity checks:
+        if (fullDuration <= 0) { Debug.LogWarning("Tried to play haptic event with duration " + fullDuration + " . This is too small."); yield break; } //Do not run if duration is zero
+
+        //Get valid devices:
+        List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>(); //Initialize list to store input devices
+        #pragma warning disable CS0618                                                     //Disable obsolescence warning
+        UnityEngine.XR.InputDevices.GetDevicesWithRole(deviceRole, devices);               //Find all input devices counted as right hand
+        #pragma warning restore CS0618                                                     //Re-enable obsolescence warning
+        for (int x = 0; x < devices.Count;) //Iterate through list of input devices (manually indexing iterator)
+        {
+            var device = devices[x];                                                                                                       //Get current device
+            if (device.TryGetHapticCapabilities(out HapticCapabilities capabilities)) if (capabilities.supportsImpulse) { x++; continue; } //Skip devices which are good to go
+            devices.RemoveAt(x);                                                                                                           //Remove incompatible devices from list
+        }
+
+        //Play haptic event over time:
+        for (float timePassed = 0; timePassed <= fullDuration; timePassed += Time.fixedDeltaTime) //Iterate over time for full duration of haptic event
+        {
+            float currentInterpolant = timePassed / fullDuration;                                               //Get interpolant based on current progression of time
+            float currentAmplitude = hapticCurve.Evaluate(currentInterpolant) * maxAmplitude;                   //Use given curve to get an amplitude value
+            foreach (var device in devices) device.SendHapticImpulse(0, currentAmplitude, Time.fixedDeltaTime); //Send a brief haptic pulse at current amplitude (duration is only until next update)
+            yield return new WaitForFixedUpdate();                                                              //Wait for next fixed update
+        }
+    }
 
     //RUNTIME METHODS:
     private protected virtual void Awake()
@@ -62,11 +143,13 @@ public class PlayerEquipment : MonoBehaviour
             {
                 inputMap = playerInput.actions.FindActionMap("XRI LeftHand Interaction"); //Get left hand input map
                 handedness = Handedness.Left;                                             //Indicate left-handedness
+                deviceRole = InputDeviceRole.LeftHanded;                                  //Indicate that equipment uses left-handed devices
             }
             else if (targetTransform.name.Contains("Right") || targetTransform.name.Contains("right")) //Equipment is being attached to the right hand/side
             {
                 inputMap = playerInput.actions.FindActionMap("XRI RightHand Interaction"); //Get right hand input map
                 handedness = Handedness.Right;                                             //Indicate right-handedness
+                deviceRole = InputDeviceRole.RightHanded;                                  //Indicate that equipment uses right-handed devices
             }
             else //Equipment is not being attached to an identifiable side
             {
@@ -75,8 +158,28 @@ public class PlayerEquipment : MonoBehaviour
             }
             if (inputMap != null) inputMap.actionTriggered += TryGiveInput; //Otherwise, subscribe to input triggered event
             else Debug.LogWarning("PlayerEquipment " + name + " could not get its desired input map, make sure PlayerInput's actions are set up properly."); //Post warning if input get was unsuccessful
+            
+            //Set up hand retargeting:
+            if (canMoveHandRig && handedness != Handedness.None) //Equipment is attached to a player hand and needs to be able to artificially move it
+            {
+                //Initialization:
+                if (player.bodyRig == null) player.bodyRig = player.GetComponentInChildren<VRIK>();                                                      //Make sure player has a reference to its own body rig
+                Transform realHandAnchor = handedness == Handedness.Left ? player.bodyRig.solver.leftArm.target : player.bodyRig.solver.rightArm.target; //Get hand IK target from body rig (use ternary to differentiate between hands)
+                
+                //Set up custom anchor parent:
+                if (realHandAnchor.parent.name == "HandAnchorMover") //IK target has already been set up by a piece of playerEquipment on the same arm
+                {
+                    handAnchorMover = realHandAnchor.parent; //Use pre-existing mover as parent
+                }
+                else //No anchor mover has been previously been set up with this target
+                {
+                    handAnchorMover = new GameObject("HandAnchorMover").transform; //Create empty transform to move anchor (without modifying actual anchor or its parent)
+                    handAnchorMover.SetParent(realHandAnchor.parent, false);       //Child anchor mover to same parent as true hand anchor
+                    realHandAnchor.SetParent(handAnchorMover, true);               //Child true anchor target to mover
+                }
+            }
         }
-        else //Equipment is not being controlled by a player (probably for demo purposes
+        else //Equipment is not being controlled by a player (probably for demo purposes)
         {
             //Initial component setup:
             if (transform.parent.TryGetComponent(out DemoEquipmentMount mount)) { mount.equipment = this; } //Send reference to equipment mount if relevant
@@ -97,6 +200,7 @@ public class PlayerEquipment : MonoBehaviour
         rb.isKinematic = false;                                                                                       //Make sure rigidbody is not kinematic
         rb.interpolation = RigidbodyInterpolation.Interpolate;                                                        //Enable interpolation
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;                                         //Enable continuous dynamic collisions
+        rb.maxAngularVelocity = jointSettings.maxAngularSpeed;                                                        //Set base max rotation value
 
         //Check for settings:
         if (jointSettings == null) //No joint settings were provided
@@ -131,6 +235,11 @@ public class PlayerEquipment : MonoBehaviour
     }
     private protected virtual void FixedUpdate()
     {
+        //Update position memory:
+        relPosMem.Insert(0, RelativePosition);                                                       //Add current relative position to beginning of memory list
+        if (relPosMem.Count > jointSettings.positionMemory) relPosMem.RemoveAt(relPosMem.Count - 1); //Keep list size constrained to designated amount (removing oldest entries)
+
+        //Cleanup:
         PerformFollowerUpdate(); //Update follower transform
     }
     private protected virtual void OnPreRender()
@@ -159,27 +268,9 @@ public class PlayerEquipment : MonoBehaviour
     /// </summary>
     public void UnEquip()
     {
-
-    }
-    /// <summary>
-    /// Updates position of rigidbody follower to match position of target.
-    /// </summary>
-    private void PerformFollowerUpdate()
-    {
-        //Calculate follower position:
-        Vector3 targetPos = targetTransform.position; //Get base target position for rigidbody follower
-        if (jointSettings.velocityCompensation > 0 && playerBody != null) //Velocity compensation is enabled by settings (and has a playerBody to reference)
-        {
-            targetPos += playerBody.velocity * jointSettings.velocityCompensation; //Adjust target position based on velocity compensation to account for lag
-        }
-        if (jointSettings.offset != Vector3.zero) //Target offset mode is enabled by settings
-        {
-            targetPos += transform.rotation * jointSettings.offset; //Apply offset to target position (orient offset to current object orientation)
-        }
-
-        //Apply follower transforms:
-        followerBody.MovePosition(targetPos);                //Apply target position through follower rigidbody
-        followerBody.MoveRotation(targetTransform.rotation); //Apply target rotation through follower rigidbody
+        //Cleanup:
+        if (player != null) player.attachedEquipment.Remove(this); //Remove this item from player's running list of attached equipment
+        inStasis = true;                                           //Indicate that equipment is now safely in stasis and will not messily try to update itself
     }
 
     //UTILITY METHODS:
@@ -237,5 +328,46 @@ public class PlayerEquipment : MonoBehaviour
         drive.positionDamper = jointSettings.angularDriveDamper; //Set angular drive dampening effect
         joint.angularXDrive = drive;                             //Apply setting to angular X drive
         joint.angularYZDrive = drive;                            //Apply setting to angular YZ drive
+    }
+    /// <summary>
+    /// Updates position of rigidbody follower to match position of target.
+    /// </summary>
+    private void PerformFollowerUpdate()
+    {
+        //Calculate follower position:
+        Vector3 targetPos = targetTransform.position; //Get base target position for rigidbody follower
+        if (jointSettings.velocityCompensation > 0 && playerBody != null) targetPos += playerBody.velocity * jointSettings.velocityCompensation; //Apply target velocity compensation to account for rigidbody lag
+        if (jointSettings.offset != Vector3.zero) targetPos += transform.rotation * jointSettings.offset;                                        //Apply constant offset to keep equipment in desired position relative to player
+        if (currentAddOffset != Vector3.zero) targetPos += transform.rotation * currentAddOffset;                                                //Apply secondary offset to target position, used by some equipment animations such as shotgun recoil
+
+        //Apply follower transforms:
+        followerBody.MovePosition(targetPos);                                                            //Apply target position through follower rigidbody
+        followerBody.MoveRotation(targetTransform.rotation);                                             //Apply target rotation through follower rigidbody
+        if (handAnchorMover != null && canMoveHandRig) handAnchorMover.localPosition = currentAddOffset; //Artificially add movement to player hand target if enabled
+    }
+    /// <summary>
+    /// Sends a haptic impulse to this equipment's associated controller.
+    /// </summary>
+    /// <param name="amplitude">Strength of vibration (between 0 and 1).</param>
+    /// <param name="duration">Duration of vibration (in seconds).</param>
+    public void SendHapticImpulse(float amplitude, float duration)
+    {
+        List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>(); //Initialize list to store input devices
+        #pragma warning disable CS0618                                                     //Disable obsolescence warning
+        UnityEngine.XR.InputDevices.GetDevicesWithRole(deviceRole, devices);               //Find all input devices counted as right hand
+        #pragma warning restore CS0618                                                     //Re-enable obsolescence warning
+        foreach (var device in devices) //Iterate through list of devices identified as right hand
+        {
+            if (device.TryGetHapticCapabilities(out HapticCapabilities capabilities)) //Device has haptic capabilities
+            {
+                if (capabilities.supportsImpulse) device.SendHapticImpulse(0, amplitude, duration); //Send impulse if supported by device
+            }
+        }
+    }
+    public void SendHapticImpulse(Vector2 properties) { SendHapticImpulse(properties.x, properties.y); }
+    public void SendHapticImpulse(HapticData properties)
+    {
+        if (properties.behaviorCurve.keys.Length <= 1) SendHapticImpulse(properties.amplitude, properties.duration); //Use simpler impulse method if no curve is given
+        else StartCoroutine(HapticEvent(properties.behaviorCurve, properties.amplitude, properties.duration));       //Use coroutine to deploy more complex haptic impulses
     }
 }

@@ -12,6 +12,7 @@ public class ProjectileSettings : ScriptableObject
     [Header("Hit Effect:")]
     [Min(0), Tooltip("How much damage this projectile deals to targets it hits.")] public int damage = 1;
     [Min(0), Tooltip("How much force this projectile applies to struck objects.")] public float knockback = 0;
+    [Min(0), Tooltip("Object spawned when projectile burns out or hits a wall.")]  public GameObject explosionPrefab;
     
     [Header("Travel Properties:")]
     [Tooltip("Speed at which projectile travels upon spawn.")]                                     public float initialVelocity;
@@ -21,8 +22,11 @@ public class ProjectileSettings : ScriptableObject
     
     [Header("Targeting:")]
     [Min(0), Tooltip("How intensely projectiles home in toward targets (set to zero to disable homing).")]                                                     public float homingStrength;
+    [Tooltip("Curve describing intensity of projectile homing throughout the course of its range.")]                                                           public AnimationCurve homingStrengthCurve;
     [MinMaxSlider(0, 180), Tooltip("Angle at which targeting system can lock on (second component is angle at which projectile will ignore target entirely.")] public Vector2 targetDesignationAngle;
+    [Tooltip("Curve describing multiplier for target designation angle throughout the course of projectile's range")]                                          public AnimationCurve targetAngleCurve;
     [Min(0), Tooltip("Maximum distance at which projectile can acquire a target.")]                                                                            public float targetingDistance;
+    [Tooltip("Curve describing homing distance multiplier throughout course of projectile's range.")]                                                          public AnimationCurve targetingDistanceCurve;
     [Tooltip("Require line-of-sight for active targeting.")]                                                                                                   public bool LOSTargeting;
     [Tooltip("Sets projectile target acquisition to always run, even when a target has already been found.")]                                                  public bool alwaysLookForTarget;
     [Range(0, 1), Tooltip("Amount by which projectile will use target velocity to predict movement and attempt interception.")]                                public float predictionStrength;
