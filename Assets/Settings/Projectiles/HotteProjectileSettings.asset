@@ -15,8 +15,8 @@ MonoBehaviour:
   damage: 1
   knockback: 40
   explosionPrefab: {fileID: 5470892112642989696, guid: a01fa86dc420545488942b0fe674d939, type: 3}
-  initialVelocity: 150
-  range: 150
+  initialVelocity: 230
+  range: 200
   barrelGap: 0.7
   drop: 0
   homingStrength: 300
@@ -36,16 +36,16 @@ MonoBehaviour:
       time: 0.099999994
       value: 1
       inSlope: -4.960938
-      outSlope: -0.33336043
+      outSlope: -0.5555556
       tangentMode: 69
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 0.6999756
-      inSlope: -0.33336043
-      outSlope: -0.33336043
+      value: 0.5
+      inSlope: -0.5555556
+      outSlope: -0.5555556
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -53,7 +53,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  targetDesignationAngle: {x: 15, y: 60}
+  targetDesignationAngle: {x: 12, y: 60}
   targetAngleCurve:
     serializedVersion: 2
     m_Curve:
@@ -87,7 +87,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  targetingDistance: 40
+  targetingDistance: 35
   targetingDistanceCurve:
     serializedVersion: 2
     m_Curve:

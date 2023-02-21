@@ -292,7 +292,7 @@ public class Projectile : MonoBehaviourPunCallbacks
         if (targetView != null) //Target has a photon view component
         {
             photonView.RPC("RPC_AcquireTarget", RpcTarget.Others, targetView.ViewID); //Use view ID to lock other projectiles onto this component
-            print("Target Acquired: " + targetView.name);
+            if (printDebug) print("Target Acquired: " + targetView.name);             //Indicate that a target has been acquired
         }
         else //Targeted object is not on network (in this case it should ideally be stationary)
         {
@@ -302,7 +302,7 @@ public class Projectile : MonoBehaviourPunCallbacks
                 if (collider.transform == target) //Target can be acquired with this solution
                 {
                     photonView.RPC("RPC_AcquireTargetDumb", RpcTarget.Others, target.position); //Send position of target as identifying acquisition data
-                    print("Dumb Target Acquired: " + target.name);
+                    if (printDebug) print("Dumb Target Acquired: " + target.name);              //Indicate that a target has been acquired
                     break;                                                                      //Exit collider iteration
                 }
             }
@@ -400,7 +400,7 @@ public class Projectile : MonoBehaviourPunCallbacks
             audioSource.loop = true;                                                        //Make audiosource loop
             audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
             audioSource.Play();                                                             //Play homing sound on loop
-            print("Target Remotely Acquired: " + targetable.name);                          //Indicate to local user that a remote projectile has successfully acquired a target
+            if (printDebug) print("Target Remotely Acquired: " + targetable.name);          //Indicate to local user that a remote projectile has successfully acquired a target
         }
     }
     /// <summary>
@@ -420,7 +420,7 @@ public class Projectile : MonoBehaviourPunCallbacks
                 audioSource.loop = true;                                                        //Make audiosource loop
                 audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
                 audioSource.Play();                                                             //Play homing sound on loop
-                print("Dumb target acquisition successful!");                                   //Indicate to local user that a remote projectile has successfully acquired a target
+                if (printDebug) print("Dumb target acquisition successful!");                   //Indicate to local user that a remote projectile has successfully acquired a target
                 break;                                                                          //Ignore everything else (risky)
             }
         }

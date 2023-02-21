@@ -36,7 +36,7 @@ public class ScreenShakeVR : MonoBehaviour
 
     //Settings:
     [SerializeField, Tooltip("Base intensity of shake effect")] private float baseMagnitude = 0.1f;
-    [SerializeField, Tooltip("Base speed of shake effect")]     private float baseFrequency = 20f;
+    [SerializeField, Tooltip("Base speed of shake effect")] private float baseFrequency = 20f;
 
     //Runtime Vars:
     private float shakeVal;

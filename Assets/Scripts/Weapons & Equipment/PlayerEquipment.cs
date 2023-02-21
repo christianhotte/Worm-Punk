@@ -341,9 +341,9 @@ public class PlayerEquipment : MonoBehaviour
         if (currentAddOffset != Vector3.zero) targetPos += transform.rotation * currentAddOffset;                                                //Apply secondary offset to target position, used by some equipment animations such as shotgun recoil
 
         //Apply follower transforms:
-        followerBody.MovePosition(targetPos);                                 //Apply target position through follower rigidbody
-        followerBody.MoveRotation(targetTransform.rotation);                  //Apply target rotation through follower rigidbody
-        if (canMoveHandRig) handAnchorMover.localPosition = currentAddOffset; //Artificially add movement to player hand target if enabled
+        followerBody.MovePosition(targetPos);                                                            //Apply target position through follower rigidbody
+        followerBody.MoveRotation(targetTransform.rotation);                                             //Apply target rotation through follower rigidbody
+        if (handAnchorMover != null && canMoveHandRig) handAnchorMover.localPosition = currentAddOffset; //Artificially add movement to player hand target if enabled
     }
     /// <summary>
     /// Sends a haptic impulse to this equipment's associated controller.

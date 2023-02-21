@@ -464,7 +464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7570470b729367d49ba17120b58aa9fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jointSettings: {fileID: 11400000, guid: 5093f50b96876fb4cae52422dcb85e6f, type: 2}
+  jointSettings: {fileID: 11400000, guid: 605c76b0acf137848904ee7ac0955c61, type: 2}
   canMoveHandRig: 1
   debugUpdateSettings: 0
   barrels:
