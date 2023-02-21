@@ -7408,13 +7408,57 @@ PrefabInstance:
       propertyPath: m_Name
       value: WristCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 7129216954941947323, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7129216954941947323, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7129216954941947323, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7129216954941947323, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7129216954941947323, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7217992755629739141, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 1952950443122428275}
     - target: {fileID: 7217992755629739141, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8848621580229578847, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
+      propertyPath: m_PresetInfoIsWorld
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9102432967625322937, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9102432967625322937, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9102432967625322937, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9102432967625322937, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9102432967625322937, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33a75cda1a1dccf419f2aefd8b4a6750, type: 3}

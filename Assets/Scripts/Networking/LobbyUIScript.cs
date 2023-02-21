@@ -192,13 +192,13 @@ public class LobbyUIScript : MonoBehaviour
         playerList = NetworkManagerScript.instance.GetPlayerNameList();
         print("Players in room list: " + playerList.Count);
 
-        // **NEW** Destroys old playerListItems so duplicates aren't created
-        while (playerListItems.Count > 0)
+        //Destroy the list before updating
+        foreach (Transform trans in playerListContent)
         {
-            PlayerListItem currentItem = playerListItems[0];
-            playerListItems.RemoveAt(0);
-            Destroy(currentItem);
+            Destroy(trans.gameObject);
         }
+
+        playerListItems.Clear();
 
         // Loops through the list of players and adds to the list of players in the room.
         for (int i = 0; i < playerList.Count; i++)

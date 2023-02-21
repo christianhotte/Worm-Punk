@@ -110,7 +110,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         }
     }
 
-    private string[] wormNames = { "Unfortunate Worm", "Sad Intertebrate", "Desolate Earth Creature", "Slimy Specimen", "Grotesque Grub", "Manic Wormling" };
+    private string[] wormNames = { "Unfortunate Worm", "Sad Invertebrate", "Desolate Earth Creature", "Slimy Specimen", "Grotesque Grub", "Manic Wormling" };
 
     /// <summary>
     /// Generates a random nickname for the player.
