@@ -38,7 +38,8 @@ public class SpawnManager2 : MonoBehaviourPunCallbacks
             return;
         }
 
-        int spawnPointIndex = PhotonNetwork.PlayerList.Length % spawnPoints.Length;
+        int spawnPointIndex = PhotonNetwork.LocalPlayer.ActorNumber;
+        Debug.Log("Actor Number: " + spawnPointIndex);
         Transform spawnPoint = spawnPoints[spawnPointIndex];
 
         demoPlayer.transform.position = spawnPoint.position;
