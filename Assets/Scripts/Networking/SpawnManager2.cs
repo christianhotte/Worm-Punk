@@ -6,41 +6,42 @@ using Photon.Realtime;
 
 public class SpawnManager2 : MonoBehaviourPunCallbacks
 {
-    public Transform[] spawnPoints; // An array of spawn points for the players
+    [SerializeField] private Transform[] spawnPoints;
 
-    private int nextSpawnPointIndex = 0; // Index of the next spawn point to use
+    private GameObject demoPlayer;
 
-    public override void OnJoinedRoom()
+    // Called on the first frame.
+    void Start()
     {
-        // Move the demo player to the appropriate spawn point
-        MoveDemoPlayerToSpawnPoint(PhotonNetwork.LocalPlayer);
-    }
-
-    private void MoveDemoPlayerToSpawnPoint(Player player)
-    {
-        // Get the demo player for this player's client
-        GameObject demoPlayer = player.TagObject as GameObject;
-        if (demoPlayer != null)
+        demoPlayer = GameObject.Find("DemoPlayer4");
+        if (demoPlayer == null)
         {
-            // Get the position and rotation of the next spawn point
-            Transform spawnPoint = spawnPoints[nextSpawnPointIndex];
-            Vector3 spawnPosition = spawnPoint.position;
-            //Quaternion spawnRotation = spawnPoint.rotation;
-
-            // Move the demo player to the spawn point
-            demoPlayer.transform.position = spawnPosition;
-            //demoPlayer.transform.rotation = spawnRotation;
-
-            // Update the next spawn point index
-            UpdateSpawnPoint();
+            Debug.LogError("DemoPlayer4 not found in scene.");
+            return;
         }
+
+        if (!PhotonNetwork.IsConnectedAndReady)
+        {
+            Debug.LogError("Photon network is not connected and ready.");
+            return;
+        }
+
+        MoveDemoPlayerToSpawnPoint();
     }
 
-    //On left room as well.
-
-    private void UpdateSpawnPoint()
+    // Moves the local demo player to a spawn point.
+    private void MoveDemoPlayerToSpawnPoint()
     {
-        // Update the next spawn point index
-        nextSpawnPointIndex = (nextSpawnPointIndex + 1) % spawnPoints.Length;
+        if (spawnPoints == null || spawnPoints.Length == 0)
+        {
+            Debug.LogError("Spawn points not set.");
+            return;
+        }
+
+        int spawnPointIndex = PhotonNetwork.PlayerList.Length % spawnPoints.Length;
+        Transform spawnPoint = spawnPoints[spawnPointIndex];
+
+        demoPlayer.transform.position = spawnPoint.position;
+        //demoPlayer.transform.rotation = spawnPoint.rotation;
     }
 }
