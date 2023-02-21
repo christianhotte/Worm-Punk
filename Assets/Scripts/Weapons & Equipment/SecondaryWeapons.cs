@@ -61,7 +61,7 @@ public class SecondaryWeapons : PlayerEquipment
                 if (bulletDistance <= blockRadius&&shotsHeld<shotCap)
                 {
                     // Debug.Log(bulletDistance);
-                    if (projScript.originPlayerID == PlayerController.photonView.ViewID) return;
+                    if (projScript != null && projScript.originPlayerID == PlayerController.photonView.ViewID) return;
                     //grindin = true;
                     Destroy(hit);
                     shotsHeld++;

@@ -156,8 +156,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   ejectHaptics:
-    amplitude: 0.5
-    duration: 0.25
+    amplitude: 0.15
+    duration: 0.2
     behaviorCurve:
       serializedVersion: 2
       m_Curve: []
@@ -165,8 +165,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   closeHaptics:
-    amplitude: 0.3
-    duration: 0.2
+    amplitude: 0.1
+    duration: 0.15
     behaviorCurve:
       serializedVersion: 2
       m_Curve: []
