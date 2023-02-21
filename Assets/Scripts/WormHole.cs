@@ -24,8 +24,7 @@ public class WormHole : MonoBehaviour
         Transform firstPos, exitPos;
         Rigidbody playerRB;
         if (holePos1.transform == startHole.transform) exitPos = holePos2.transform;
-        else exitPos = holePos2.transform;
-
+        else exitPos = holePos1.transform;
         playerRB = playerOBJ.GetComponent<Rigidbody>();
         playerRB.useGravity = false;
         playerOBJ.transform.position = wormZone.position;
