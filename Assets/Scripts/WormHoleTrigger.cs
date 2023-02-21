@@ -26,6 +26,7 @@ public class WormHoleTrigger : MonoBehaviour
                 {
                     playerOBJ = hit.gameObject;
                     StartCoroutine(WHS.StartWormhole(this.gameObject, playerOBJ));
+                    
 
                     break;
                 }

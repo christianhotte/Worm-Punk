@@ -479,7 +479,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     }
     private void Delete()
     {
-        if (!dumbFired && (photonView.IsMine || photonView.ViewID == 0)) PhotonNetwork.Destroy(gameObject); //Destroy networked projectiles on the network
-        else Destroy(gameObject);                                                                           //Use normal destruction for non-networked projectiles
+        if (!dumbFired && photonView.IsMine) PhotonNetwork.Destroy(gameObject); //Destroy networked projectiles on the network
+        else Destroy(gameObject);                                               //Use normal destruction for non-networked projectiles
     }
 }
