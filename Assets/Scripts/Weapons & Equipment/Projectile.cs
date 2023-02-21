@@ -15,15 +15,19 @@ public class Projectile : MonoBehaviourPunCallbacks
     //Settings:
     [Tooltip("Settings object determining base properties of projectile.")]                      public ProjectileSettings settings;
     [SerializeField, Tooltip("When on, projectile will print debug information as it travels.")] private bool printDebug = true;
+    [SerializeField, Tooltip("When on, projectile will draw lines showing its homing radius.")]  private bool debugDrawHoming = true;
     [Header("Sounds:")]
     [SerializeField, Tooltip("Material projectile has when it has locked onto a target (for debug purposes).")] private Material homingMat;
     [SerializeField, Tooltip("Sound projectile makes when it's homing in on a player.")]                        private AudioClip homingSound;
 
     //Runtime Variables:
-    internal int originPlayerID; //PhotonID of player which last fired this projectile
-    private Vector3 velocity;    //Speed and direction at which projectile is traveling
-    private Transform target;    //Transform which projectile is currently homing toward
-    private float totalDistance; //Total travel distance covered by this projectile
+    private bool dumbFired;          //Indicates that this projectile was fired by a non-player
+    private float estimatedLifeTime; //Approximate projectile lifetime calculated based on velocity and range
+    internal int originPlayerID;     //PhotonID of player which last fired this projectile
+    private Vector3 velocity;        //Speed and direction at which projectile is traveling
+    private Transform target;        //Transform which projectile is currently homing toward
+    private float totalDistance;     //Total travel distance covered by this projectile
+    private float timeAlive;         //How much time this projectile has been alive for
 
     private Vector3 prevTargetPos; //Previous position of target, used for velocity prediction
     private Material origMat;      //Original material projectile had when spawned
@@ -77,7 +81,12 @@ public class Projectile : MonoBehaviourPunCallbacks
         //Look for targets:
         while (true) //Run forever
         {
-            if (potentialTargets.Count == 0) break; //Stop when projectile has run out of targets
+            //Initialization:
+            if (potentialTargets.Count == 0) break;                                                                               //Stop when projectile has run out of targets
+            float realDesignationAngle = settings.targetAngleCurve.Evaluate(DistancePercent) * settings.targetDesignationAngle.x; //Apply multiplier for target designation angle based on evaluation of curve over range
+            float realTargetingDistance = settings.targetingDistanceCurve.Evaluate(DistancePercent) * settings.targetingDistance; //Apply multiplier for target designation distance based on evaluation of curve over range
+
+            //Targeting sequence:
             for (int x = 0; x < potentialTargets.Count;) //Iterate through list of potential targets (allow internal functionality to manually index to next target)
             {
                 //Eliminate non-viable targets:
@@ -85,7 +94,6 @@ public class Projectile : MonoBehaviourPunCallbacks
                 Vector3 targetSep = potentialTarget.position - transform.position; //Get distance and direction from projectile to target
                 float targetDist = targetSep.magnitude;                            //Distance from projectile to target
                 float targetAngle = Vector3.Angle(targetSep, transform.forward);   //Get angle between target direction and projectile movement direction
-                print("TargPos: " + potentialTarget.position + " | ProjPos: " + transform.position);
                 if (targetAngle > settings.targetDesignationAngle.y)               //Angle to potential target is so steep that projectile will likely never hit
                 {
                     potentialTargets.RemoveAt(x); //Remove this target from list of potential targets
@@ -99,7 +107,7 @@ public class Projectile : MonoBehaviourPunCallbacks
                 }
 
                 //Check for viable targets:
-                if (targetDist <= settings.targetingDistance && targetAngle <= settings.targetDesignationAngle.x) //Current targetable is within range and within acquisition angle
+                if (targetDist <= realTargetingDistance && targetAngle <= realDesignationAngle) //Current targetable is within range and within acquisition angle
                 {
                     //Check for obstructions:
                     if (settings.LOSTargeting) //System is using line-of-sight targeting
@@ -116,8 +124,8 @@ public class Projectile : MonoBehaviourPunCallbacks
                     }
 
                     //Check target viability:
-                    float currentHeuristic = (1 - settings.angleDistancePreference) * Mathf.InverseLerp(settings.targetDesignationAngle.x, 0, targetAngle); //Calculate angle preference score for this target
-                    currentHeuristic += settings.angleDistancePreference * Mathf.InverseLerp(settings.targetingDistance, 0, targetDist);                    //Calculate proximity preference score for this target
+                    float currentHeuristic = (1 - settings.angleDistancePreference) * Mathf.InverseLerp(realDesignationAngle, 0, targetAngle); //Calculate angle preference score for this target
+                    currentHeuristic += settings.angleDistancePreference * Mathf.InverseLerp(realTargetingDistance, 0, targetDist);            //Calculate proximity preference score for this target
 
                     //Update current target:
                     if (target == potentialTarget) targetHeuristic = currentHeuristic; //Update current target heuristic whenever current target is re-acquired
@@ -153,6 +161,39 @@ public class Projectile : MonoBehaviourPunCallbacks
         origMat = GetComponentInChildren<Renderer>().material;                                       //Get original version of material on projectile
         
     }
+    private protected virtual void Update()
+    {
+        //Draw homing debugs:
+        if (debugDrawHoming) //Projectile is in debug mode
+        {
+            //Draw targeting cones:
+            float targetingAngle = settings.targetAngleCurve.Evaluate(DistancePercent) * settings.targetDesignationAngle.x;                   //Get current angle at which projectile can track targets
+            Vector3 centerLineEnd = settings.targetingDistanceCurve.Evaluate(DistancePercent) * settings.targetingDistance * Vector3.forward; //Create a vector pointing in world forward direction with length equal to current projectile homing distance
+            Vector3 lineEnd1 = Quaternion.Euler(0, targetingAngle, 0) * centerLineEnd;                                                        //Rotate vector to point at edge of target designation cone
+            Vector3 lineEnd2 = Quaternion.Euler(0, settings.targetDesignationAngle.y, 0) * centerLineEnd * 0.5f;                              //Rotate vector to point at edge of target exclusion cone (make half as large to cut down on clutter)
+            Quaternion forwardRotator = Quaternion.FromToRotation(Vector3.forward, transform.forward);                                        //Get a quaternion which aligns vectors to projectile orientation
+            Vector3[] innerPositions = new Vector3[10]; Vector3[] outerPositions = new Vector3[10];                                           //Initialize arrays to store endpoint positions
+            for (int x = 0; x < 10; x++) //Iterate 10 times
+            {
+                //Draw main cones:
+                Quaternion currentRotator = Quaternion.Euler(0, 0, x * 36);                              //Get quaternion which will rotate lines around forward axis
+                innerPositions[x] = (forwardRotator * (currentRotator * lineEnd1)) + transform.position; //Calculate and store world position of inner targeting cone point
+                outerPositions[x] = (forwardRotator * (currentRotator * lineEnd2)) + transform.position; //Calculate and store world position of outer targeting cone point
+                Debug.DrawLine(transform.position, innerPositions[x], Color.green);                      //Draw line for this side of inner targeting cone
+                Debug.DrawLine(transform.position, outerPositions[x], Color.red);                        //Draw line for this side of outer targeting cone
+
+                //Draw cone outlines:
+                if (x == 0) continue;                                                  //Skip if there are no two points to connect yet
+                Debug.DrawLine(innerPositions[x], innerPositions[x - 1], Color.green); //Draw inner outlines
+                Debug.DrawLine(outerPositions[x], outerPositions[x - 1], Color.red);   //Draw outer outlines
+                if (x == 9) //Process is on its final loop, an additional line needs to be drawn to complete circle
+                {
+                    Debug.DrawLine(innerPositions[x], innerPositions[0], Color.green); //Wrap around to connect circle
+                    Debug.DrawLine(outerPositions[x], outerPositions[0], Color.red);   //Wrap around to connect circle
+                }
+            }
+        }
+    }
     private protected virtual void FixedUpdate()
     {
         //Modify velocity:
@@ -171,9 +212,13 @@ public class Projectile : MonoBehaviourPunCallbacks
                 prevTargetPos = target.position;                                                               //Update target position tracker
             }
 
+            //Draw debug:
+            if (debugDrawHoming) Debug.DrawLine(transform.position, targetPos, Color.red); //Draw a line from projectile to target position
+
             //Curve to meet target:
-            Vector3 newVelocity = (targetPos - transform.position).normalized * velocity.magnitude;               //Get velocity which would point projectile directly at target
-            velocity = Vector3.MoveTowards(velocity, newVelocity, settings.homingStrength * Time.fixedDeltaTime); //Incrementally adjust toward target velocity
+            Vector3 newVelocity = (targetPos - transform.position).normalized * velocity.magnitude;                      //Get velocity which would point projectile directly at target
+            float realHomingStrength = settings.homingStrengthCurve.Evaluate(DistancePercent) * settings.homingStrength; //Evaluate strength curve to get actual current projectile homing strength
+            velocity = Vector3.MoveTowards(velocity, newVelocity, realHomingStrength * Time.fixedDeltaTime);             //Incrementally adjust toward target velocity
         }
 
         //Get target position:
@@ -192,7 +237,7 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Check for hit:
-        if (photonView.IsMine) //Only check for hits on local projectile
+        if (photonView.IsMine || dumbFired) //Only check for hits on local projectile
         {
             if (Physics.Linecast(transform.position, newPosition, out RaycastHit hitInfo, ~settings.ignoreLayers)) //Do a simple linecast, only ignoring designated layers
             {
@@ -203,7 +248,7 @@ public class Projectile : MonoBehaviourPunCallbacks
             if (settings.radius > 0) //Projectile has a radius
             {
                 //if (Physics.SphereCast(transform.position + (velocity.normalized * settings.radius), settings.radius, velocity, out hitInfo, travelDistance - (settings.radius * 2), settings.radiusIgnoreLayers)) //Do a spherecast with exact length of linecast
-                if (Physics.SphereCast(transform.position, settings.radius, velocity, out hitInfo, travelDistance, settings.radiusIgnoreLayers)) //Do a spherecast with exact length of linecast (simpler, over-extends slightly)
+                if (Physics.SphereCast(transform.position, settings.radius, velocity, out hitInfo, travelDistance, ~settings.radiusIgnoreLayers)) //Do a spherecast with exact length of linecast (simpler, over-extends slightly)
                 {
                     totalDistance -= velocity.magnitude - hitInfo.distance; //Update totalDistance to reflect actual distance traveled at exact point of contact
                     HitObject(hitInfo);                                     //Trigger hit procedure
@@ -213,9 +258,16 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Perform move:
-        transform.position = newPosition;                                                                //Move projectile to target position
-        transform.rotation = Quaternion.LookRotation(velocity);                                          //Rotate projectile to align with current velocity
-        if (photonView.IsMine) { if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); } //Delayed projectile destruction for end of range (ensures projectile dies after being moved)
+        transform.position = newPosition;                       //Move projectile to target position
+        transform.rotation = Quaternion.LookRotation(velocity); //Rotate projectile to align with current velocity
+
+        //Burnout check:
+        if (photonView.IsMine || dumbFired) ////Only check if projectile is authoritative version
+        {
+            timeAlive += Time.fixedDeltaTime;                                     //Update time tracker
+            if (timeAlive > estimatedLifeTime) BurnOut();                         //Burn projectile out if it has been alive for too long
+            if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); //Destroy projectile if it has reached its maximum range
+        }
     }
 
     //FUNCTIONALITY METHODS:
@@ -228,12 +280,19 @@ public class Projectile : MonoBehaviourPunCallbacks
         target = newTarget;              //Set potential target as chosen target
         prevTargetPos = target.position; //Initialize target position tracker
 
+        //Effects:
+        if (homingMat != null) GetComponentInChildren<Renderer>().material = homingMat; //Change color to indicate that it has successfully locked on to target
+        audioSource.loop = true;                                                        //Make audiosource loop
+        audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
+        audioSource.Play();                                                             //Play homing sound on loop
+
         //Have other projectiles acquire target:
+        if (dumbFired) return;
         if (!target.TryGetComponent(out PhotonView targetView)) targetView = target.GetComponentInParent<PhotonView>(); //Try to get photonView from target
         if (targetView != null) //Target has a photon view component
         {
             photonView.RPC("RPC_AcquireTarget", RpcTarget.Others, targetView.ViewID); //Use view ID to lock other projectiles onto this component
-            print("Target Acquired: " + targetView.name);
+            if (printDebug) print("Target Acquired: " + targetView.name);             //Indicate that a target has been acquired
         }
         else //Targeted object is not on network (in this case it should ideally be stationary)
         {
@@ -243,18 +302,12 @@ public class Projectile : MonoBehaviourPunCallbacks
                 if (collider.transform == target) //Target can be acquired with this solution
                 {
                     photonView.RPC("RPC_AcquireTargetDumb", RpcTarget.Others, target.position); //Send position of target as identifying acquisition data
-                    print("Dumb Target Acquired: " + target.name);
+                    if (printDebug) print("Dumb Target Acquired: " + target.name);              //Indicate that a target has been acquired
                     break;                                                                      //Exit collider iteration
                 }
             }
         }
         photonView.RPC("RPC_Move", RpcTarget.Others, transform.position); //Sync up position and velocity between all versions of networked projectile
-
-        //Effects:
-        if (homingMat != null) GetComponentInChildren<Renderer>().material = homingMat; //Change color to indicate that it has successfully locked on to target
-        audioSource.loop = true;                                                        //Make audiosource loop
-        audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
-        audioSource.Play();                                                             //Play homing sound on loop
     }
     /// <summary>
     /// Makes projectile lose its current target.
@@ -266,8 +319,8 @@ public class Projectile : MonoBehaviourPunCallbacks
         audioSource.Stop();                                    //Stop playing homing sound
 
         //Cleanup:
-        target = null;                                      //Clear active target
-        photonView.RPC("RPC_LostTarget", RpcTarget.Others); //Indicate to all other projectiles that target has been lost
+        target = null;                                                      //Clear active target
+        if (!dumbFired) photonView.RPC("RPC_LostTarget", RpcTarget.Others); //Indicate to all other projectiles that target has been lost
     }
 
     //INPUT METHODS:
@@ -300,9 +353,21 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
 
         //Cleanup:
-        print("Projectile Fired!");
-        transform.position = targetPosition;                                                         //Move to initial position
-        if (photonView.IsMine && settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition
+        if (printDebug) print("Projectile Fired!"); //Print debug signal if called for
+        transform.position = targetPosition;        //Move to initial position
+        if (photonView.IsMine || dumbFired) //This is the authoritative version of the projectile
+        {
+            if (settings.homingStrength > 0) StartCoroutine(DoTargetAcquisition()); //Begin doing target acquisition if projectile does homing
+            estimatedLifeTime = settings.range / settings.initialVelocity;          //Calculate approximate lifetime based on range and velocity
+        }
+    }
+    /// <summary>
+    /// Safely fires projectile with no player reference.
+    /// </summary>
+    public void FireDumb(Transform barrel)
+    {
+        dumbFired = true; //Indicate that projectile was fired without player
+        Fire(barrel);     //Do normal firing procedure
     }
 
     //REMOTE METHODS:
@@ -328,16 +393,15 @@ public class Projectile : MonoBehaviourPunCallbacks
     {
         PhotonView targetView = PhotonNetwork.GetPhotonView(targetViewID);                                                        //Get photonView from ID
         if (!targetView.TryGetComponent(out Targetable targetable)) targetable = targetView.GetComponentInChildren<Targetable>(); //Get targetable script from photonView
-        if (targetable != null)
+        if (targetable != null) //Target has been successfully acquired
         {
             target = targetable.targetPoint;                                                //Get target from script
             if (homingMat != null) GetComponentInChildren<Renderer>().material = homingMat; //Change color to indicate that it has successfully locked on to target
             audioSource.loop = true;                                                        //Make audiosource loop
             audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
             audioSource.Play();                                                             //Play homing sound on loop
+            if (printDebug) print("Target Remotely Acquired: " + targetable.name);          //Indicate to local user that a remote projectile has successfully acquired a target
         }
-
-        if (targetable != null) print("Target Remotely Acquired: " + targetable.name);
     }
     /// <summary>
     /// Attempts to acquire stationary, non-networked target based on position.
@@ -349,18 +413,17 @@ public class Projectile : MonoBehaviourPunCallbacks
         foreach (Collider collider in checkColliders) //Iterate through colliders found by targeting solution
         {
             if (!collider.TryGetComponent(out Targetable targetable)) targetable = collider.GetComponentInParent<Targetable>(); //Try very hard to get targetable controller from collider
-            if (targetable != null)
+            if (targetable != null) //Target has been successfully acquired
             {
                 target = targetable.targetPoint;                                                //Lock onto target
-
                 if (homingMat != null) GetComponentInChildren<Renderer>().material = homingMat; //Change color to indicate that it has successfully locked on to target
                 audioSource.loop = true;                                                        //Make audiosource loop
                 audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
                 audioSource.Play();                                                             //Play homing sound on loop
+                if (printDebug) print("Dumb target acquisition successful!");                   //Indicate to local user that a remote projectile has successfully acquired a target
                 break;                                                                          //Ignore everything else (risky)
             }
         }
-        if (target != null) print("Dumb target acquisition successful!");
     }
     /// <summary>
     /// Causes remote projectile to clear target field.
@@ -385,8 +448,13 @@ public class Projectile : MonoBehaviourPunCallbacks
         if (targetPlayer == null) targetPlayer = hitInfo.collider.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
         if (targetPlayer != null) //Hit object was a player
         {
-            targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);                                  //Indicate to player that it has been hit
-            if (originPlayerID != 0) PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
+            targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);                                                //Indicate to player that it has been hit
+            if (!dumbFired && originPlayerID != 0) PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
+            if (settings.knockback > 0) //Projectile has player knockback
+            {
+                Vector3 knockback = transform.forward * settings.knockback;          //Get value by which to launch hit player
+                targetPlayer.photonView.RPC("RPC_Launch", RpcTarget.All, knockback); //Add force to player rigidbody based on knockback amount
+            }
         }
         else //Hit object is not a player
         {
@@ -394,18 +462,24 @@ public class Projectile : MonoBehaviourPunCallbacks
             if (targetObject != null) targetObject.IsHit(settings.damage);         //Indicate to targetable that it has been hit
         }
 
+        //Effects:
+        if (hitInfo.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle")) Instantiate(settings.explosionPrefab, transform.position, transform.rotation); //Instantiate an explosion when hitting a wall
+
         //Cleanup:
-        Delete(); //Destroy projectile
+        if (printDebug) print("Projectile hit " + hitInfo.collider.name); //Indicate what the projectile hit if debug logging is on
+        Delete();                                                         //Destroy projectile
     }
     /// <summary>
     /// Called if projectile range is exhausted and projectile hasn't hit anything.
     /// </summary>
     private protected virtual void BurnOut()
     {
-        Delete();
+        Instantiate(settings.explosionPrefab, transform.position, transform.rotation); //Instantiate an explosion at burnout point
+        Delete();                                                                      //Destroy projectile
     }
     private void Delete()
     {
-        if (photonView.IsMine || photonView.ViewID == 0) PhotonNetwork.Destroy(gameObject);
+        if (!dumbFired && (photonView.IsMine || photonView.ViewID == 0)) PhotonNetwork.Destroy(gameObject); //Destroy networked projectiles on the network
+        else Destroy(gameObject);                                                                           //Use normal destruction for non-networked projectiles
     }
 }

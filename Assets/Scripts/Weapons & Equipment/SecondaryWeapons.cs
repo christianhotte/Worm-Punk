@@ -56,11 +56,12 @@ public class SecondaryWeapons : PlayerEquipment
             GameObject[] bullethits = GameObject.FindGameObjectsWithTag("Bullet");
             foreach (var hit in bullethits)
             {
-                float bulletDistance = Vector3.Distance(stowedTip.position, hit.transform.position);
+                float bulletDistance = Vector3.Distance(bladeTip.position, hit.transform.position);
                 projScript = hit.gameObject.GetComponent<Projectile>();
                 if (bulletDistance <= blockRadius&&shotsHeld<shotCap)
                 {
-                    Debug.Log(bulletDistance);
+                    // Debug.Log(bulletDistance);
+                    if (projScript.originPlayerID == PlayerController.photonView.ViewID) return;
                     //grindin = true;
                     Destroy(hit);
                     shotsHeld++;
@@ -76,7 +77,7 @@ public class SecondaryWeapons : PlayerEquipment
         foreach (var hit in hits)
         {
 
-               Debug.Log(hit.name);
+             //  Debug.Log(hit.name);
                 grindin = true;
                 break;
             
@@ -90,7 +91,7 @@ public class SecondaryWeapons : PlayerEquipment
             rayHitDistance = Vector3.Distance(rayStartPoint.position, checkBlade.point);
             if (rayHitDistance < sawDistance&&checkBlade.collider.tag!="Blade"&&checkBlade.collider.tag!="Player"&&checkBlade.collider.tag!="Barrel")
             {
-              //  Debug.Log(checkBlade.collider.name);
+               // Debug.Log(checkBlade.collider.name);
                 grindin = true;
             }
             else if (rayHitDistance > sawDistance)
@@ -105,6 +106,7 @@ public class SecondaryWeapons : PlayerEquipment
         {
             //Debug.Log("Grindin");
             playerRB.velocity = bladeImpulsePosition.forward * grindSpeed;
+            
         }
         Vector3 handPos,handMotion;
         handPos = attachedHand.localPosition; //headpos.InverseTransformPoint(attachedHand.position);

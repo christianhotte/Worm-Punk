@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HookDetector : MonoBehaviour
 {
-    public Rigidbody hookrb;
+    public Rigidbody hookrb,hitRB;
     private GameObject hookHit;
     public RocketBoost RBScript;
     public Transform hookLead;
@@ -46,11 +46,12 @@ public class HookDetector : MonoBehaviour
         if (pullin)
         {
             this.transform.position = hookHit.transform.position;
-            hookHit.transform.position = Vector3.MoveTowards(hookHit.transform.position, RBScript.player.transform.position,pullSpeed);
+            hitRB.velocity = (RBScript.rocketTip.forward * -hookSpeed/4);
 
             if (RBScript.realDistance > 2)
             {
                 pullin = false;
+                RBScript.GrappleStop();
             }
         }
        
@@ -58,19 +59,26 @@ public class HookDetector : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.collider.tag == "Pullable")
+        if(collision.gameObject.layer == 11)
+        {
+            return;
+        }
+        else if(collision.collider.tag == "Pullable")
         {
             Debug.Log("triedtopull");
-            this.transform.position = collision.transform.position;
+            //this.transform.position = collision.transform.position;
             hookHit = collision.gameObject;
+            hitRB = hookHit.GetComponent<Rigidbody>();
+            hookrb.isKinematic = true;
             pullin = true;
+            flying = false;
 
         }
         else if (collision.collider.tag != "Blade")
         {
             hookrb.isKinematic = true;
             flying = false;
-            Debug.Log("hit object " + collision.collider.name + " on Layer " + collision.collider.gameObject.layer);
+            //Debug.Log("hit object " + collision.collider.name + " on Layer " + collision.collider.gameObject.layer);
             RBScript.grappleCooldown = false;
             RBScript.HookHit();
 

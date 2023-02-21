@@ -35,7 +35,7 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         // The room becomes open to let more people come in.
         if (playersNeededToStart < 6)
         {
-            PhotonNetwork.CurrentRoom.IsOpen = true;
+            if (PhotonNetwork.InRoom) PhotonNetwork.CurrentRoom.IsOpen = true;
         }
     }
 

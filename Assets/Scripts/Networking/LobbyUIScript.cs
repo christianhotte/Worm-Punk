@@ -25,13 +25,8 @@ public class LobbyUIScript : MonoBehaviour
 
     [SerializeField] Menus[] menus;
 
-    private List<string> playerList;
-
-    // Awake is called first thing.
-    void Awake()
-    {
-        playerList = new List<string>();
-    }
+    private List<string> playerList = new List<string>();
+    private List<PlayerListItem> playerListItems = new List<PlayerListItem>();
 
     // Easier to call the  open menu method through script
     public void OpenMenu(string menuName)
@@ -195,11 +190,22 @@ public class LobbyUIScript : MonoBehaviour
         playerNameText.text = NetworkManagerScript.instance.GetLocalPlayerName();
 
         playerList = NetworkManagerScript.instance.GetPlayerNameList();
+        print("Players in room list: " + playerList.Count);
+
+        // **NEW** Destroys old playerListItems so duplicates aren't created
+        while (playerListItems.Count > 0)
+        {
+            PlayerListItem currentItem = playerListItems[0];
+            playerListItems.RemoveAt(0);
+            Destroy(currentItem);
+        }
 
         // Loops through the list of players and adds to the list of players in the room.
         for (int i = 0; i < playerList.Count; i++)
         {
-            Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(playerList[i]);
+            PlayerListItem newItem = Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>();
+            newItem.SetUp(playerList[i]);
+            playerListItems.Add(newItem);
         }
     }
 }
