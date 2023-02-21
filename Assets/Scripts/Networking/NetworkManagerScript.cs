@@ -110,7 +110,9 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         }
     }
 
-    private string[] wormNames = { "Unfortunate Worm", "Sad Invertebrate", "Desolate Earth Creature", "Slimy Specimen", "Grotesque Grub", "Manic Wormling" };
+    //List of random adjectives and nouns to name random players
+    private string[] wormAdjectives = { "Unfortunate", "Sad", "Desolate", "Slimy", "Grotesque", "Manic", "Slippery", "Moist", "Lugubrious", "Tubular", "Flaccid", "Erratic", "Animalistic" };
+    private string[] wormNouns = { "Worm", "Invertebrate", "Earth Creature", "Specimen", "Grub", "Wormling", "Nightcrawler", "Crawler", "Larva", "Wiggler", "Maggot", "Creepy-Crawlie", "Parasite" };
 
     /// <summary>
     /// Generates a random nickname for the player.
@@ -118,7 +120,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     private void GenerateRandomNickname()
     {
         Random.InitState(System.DateTime.Now.Millisecond);  //Seeds the randomizer
-        string currentWormName = wormNames[Random.Range(0, wormNames.Length)];
+        string currentWormName = wormAdjectives[Random.Range(0, wormAdjectives.Length)] + " " + wormNouns[Random.Range(0, wormNouns.Length)];
         SetPlayerNickname(currentWormName + " #" + Random.Range(0, 1000).ToString("0000"));
     }
 
