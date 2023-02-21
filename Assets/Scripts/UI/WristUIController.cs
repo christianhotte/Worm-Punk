@@ -87,6 +87,7 @@ public class WristUIController : MonoBehaviour
     public void LeaveRoomToMain()
     {
         PhotonNetwork.LeaveRoom();  //Leave the room
+        PhotonNetwork.LeaveLobby(); //Leave the lobby
 
         SceneManager.LoadScene((int)SceneIndexes.TITLESCREEN);    //Go back to the main menu
     }
