@@ -18,7 +18,11 @@ public class NewShotgunController : PlayerEquipment
     //Settings:
     [SerializeField, Tooltip("Transforms representing position and direction of weapon barrels.")] private Transform[] barrels;
     [Tooltip("Settings object which determines general weapon behavior.")]                         public ShotgunSettings gunSettings;
-    [Space()]
+    [Header("Animated Components:")]
+    [SerializeField, Tooltip("The forward part of the weapon which jolts backward when weapon fires.")] private Transform reciprocatingAssembly;
+    [SerializeField, Tooltip("Part on the side of the weapon which indicates barrel load status.")]     private Transform leftEjectorAssembly;
+    [SerializeField, Tooltip("Part on the side of the weapon which indicates barrel load status.")]     private Transform rightEjectorAssembly;
+    [Header("Debug Settings:")]
     [SerializeField, Tooltip("Makes it so that weapon fires from the gun itself and not on the netwrok.")] private bool debugFireLocal = false;
 
     //Runtime Variables:
@@ -29,7 +33,9 @@ public class NewShotgunController : PlayerEquipment
     private bool triggerPulled = false; //Whether or not the trigger is currently pulled
     private float doubleFireWindow = 0; //Above zero means that weapon has just been fired and firing another weapon will cause a double fire
     internal bool locked = false;       //Lets the other equipment disable the guns
-    private Vector3 baseScale;          //Initial scale of weapon
+    
+    private Vector3 baseScale;      //Initial scale of weapon
+    private Vector3 baseReciproPos; //Base position of reciprocating barrel assembly
 
     //Events & Coroutines:
     /// <summary>
@@ -38,26 +44,35 @@ public class NewShotgunController : PlayerEquipment
     public IEnumerator DoRecoil()
     {
         //Initialize:
-        Vector3 maxOffset = gunSettings.recoilDistance * Vector3.back; //Get greatest offset value which weapon will reach during recoil phase
-        Vector3 maxScale = gunSettings.recoilScale * baseScale;        //Get greatest scale value which weapon will reach during recoil phase
+        rb.maxAngularVelocity = 0;                                                    //Lock down weapon swinginess
+        Vector3 maxOffset = gunSettings.recoilDistance * Vector3.back;                //Get greatest offset value which weapon will reach during recoil phase
+        Quaternion maxRotation = Quaternion.Euler(-gunSettings.recoilRotation, 0, 0); //Get greatest rotation value which weapon will reaach during recoil phase
+        Vector3 maxScale = gunSettings.recoilScale * baseScale;                       //Get greatest scale value which weapon will reach during recoil phase
 
-        //Apply recoil torque:
-        rb.maxAngularVelocity = gunSettings.recoilAngularSpeed;                                                               //Make weapon very swingy for recoil
-        Transform currentBarrel = barrels[currentBarrelIndex];                                                                //Get transform of current barrel
-        rb.AddForceAtPosition(currentBarrel.up * gunSettings.recoilTorque, currentBarrel.position, ForceMode.VelocityChange); //Apply upward torque to weapon at end of barrel
+        Vector3 barrelTargetPos = (gunSettings.barrelReciprocationDistance * Vector3.back) + baseReciproPos; //Get target position barrels reciprocate to
 
         //Linear recoil & scaling procedure:
         for (float totalTime = 0; totalTime < gunSettings.recoilTime; totalTime += Time.fixedDeltaTime) //Iterate once each fixed update for duration of recoil phase
         {
-            float timeValue = totalTime / gunSettings.recoilTime;                                                                  //Get value representing progression through recoil phase
-            rb.maxAngularVelocity = Mathf.LerpUnclamped(gunSettings.recoilAngularSpeed, jointSettings.maxAngularSpeed, timeValue); //Adjust max angular speed back to normal throughout phase
-            currentAddOffset = Vector3.LerpUnclamped(Vector3.zero, maxOffset, gunSettings.recoilCurve.Evaluate(timeValue));        //Modify follower offset so that weapon is moved backwards/forwards
-            transform.localScale = Vector3.LerpUnclamped(baseScale, maxScale, gunSettings.recoilScaleCurve.Evaluate(timeValue));   //Adjust scale based on settings and curve
-            yield return new WaitForFixedUpdate();                                                                                 //Wait for next fixed update
+            //Initialize:
+            float timeValue = totalTime / gunSettings.recoilTime; //Get value representing progression through recoil phase
+            
+            //Main recoil animations:
+            rb.maxAngularVelocity = Mathf.LerpUnclamped(0, jointSettings.maxAngularSpeed, timeValue);                                                          //Adjust max angular speed back to normal throughout phase
+            currentAddOffset = Vector3.LerpUnclamped(Vector3.zero, maxOffset, gunSettings.recoilCurve.Evaluate(timeValue));                                    //Modify follower offset so that weapon is moved backwards/forwards
+            currentAddRotOffset = Quaternion.LerpUnclamped(Quaternion.identity, maxRotation, gunSettings.recoilRotationCurve.Evaluate(timeValue)).eulerAngles; //Modify follower rotation so that weapon is rotated upwards
+            transform.localScale = Vector3.LerpUnclamped(baseScale, maxScale, gunSettings.recoilScaleCurve.Evaluate(timeValue));                               //Adjust scale based on settings and curve
+
+            //Secondary animations:
+            reciprocatingAssembly.localPosition = Vector3.LerpUnclamped(baseReciproPos, barrelTargetPos, gunSettings.barrelReciproCurve.Evaluate(timeValue)); //Move reciprocating barrel assembly back and forth along curve
+
+            //Cleanup:
+            yield return new WaitForFixedUpdate(); //Wait for next fixed update
         }
 
         //Cleanup:
         rb.maxAngularVelocity = jointSettings.maxAngularSpeed; //Set angular speed cap back to default
+        reciprocatingAssembly.localPosition = baseReciproPos;  //Return reciprocating barrels to base position
         currentAddOffset = Vector3.zero;                       //Return system to base position
         transform.localScale = baseScale;                      //Reset weapon to base scale
     }
