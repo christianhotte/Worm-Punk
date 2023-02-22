@@ -61,13 +61,13 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         if(leverValue == 1)
         {
             //The player is ready
-            PlayerSettings.Instance.playerStats.isReady = true;
+            NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady = true;
         }
 
         else
         {
             //The player is not ready
-            PlayerSettings.Instance.playerStats.isReady = false;
+            NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady = false;
         }
 
         NetworkManagerScript.localNetworkPlayer.SyncStats();
@@ -86,8 +86,9 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         UpdateReadyText();
 
         // If all players are ready, load the game scene
-        if (playersReady == playersInRoom && playersInRoom >= MINIMUM_PLAYERS_NEEDED)
+        if (playersReady == playersInRoom && playersInRoom >= MINIMUM_PLAYERS_NEEDED && PhotonNetwork.IsMasterClient)
         {
+            PhotonNetwork.AutomaticallySyncScene = true;
             PhotonNetwork.LoadLevel(sceneToLoad);
         }
     }
