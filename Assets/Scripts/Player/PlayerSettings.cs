@@ -10,19 +10,17 @@ public class PlayerSettings : MonoBehaviour
     //Objects & Components:
     public static PlayerSettings Instance; //Singleton reference to this script at runtime (each player uses only their own local version)
     public CharacterData charData;         //Object where player settings are set, stored and sent from
-    public PlayerStats playerStats;        //Object where the player stats are set, stored and sent from
 
     //RUNTIME METHODS:
     private void OnEnable()
     {
         Instance = this;                //Create static reference to this settings container
         charData = new CharacterData(); //Create and store a fresh settings object upon instantiation
-        playerStats = new PlayerStats();//Create and store a fresh player stats object upon instantiation
     }
 
     //UTILITY METHODS:
     public string CharDataToString() => JsonUtility.ToJson(charData); //Sends player settings to a string (transmissible over RPC)
-    public string PlayerStatsToString() => JsonUtility.ToJson(playerStats); //Sends player stats to a string (transmissible over RPC)
+    public static string PlayerStatsToString(PlayerStats playerStats) => JsonUtility.ToJson(playerStats); //Sends player stats to a string (transmissible over RPC)
 }
 
 /// <summary>

@@ -19,7 +19,7 @@ public class NetworkPlayer : MonoBehaviour
     //Objects & Components:
     internal PhotonView photonView;           //PhotonView network component used by this NetworkPlayer to synchronize movement
     private SkinnedMeshRenderer bodyRenderer; //Renderer component for main player body/skin
-    private PlayerStats networkPlayerStats; //The stats for the network player
+    private PlayerStats networkPlayerStats = new PlayerStats(); //The stats for the network player
 
     private Transform headTarget;      //True local position of player head
     private Transform leftHandTarget;  //True local position of player left hand
@@ -39,6 +39,8 @@ public class NetworkPlayer : MonoBehaviour
         //Get objects & components:
         photonView = GetComponent<PhotonView>();                      //Get photonView component from local object
         bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>(); //Get body renderer component from model in children
+
+        PhotonNetwork.AutomaticallySyncScene = true;
 
         //Set up rig:
         foreach (PhotonTransformView view in GetComponentsInChildren<PhotonTransformView>()) //Iterate through each network-tracked component
@@ -145,7 +147,7 @@ public class NetworkPlayer : MonoBehaviour
     public void SyncStats()
     {
         Debug.Log("Syncing Player Stats...");
-        string statsData = PlayerSettings.Instance.PlayerStatsToString();
+        string statsData = PlayerSettings.PlayerStatsToString(networkPlayerStats);
         photonView.RPC("LoadPlayerStats", RpcTarget.AllBuffered, statsData);
     }
 
