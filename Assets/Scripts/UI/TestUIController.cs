@@ -5,7 +5,7 @@ using TMPro;
 
 public class TestUIController : MonoBehaviour
 {
-    [SerializeField, Tooltip("Test value text objects.")] private TextMeshProUGUI toggleText, dialText, sliderText, unlockText;
+    [SerializeField, Tooltip("Test value text objects.")] private TextMeshProUGUI toggleText, dialText, sliderText, leverText, unlockText;
 
     /// <summary>
     /// Updates the test toggle text.
@@ -37,6 +37,15 @@ public class TestUIController : MonoBehaviour
     {
         GameSettings.testSliderValue = val;
         sliderText.text = "Slider Value: " + GameSettings.testSliderValue.ToString("F0");
+    }
+
+    /// <summary>
+    /// Updates the test lever text.
+    /// </summary>
+    /// <param name="val">The current value of the lever.</param>
+    public void UpdateLeverText(float val)
+    {
+        leverText.text = "Lever Value: " + val.ToString("F0");
     }
 
     public void UnlockText(bool isUnlocked)

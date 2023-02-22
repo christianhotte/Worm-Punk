@@ -7,6 +7,7 @@ public class FollowTransform : MonoBehaviour
     [SerializeField] private Transform lookAt;
     [SerializeField] private Transform transformToFollow;
     [SerializeField] private float followSpeed;
+    [SerializeField] private float maxFollowDist;
 
     private Transform objectTransform;
 
@@ -23,9 +24,8 @@ public class FollowTransform : MonoBehaviour
 
         Vector3 newPos = objectTransform.position;
         Vector3 followPos = transformToFollow.position;
-        newPos.x = Mathf.Lerp(newPos.x, followPos.x, followSpeed * Time.deltaTime);
-        newPos.y = Mathf.Lerp(newPos.y, followPos.y, followSpeed * Time.deltaTime);
-        newPos.z = Mathf.Lerp(newPos.z, followPos.z, followSpeed * Time.deltaTime);
+
+        newPos = Vector3.MoveTowards(followPos, Vector3.Lerp(newPos, followPos, followSpeed * Time.deltaTime), maxFollowDist);
         transform.position = newPos;
     }
 }
