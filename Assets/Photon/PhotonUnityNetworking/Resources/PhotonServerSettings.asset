@@ -58,6 +58,7 @@ MonoBehaviour:
   - RPC_ChangeVisibility
   - RPC_MovePlayerToPoint
   - RPC_Launch
+  - LoadPlayerStats
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
