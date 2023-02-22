@@ -75,12 +75,13 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
 
         NetworkManagerScript.localNetworkPlayer.SyncStats();
 
-        PlayerController.photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered);
+        Debug.Log("Updating RPC...");
+        photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered);
     }
 
     // Tells the master server the amount of players that are ready to start the match.
     [PunRPC]
-    private void RPC_UpdateReadyStatus()
+    public void RPC_UpdateReadyStatus()
     {
         // Get the number of players that have readied up
         playersReady = GetAllPlayersReady();
@@ -91,7 +92,6 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         // If all players are ready, load the game scene
         if (playersReady == playersInRoom && playersInRoom >= MINIMUM_PLAYERS_NEEDED && PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.AutomaticallySyncScene = true;
             PhotonNetwork.LoadLevel(sceneToLoad);
         }
     }
