@@ -19,9 +19,17 @@ public class JumpPad : MonoBehaviour
         Collider[] hits = Physics.OverlapSphere(jumpDirection.position, jumpPadRange, LayerMask.GetMask("Player"));
             foreach (var hit in hits)
             {
+                if (hit.name == "XR Origin")
+                {
                 playerRb = hit.gameObject.GetComponent<Rigidbody>();
                 playerRb.velocity = jumpDirection.up * jumpForce;
                 break;
+                }
+            else
+            {
+                break;
+            }
+        
             }       
     }
     private void OnDrawGizmosSelected()
