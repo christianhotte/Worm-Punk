@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class WormHole : MonoBehaviour
 {
-    public Transform holePos1, holePos2,wormZone;
+    public Transform holePos1, holePos2,wormZone,playerHead;
     public float waitTime,exitSpeed=30;
     internal bool locked = false;
     private NewShotgunController NSC;
+    public GameObject playerOrigin;
     // Start is called before the first frame update
     void Start()
     {
