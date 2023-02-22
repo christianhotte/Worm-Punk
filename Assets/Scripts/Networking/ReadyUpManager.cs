@@ -56,8 +56,22 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     }
 
     // Once the level is pulled to signify that the player is ready...
-    public void ReadyLeverPulled()
+    public void ReadyLeverPulled(float leverValue)
     {
+        if(leverValue == 1)
+        {
+            //The player is ready
+            PlayerSettings.Instance.playerStats.isReady = true;
+        }
+
+        else
+        {
+            //The player is not ready
+            PlayerSettings.Instance.playerStats.isReady = false;
+        }
+
+        NetworkManagerScript.localNetworkPlayer.SyncStats();
+
         photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered);
     }
 
@@ -102,9 +116,9 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         int playersReady = 0;
 
         // Gets the amount of players that have a readied lever at lowest state.
-        foreach(var lever in allLevers)
+        foreach(var players in FindObjectsOfType<NetworkPlayer>())
         {
-            if (lever.hingeJointState == LeverController.HingeJointState.Max)
+            if (players.GetNetworkPlayerStats().isReady)
                 playersReady++;
         }
 
