@@ -310,7 +310,8 @@ public class NewShotgunController : PlayerEquipment
     public void Close()
     {
         //Validity checks:
-        if (!breachOpen) return; //Do not attempt to close if breach is open
+        if (!breachOpen) return;                               //Do not attempt to close if breach is open
+        if (breachOpenTime < gunSettings.cooldownTime) return; //Do not allow breach to close during cooldown
 
         //Close joint:
         breakJoint.angularXMotion = ConfigurableJointMotion.Locked;  //Lock pivot rotation
