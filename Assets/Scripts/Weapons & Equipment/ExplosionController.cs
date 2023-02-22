@@ -18,6 +18,7 @@ public class ExplosionController : MonoBehaviour
     [SerializeField, Tooltip("How close a player must be to explosion for it to damage them.")]                                                           private float damageRadius;
 
     //Runtime Variables:
+    internal int originPlayerID;                                        //ID number of the player who caused this explosion, inherited from projectile which caused it
     private float timeAlive;                                            //How long the explosion has existed for
     private List<NetworkPlayer> hitPlayers = new List<NetworkPlayer>(); //List of players who have already been caught in this explosion (used to prevent recurring effects)
 
@@ -52,6 +53,7 @@ public class ExplosionController : MonoBehaviour
             if (player != null) //Explosion has hit a player
             {
                 //Initialization:
+                if (player.photonView.ViewID == originPlayerID) continue;                            //Do not allow explosion to damage the player who created it
                 float distance = Vector3.Distance(transform.position, collider.transform.position);  //Get distance between epicenter and player
                 Vector3 launchForce = (collider.transform.position - transform.position).normalized; //Initialize generated launch force as normalized direction from explosion to player
                 launchForce *= (distance / (newScale / 2)) * maxLaunchForce;                         //Modify launch force based on how close player is to epicenter of explosion

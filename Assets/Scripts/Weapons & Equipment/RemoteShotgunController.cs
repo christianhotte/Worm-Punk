@@ -56,7 +56,7 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
     /// <summary>
     /// Fires this weapon on local client.
     /// </summary>
-    public void LocalFire(Transform barrel)
+    public Projectile LocalFire(Transform barrel)
     {
         //Initialization:
         if (!photonView.IsMine) //This is a remote weapon
@@ -67,12 +67,16 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
                 shotParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); //Reset particle system
                 shotParticles.Play();                                                      //Play particle effect
             }
-            return; //Ignore if this method is not being called on this client
+            return null; //Ignore if this method is not being called on this client
         }
 
         //Launch projectile:
         Projectile projectile = PhotonNetwork.Instantiate(projectileResourceName, barrel.position, barrel.rotation).GetComponent<Projectile>(); //Instantiate projectile across network
         projectile.photonView.RPC("RPC_Fire", RpcTarget.All, barrel.position, barrel.rotation, PlayerController.photonView.ViewID);             //Initialize all projectiles simultaneously
+
+        //Cleanup:
+        projectile.originPlayerID = PlayerController.photonView.ViewID; //Give a projectile a reference to the player who fired it
+        return projectile;                                              //Return fired projectile script
     }
 
     //REMOTE METHODS:
