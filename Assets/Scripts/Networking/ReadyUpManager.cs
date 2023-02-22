@@ -86,7 +86,7 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         UpdateReadyText();
 
         // If all players are ready, load the game scene
-        if (playersReady == playersInRoom && PhotonNetwork.IsMasterClient && playersInRoom >= MINIMUM_PLAYERS_NEEDED)
+        if (playersReady == playersInRoom && playersInRoom >= MINIMUM_PLAYERS_NEEDED)
         {
             PhotonNetwork.LoadLevel(sceneToLoad);
         }
