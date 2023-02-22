@@ -39,6 +39,11 @@ public class WormHoleTrigger : MonoBehaviour
         }
        
     }
-   
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(entrancePos.position, wormEnterRange);
+    }
+
 
 }
