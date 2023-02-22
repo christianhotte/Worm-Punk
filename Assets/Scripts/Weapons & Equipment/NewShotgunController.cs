@@ -88,35 +88,28 @@ public class NewShotgunController : PlayerEquipment
     public IEnumerator MoveEjector(Handedness side, bool forward)
     {
         //validity checks:
-        bool leftInPlace = (leftEjectorAssembly.position == baseEjectorLPos) != forward;   //Check whether or not left ejector is in target position
-        bool rightInPlace = (rightEjectorAssembly.position == baseEjectorRPos) != forward; //Check whether or not right ejector is in target position
+        bool leftInPlace = (leftEjectorAssembly.localPosition == baseEjectorLPos) != forward;   //Check whether or not left ejector is in target position
+        bool rightInPlace = (rightEjectorAssembly.localPosition == baseEjectorRPos) != forward; //Check whether or not right ejector is in target position
         if (side == Handedness.None && leftInPlace && rightInPlace) yield return null; //End if both ejectors are already in target positions
         if (side == Handedness.Left && leftInPlace) yield return null;                 //End if left ejector is already in target position
         if (side == Handedness.Right && rightInPlace) yield return null;               //End if right ejector is already in target position
-
-        Vector3 targetAdd = forward ? (gunSettings.ejectorTraverseDistance * leftEjectorAssembly.forward) : Vector3.zero;
-        Vector3 leftTarget = baseEjectorLPos + targetAdd;
+        Vector3 originAdd = forward ? Vector3.zero : (gunSettings.ejectorTraverseDistance * Vector3.forward); //Get amount to add to origin for each ejector
+        Vector3 targetAdd = forward ? (gunSettings.ejectorTraverseDistance * Vector3.forward) : Vector3.zero; //Get amount to add to target for each ejector
 
         for (float totalTime = 0; totalTime < gunSettings.ejectorTraverseTime; totalTime += Time.fixedDeltaTime) //Iterate once each fixed update for duration of ejector phase
         {
             //Initialization:
-            float timeValue = totalTime / gunSettings.ejectorTraverseTime; //Get value representing progression through recoil phase
+            float timeValue = totalTime / gunSettings.ejectorTraverseTime;      //Get value representing progression through recoil phase
+            Vector3 currentAdd = Vector3.Lerp(originAdd, targetAdd, timeValue); //Get current positional value to add to base ejector positions
 
-            //Left side movement:
-            if ((side == Handedness.Left || side == Handedness.None) && !leftInPlace) //Left side ejector needs to be moved
-            {
-
-            }
-
-            //Right side movement:
-            if ((side == Handedness.Right || side == Handedness.None) && !rightInPlace) //Right side ejector needs to be moved
-            {
-
-            }
+            //Movement:
+            if ((side == Handedness.Left || side == Handedness.None) && !leftInPlace) leftEjectorAssembly.localPosition = baseEjectorLPos + currentAdd;    //Move left side ejector
+            if ((side == Handedness.Right || side == Handedness.None) && !rightInPlace) rightEjectorAssembly.localPosition = baseEjectorRPos + currentAdd; //Move right side ejector
         }
 
         //Cleanup:
-        if ((side == Handedness.Left || side == Handedness.None) && !leftInPlace) leftEjectorAssembly.localPosition = leftTarget;
+        if ((side == Handedness.Left || side == Handedness.None) && !leftInPlace) leftEjectorAssembly.localPosition = baseEjectorLPos + targetAdd;    //Make sure left side ejector is at its destination
+        if ((side == Handedness.Right || side == Handedness.None) && !rightInPlace) rightEjectorAssembly.localPosition = baseEjectorRPos + targetAdd; //Make sure right side ejector is at its destination
     }
 
     //RUNTIME METHODS:
@@ -250,13 +243,15 @@ public class NewShotgunController : PlayerEquipment
 
         //Effects:
         StartCoroutine(DoRecoil()); //Begin recoil phase
+        if (loadedShots == 2) StartCoroutine(MoveEjector(handedness, true));          //Move inner ejector when one shot is fired
+        if (loadedShots == 1) StartCoroutine(MoveEjector(otherGun.handedness, true)); //Move outer ejector when both shots are fired
         if (player != null) //Effects which need a playerController
         {
             //Direct player feedback:
             SendHapticImpulse(gunSettings.fireHaptics);      //Play haptic impulse
             player.ShakeScreen(gunSettings.fireScreenShake); //Shake screen (gently)
 
-            //Player launching
+            //Player launching:
             float effectiveFireVel = gunSettings.fireVelocity;                                                      //Store fire velocity so it can be optionally modified
             if (otherGun != null && otherGun.doubleFireWindow > 0) effectiveFireVel *= gunSettings.doubleFireBoost; //Apply boost if player is firing both weapons simultaneously
             Vector3 newVelocity = -fireDirection * effectiveFireVel;                                                //Store new velocity for player (always directly away from barrel that fired latest shot, unless reverse firing)
@@ -280,7 +275,7 @@ public class NewShotgunController : PlayerEquipment
             if (currentBarrelIndex >= barrels.Length) currentBarrelIndex = 0; //Overflow barrel index if relevant
         }
         loadedShots = Mathf.Max(loadedShots - 1, 0); //Spend one shot (floor at zero)
-        return projectile;
+        return projectile; //Return reference to the master script of the projectile that was fired
     }
     /// <summary>
     /// Opens weapon breach and ejects shells.
@@ -300,6 +295,9 @@ public class NewShotgunController : PlayerEquipment
         SoftJointLimit newJointLimit = breakJoint.highAngularXLimit;                          //Copy current joint limit setting
         newJointLimit.limit = gunSettings.breakAngle;                                         //Set break angle to open position
         breakJoint.highAngularXLimit = newJointLimit;                                         //Apply new joint limit
+
+        //Effects:
+        StartCoroutine(MoveEjector(Handedness.None, false)); //Move ejectors back to forward positions
 
         //Cleanup:
         if (gunSettings.ejectSound != null) audioSource.PlayOneShot(gunSettings.ejectSound); //Play sound effect

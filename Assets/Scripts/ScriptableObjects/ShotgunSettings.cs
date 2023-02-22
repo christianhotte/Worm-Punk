@@ -37,6 +37,7 @@ public class ShotgunSettings : ScriptableObject
     [Tooltip("Curve describing the motion of barrel reciprocation throughout recoil phase.")] public AnimationCurve barrelReciproCurve;
     [Min(0), Tooltip("Max distance ejector nubbins can move along their rails.")]             public float ejectorTraverseDistance;
     [Min(0), Tooltip("Amount of time ejectors take to travel to their target positions.")]    public float ejectorTraverseTime;
+    [Tooltip("Describes motion of ejector during traversal.")]                                public AnimationCurve ejectorTraverseCurve;
     [Header("Effects:")]
     [Tooltip("Settings for configuring the vibration player feels when firing.")]             public PlayerEquipment.HapticData fireHaptics;
     [Tooltip("Settings for configuring the vibration player feels when ejecting shells.")]    public PlayerEquipment.HapticData ejectHaptics;
