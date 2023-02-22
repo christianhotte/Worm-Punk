@@ -18,7 +18,7 @@ MonoBehaviour:
   cooldownTime: 0.05
   doubleFireTime: 0.15
   doubleFireBoost: 1.6
-  fireVelocity: 35
+  fireVelocity: 25
   additiveVelocityMaxAngle: 70
   additiveVelocityMultiplier: 0.6
   additiveVelocityCurve:
