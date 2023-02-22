@@ -74,6 +74,7 @@ public class LeverController : MonoBehaviour
                     //Move the hinge to the lower limit
                     hinge.transform.localEulerAngles = new Vector3(hinge.limits.max, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z);
 
+
                     if (lockOnMaximumLimit)
                     {
                         LockLever(true);
@@ -151,6 +152,11 @@ public class LeverController : MonoBehaviour
     /// <returns>The current numerical value of the lever based on its position.</returns>
     public float GetLeverValue()
     {
+        if (hingeJointState == HingeJointState.Min)
+            return minimumValue;
+        else if (hingeJointState == HingeJointState.Max)
+            return maximumValue;
+
         float maxValueDistance = Mathf.Abs(minimumValue - maximumValue);
         float currentDistance = (hinge.limits.max - hinge.angle) / (hinge.limits.max - hinge.limits.min);
         return minimumValue + (maxValueDistance * currentDistance);
