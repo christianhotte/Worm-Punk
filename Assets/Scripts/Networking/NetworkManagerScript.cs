@@ -23,7 +23,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     [Tooltip("Name of primary multiplayer room scene.")]                              public string roomScene;
     [SerializeField, Tooltip("Name of network player prefab in Resources folder.")]   private string networkPlayerName;
 
-    //Runtime Variables:
+    private Room mostRecentRoom;
 
 
     //RUNTIME METHODS:
@@ -63,6 +63,8 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     {
         // Joins the room on the network
         PhotonNetwork.JoinRoom(roomName);
+
+        mostRecentRoom = PhotonNetwork.CurrentRoom;
 
         if (PhotonNetwork.InRoom) Debug.Log("Successfully Connected To " + roomName);
     }
@@ -269,6 +271,8 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
 
         return playerNameList;
     }
+
+    public Room GetMostRecentRoom() => mostRecentRoom;
     public string GetCurrentRoom() => PhotonNetwork.CurrentRoom.Name;
     public Player[] GetPlayerList() => PhotonNetwork.PlayerList;
     public string GetLocalPlayerName() => PhotonNetwork.LocalPlayer.NickName;
