@@ -1418,7 +1418,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 675639650}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.032160312, y: 0.42309916, z: -0.12594527}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1178906150}
@@ -2203,7 +2203,7 @@ MonoBehaviour:
   m_Camera: {fileID: 675639655}
   m_OriginBaseGameObject: {fileID: 1176121080}
   m_CameraFloorOffsetObject: {fileID: 245622163}
-  m_RequestedTrackingOriginMode: 2
+  m_RequestedTrackingOriginMode: 1
   m_CameraYOffset: 1.1176
 --- !u!4 &1176121083
 Transform:
@@ -2213,7 +2213,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1176121080}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.4160279, y: 0.22082925, z: 0.16571999}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 245622164}
@@ -2243,8 +2243,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1178906149}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0017610788, y: 0.04664302, z: -0.016431332}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 675639651}
@@ -2714,15 +2714,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.37866145
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.619
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.032
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b32350a4f824e5740bdaa692b6ae2edd, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2841,8 +2841,8 @@ MonoBehaviour:
       shoulderTwistWeight: 1
       bendGoalWeight: 0
       swivelOffset: 0
-      wristToPalmAxis: {x: -44.82778, y: 2.122164e-12, z: -6.669124e-17}
-      palmToThumbAxis: {x: 1, y: 0, z: 0}
+      wristToPalmAxis: {x: -1, y: 0, z: 0}
+      palmToThumbAxis: {x: 1, y: 0, z: -1}
       armLengthMlp: 1
       stretchCurve:
         serializedVersion: 2
@@ -2879,8 +2879,8 @@ MonoBehaviour:
       shoulderTwistWeight: 1
       bendGoalWeight: 0
       swivelOffset: 0
-      wristToPalmAxis: {x: 44.82832, y: 0.0001048682, z: 0.000000002735842}
-      palmToThumbAxis: {x: -1, y: 0, z: 0}
+      wristToPalmAxis: {x: -1, y: 0, z: 0}
+      palmToThumbAxis: {x: 0, y: 0, z: 1}
       armLengthMlp: 1
       stretchCurve:
         serializedVersion: 2
