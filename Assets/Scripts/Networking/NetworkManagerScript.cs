@@ -33,7 +33,6 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         if (instance == null) { instance = this; } else Destroy(gameObject); //Singleton-ize this script instance
 
         //Get objects & components:
-
     }
     void Start()
     {

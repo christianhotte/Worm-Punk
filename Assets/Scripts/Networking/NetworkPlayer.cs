@@ -40,6 +40,8 @@ public class NetworkPlayer : MonoBehaviour
         photonView = GetComponent<PhotonView>();                      //Get photonView component from local object
         bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>(); //Get body renderer component from model in children
 
+        PhotonNetwork.AutomaticallySyncScene = true;
+
         //Set up rig:
         foreach (PhotonTransformView view in GetComponentsInChildren<PhotonTransformView>()) //Iterate through each network-tracked component
         {
