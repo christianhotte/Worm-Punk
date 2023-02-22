@@ -72,6 +72,14 @@ public class Projectile : MonoBehaviourPunCallbacks
                 if (printDebug) print("Target ignored, outside angle. Angle from projectile: " + targetAngle); //Indicate reason target was ignored
                 continue;                                                                                      //Ignore target
             }
+            if (targetable.TryGetComponent(out NetworkPlayer targetPlayer)) //Target is a player
+            {
+                if (targetPlayer.photonView.ViewID == originPlayerID) //This is the player who shot this projectile
+                {
+                    if (printDebug) print("Target ignored, projectile cannot target player who shot it."); //Indicate reason target was ignored
+                    continue;                                                                              //Ignore target
+                }
+            }
 
             //Cleanup:
             potentialTargets.Add(targetable.targetPoint); //Add valid targets to list of targets to check
@@ -241,18 +249,24 @@ public class Projectile : MonoBehaviourPunCallbacks
         {
             if (Physics.Linecast(transform.position, newPosition, out RaycastHit hitInfo, ~settings.ignoreLayers)) //Do a simple linecast, only ignoring designated layers
             {
-                totalDistance -= velocity.magnitude - hitInfo.distance; //Update totalDistance to reflect actual distance traveled at exact point of contact
-                HitObject(hitInfo);                                     //Trigger hit procedure
-                return;                                                 //Do nothing else
+                if (!HitsOwnPlayer(hitInfo)) //Make sure projectile is not hitting its own player
+                {
+                    totalDistance -= velocity.magnitude - hitInfo.distance; //Update totalDistance to reflect actual distance traveled at exact point of contact
+                    HitObject(hitInfo);                                     //Trigger hit procedure
+                    return;                                                 //Do nothing else
+                }
             }
             if (settings.radius > 0) //Projectile has a radius
             {
                 //if (Physics.SphereCast(transform.position + (velocity.normalized * settings.radius), settings.radius, velocity, out hitInfo, travelDistance - (settings.radius * 2), settings.radiusIgnoreLayers)) //Do a spherecast with exact length of linecast
                 if (Physics.SphereCast(transform.position, settings.radius, velocity, out hitInfo, travelDistance, ~settings.radiusIgnoreLayers)) //Do a spherecast with exact length of linecast (simpler, over-extends slightly)
                 {
-                    totalDistance -= velocity.magnitude - hitInfo.distance; //Update totalDistance to reflect actual distance traveled at exact point of contact
-                    HitObject(hitInfo);                                     //Trigger hit procedure
-                    return;                                                 //Do nothing else
+                    if (!HitsOwnPlayer(hitInfo)) //Make sure projectile is not hitting its own player
+                    {
+                        totalDistance -= velocity.magnitude - hitInfo.distance; //Update totalDistance to reflect actual distance traveled at exact point of contact
+                        HitObject(hitInfo);                                     //Trigger hit procedure
+                        return;                                                 //Do nothing else
+                    }
                 }
             }
         }
@@ -462,8 +476,12 @@ public class Projectile : MonoBehaviourPunCallbacks
             if (targetObject != null) targetObject.IsHit(settings.damage);         //Indicate to targetable that it has been hit
         }
 
-        //Effects:
-        if (hitInfo.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle")) Instantiate(settings.explosionPrefab, transform.position, transform.rotation); //Instantiate an explosion when hitting a wall
+        //Explosion:
+        if (targetPlayer == null) //Explosions do not happen when a player is hit
+        {
+            ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate the explosion prefab and get reference to its script
+            explosion.originPlayerID = originPlayerID;                                                                                                         //Pass origin player ID onto explosion
+        }
 
         //Cleanup:
         if (printDebug) print("Projectile hit " + hitInfo.collider.name); //Indicate what the projectile hit if debug logging is on
@@ -476,6 +494,18 @@ public class Projectile : MonoBehaviourPunCallbacks
     {
         Instantiate(settings.explosionPrefab, transform.position, transform.rotation); //Instantiate an explosion at burnout point
         Delete();                                                                      //Destroy projectile
+    }
+
+    //UTILITY METHODS:
+    /// <summary>
+    /// Returns true if given RaycastHit is a hit on this projectile's own player.
+    /// </summary>
+    /// <returns></returns>
+    private bool HitsOwnPlayer(RaycastHit hit)
+    {
+        NetworkPlayer hitPlayer = hit.collider.GetComponentInParent<NetworkPlayer>();        //Try to get playercontroller from collision
+        if (hitPlayer != null && hitPlayer.photonView.ViewID == originPlayerID) return true; //Return true if raycast hits projectile's own player
+        else return false;                                                                   //Otherwise, return false
     }
     private void Delete()
     {
