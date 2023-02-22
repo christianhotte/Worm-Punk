@@ -75,7 +75,7 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
 
         NetworkManagerScript.localNetworkPlayer.SyncStats();
 
-        photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered);
+        PlayerController.photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered);
     }
 
     // Tells the master server the amount of players that are ready to start the match.
