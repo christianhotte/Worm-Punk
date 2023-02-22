@@ -18,9 +18,9 @@ MonoBehaviour:
   cooldownTime: 0.05
   doubleFireTime: 0.15
   doubleFireBoost: 1.6
-  fireVelocity: 27
-  additiveVelocityMaxAngle: 65
-  additiveVelocityMultiplier: 0.55
+  fireVelocity: 35
+  additiveVelocityMaxAngle: 70
+  additiveVelocityMultiplier: 0.6
   additiveVelocityCurve:
     serializedVersion: 2
     m_Curve:
@@ -55,8 +55,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   triggerThreshold: 0.9
-  closerForce: 27
-  swingCloseWait: 0.35
+  closerForce: 30
+  swingCloseWait: 0.3
   recoilDistance: 0.18
   recoilTime: 0.42
   recoilCurve:
@@ -144,7 +144,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  recoilRotation: 26
+  recoilRotation: 15
   recoilRotationCurve:
     serializedVersion: 2
     m_Curve:
@@ -235,6 +235,32 @@ MonoBehaviour:
       tangentMode: 0
       weightedMode: 1
       inWeight: 0.3599542
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  ejectorTraverseDistance: 1.25
+  ejectorTraverseTime: 0.4
+  ejectorTraverseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 4.034323
+      outSlope: 4.034323
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0
+      outWeight: 0.23995617
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
