@@ -85,9 +85,25 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         Debug.Log("Connected To Server.");
         base.OnConnectedToMaster();
 
+        // Setting up the lobby
+        if (joinRoomOnLoad && !PhotonNetwork.InRoom)
+        {
+            JoinLobby();
+        }
+    }
+
+    public void JoinLobby()
+    {
         // Joins the lobby
         PhotonNetwork.JoinLobby();
     }
+
+    public void LeaveLobby()
+    {
+        //Leaves the lobby
+        PhotonNetwork.LeaveLobby();
+    }
+
     public override void OnJoinedLobby()
     {
         LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
@@ -100,7 +116,8 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
 
         Debug.Log("Joined a lobby.");
         base.OnJoinedLobby();
-        SetPlayerNickname("Player " + Random.Range(0, 1000).ToString("0000"));
+
+        GenerateRandomNickname();
 
         // Setting up the room options
         if (joinRoomOnLoad && !PhotonNetwork.InRoom)
@@ -108,6 +125,21 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
             OnCreateRoom("Dev. Test Room");
         }
     }
+
+    //List of random adjectives and nouns to name random players
+    private string[] wormAdjectives = { "Unfortunate", "Sad", "Desolate", "Slimy", "Grotesque", "Manic", "Slippery", "Moist", "Lugubrious", "Tubular", "Flaccid", "Erratic", "Animalistic", "Pathetic" };
+    private string[] wormNouns = { "Worm", "Invertebrate", "Earth Creature", "Specimen", "Grub", "Wormling", "Nightcrawler", "Crawler", "Larva", "Wiggler", "Maggot", "Creepy-Crawlie", "Parasite", "Organism" };
+
+    /// <summary>
+    /// Generates a random nickname for the player.
+    /// </summary>
+    private void GenerateRandomNickname()
+    {
+        Random.InitState(System.DateTime.Now.Millisecond);  //Seeds the randomizer
+        string currentWormName = wormAdjectives[Random.Range(0, wormAdjectives.Length)] + " " + wormNouns[Random.Range(0, wormNouns.Length)];
+        SetPlayerNickname(currentWormName + " #" + Random.Range(0, 1000).ToString("0000"));
+    }
+
     public override void OnCreatedRoom()
     {
         LobbyUIScript lobbyUI = FindObjectOfType<LobbyUIScript>();
@@ -211,6 +243,8 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     {
         if (localNetworkPlayer != null) { Debug.LogError("Tried to spawn a second NetworkPlayer for local client."); return; }              //Abort if player already has a network player
         localNetworkPlayer = PhotonNetwork.Instantiate(networkPlayerName, Vector3.zero, Quaternion.identity).GetComponent<NetworkPlayer>(); //Spawn instance of network player and get reference to its script
+
+        Debug.Log("Actor Number For " + GetLocalPlayerName() + ": " + PhotonNetwork.LocalPlayer.ActorNumber);
     }
     public void DeSpawnNetworkPlayer()
     {

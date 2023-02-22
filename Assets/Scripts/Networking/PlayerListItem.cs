@@ -11,11 +11,13 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
 {
     [SerializeField] private TextMeshProUGUI text;
     Player player;
+    private string playerListName;
 
     // Displays the names of players in the room.
     public void SetUp(string playerName)
     {
         text.text = playerName;
+        playerListName = playerName;
     }
 
     // Compares to the player that has left the room
@@ -33,4 +35,6 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
     {
         Destroy(gameObject);
     }
+
+    public string GetName() => playerListName;
 }
