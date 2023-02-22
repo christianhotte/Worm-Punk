@@ -17,7 +17,7 @@ MonoBehaviour:
   breakAngle: 32
   cooldownTime: 0.05
   doubleFireTime: 0.15
-  doubleFireBoost: 1
+  doubleFireBoost: 1.6
   fireVelocity: 27
   additiveVelocityMaxAngle: 65
   additiveVelocityMultiplier: 0.55
@@ -55,10 +55,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   triggerThreshold: 0.9
-  closerForce: 35
-  swingCloseWait: 0.3
-  recoilTorque: 12
-  recoilAngularSpeed: 50
+  closerForce: 27
+  swingCloseWait: 0.35
   recoilDistance: 0.18
   recoilTime: 0.42
   recoilCurve:
@@ -117,7 +115,7 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.031810362
     - serializedVersion: 3
-      time: 0.155
+      time: 0.17144898
       value: 1.0000001
       inSlope: 0.017811298
       outSlope: 0.017811298
@@ -126,10 +124,10 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.06905983
     - serializedVersion: 3
-      time: 0.5
+      time: 0.59698486
       value: 0.00040378422
       inSlope: 0.004307504
-      outSlope: -0.00080756843
+      outSlope: -0.0010019083
       tangentMode: 65
       weightedMode: 1
       inWeight: 0.57907504
@@ -137,11 +135,106 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: -0.00080756843
+      inSlope: -0.0010019083
       outSlope: -0.04797588
       tangentMode: 5
       weightedMode: 0
       inWeight: 0.079254985
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  recoilRotation: 26
+  recoilRotationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.07361095
+      outSlope: 10.000001
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.14463112
+    - serializedVersion: 3
+      time: 0.099999994
+      value: 1
+      inSlope: 10.000001
+      outSlope: 0.002072041
+      tangentMode: 5
+      weightedMode: 2
+      inWeight: 0.33333334
+      outWeight: 0.7580601
+    - serializedVersion: 3
+      time: 0.5907671
+      value: 0
+      inSlope: 1.2766576
+      outSlope: 1.2766576
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.05805234
+      outWeight: 0.44600952
+    - serializedVersion: 3
+      time: 0.69076705
+      value: 0
+      inSlope: -0.02503657
+      outSlope: -0.02503657
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.2608749
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  barrelReciprocationDistance: 1.1
+  barrelReciproCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 20.000002
+      outSlope: 20.000002
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.049999997
+      value: 1
+      inSlope: 20.000002
+      outSlope: -0.0006996217
+      tangentMode: 5
+      weightedMode: 2
+      inWeight: 0.33333334
+      outWeight: 0.36478883
+    - serializedVersion: 3
+      time: 0.16784601
+      value: 1
+      inSlope: -0
+      outSlope: -0.010731058
+      tangentMode: 5
+      weightedMode: 3
+      inWeight: 0.30355683
+      outWeight: 0.47244537
+    - serializedVersion: 3
+      time: 0.6816406
+      value: 0
+      inSlope: -0.021577127
+      outSlope: -0.021577127
+      tangentMode: 0
+      weightedMode: 1
+      inWeight: 0.3599542
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -156,7 +249,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   ejectHaptics:
-    amplitude: 0.125
+    amplitude: 0.1
     duration: 0.2
     behaviorCurve:
       serializedVersion: 2
@@ -165,8 +258,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   closeHaptics:
-    amplitude: 0.1
-    duration: 0.15
+    amplitude: 0.2
+    duration: 0.3
     behaviorCurve:
       serializedVersion: 2
       m_Curve: []
