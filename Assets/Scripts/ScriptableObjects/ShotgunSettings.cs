@@ -25,13 +25,16 @@ public class ShotgunSettings : ScriptableObject
     [Min(0), Tooltip("Strength of force used to close breach when swinging guns vertically.")]     public float closerForce;
     [Min(0), Tooltip("Time to wait after opening breach before allowing swing-close assistance.")] public float swingCloseWait;
     [Space()]
-    [Tooltip("Amount of upward recoil force applied to weapon rigidbody when firing (mostly aesthetic).")] public float recoilTorque;
-    [Min(0), Tooltip("Maximum angular speed during recoil phase (allows weapon to be more wiggly.")]       public float recoilAngularSpeed;
     [Min(0), Tooltip("Length of linear recoil weapon goes through when fired.")]                           public float recoilDistance;
     [Min(0.01f), Tooltip("Amout of time (in seconds) gun spends in linear recoil phase.")]                 public float recoilTime;
     [Tooltip("Describes linear recoil motion over time.")]                                                 public AnimationCurve recoilCurve;
     [Min(1), Tooltip("Maximum scale multiplier weapon reaches during recoil phase.")]                      public float recoilScale = 1;
     [Tooltip("Describes scale modulation throughout recoil phase.")]                                       public AnimationCurve recoilScaleCurve;
+    [Min(0), Tooltip("Maximum vertical rotation of weapon (in degrees) during recoil phase.")]             public float recoilRotation;
+    [Tooltip("Describes weapon rotation throughout recoil phase.")]                                        public AnimationCurve recoilRotationCurve;
+    [Space()]
+    [Min(0), Tooltip("Distance barrels move backward when reciprocating after firing")]       public float barrelReciprocationDistance;
+    [Tooltip("Curve describing the motion of barrel reciprocation throughout recoil phase.")] public AnimationCurve barrelReciproCurve;
     [Header("Effects:")]
     [Tooltip("Settings for configuring the vibration player feels when firing.")]             public PlayerEquipment.HapticData fireHaptics;
     [Tooltip("Settings for configuring the vibration player feels when ejecting shells.")]    public PlayerEquipment.HapticData ejectHaptics;
