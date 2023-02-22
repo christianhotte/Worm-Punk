@@ -4,39 +4,51 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class ReadyUpManager : MonoBehaviourPunCallbacks
 {
     // Can probably have a button that lights up green or red to show if a player is ready through the network.
     //[SerializeField] private GameObject readyButton;
 
-    private int numberOfPlayers; // The number of players in the current room
-    [SerializeField] private int playersNeededToStart; // The number of players needed to start the game
-    [SerializeField] private string sceneToLoad = "DMars_New_Area";
-    private int playersReady = 0; // The number of players that have readied up
+    [SerializeField] private TextMeshProUGUI playerReadyText;
+
+    private const int MINIMUM_PLAYERS_NEEDED = 2;   // The minimum number of players needed for a round to start
+    [SerializeField] private string sceneToLoad = "DM_0.11_Arena";
+
+    private int playersReady, playersInRoom;
+
+    private LeverController[] allLevers;
+    
+    // Is called upon the first frame.
+    private void Start()
+    {
+        allLevers = FindObjectsOfType<LeverController>();
+        UpdateReadyText();
+    }
 
     // Once the room is joined.
     public override void OnJoinedRoom()
     {
-        //numberOfPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
-        playersNeededToStart++;
+        UpdateReadyText();
 
         // If the amount of players in the room is maxed out, close the room so no more people are able to join.
-        if (playersNeededToStart == PhotonNetwork.CurrentRoom.MaxPlayers)
+/*        if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
         {
             PhotonNetwork.CurrentRoom.IsOpen = false;
-        }
+        }*/
     }
 
+    // When a player leaves the room
     public override void OnLeftRoom()
     {
-        playersNeededToStart--;
+        UpdateReadyText();
 
         // The room becomes open to let more people come in.
-        if (playersNeededToStart < 6)
+/*        if (PhotonNetwork.CurrentRoom.PlayerCount < PhotonNetwork.CurrentRoom.MaxPlayers)
         {
             if (PhotonNetwork.InRoom) PhotonNetwork.CurrentRoom.IsOpen = true;
-        }
+        }*/
     }
 
     // Once the level is pulled to signify that the player is ready...
@@ -49,15 +61,49 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_UpdateReadyStatus()
     {
-        // Increase the number of players that have readied up
-        playersReady++;
+        // Get the number of players that have readied up
+        playersReady = GetAllPlayersReady();
+        playersInRoom = PhotonNetwork.CurrentRoom.PlayerCount;
 
-        Debug.Log(playersReady.ToString() + "/" + PhotonNetwork.PlayerList.Length.ToString() + " players ready.");
+        UpdateReadyText();
 
         // If all players are ready, load the game scene
-        if (playersReady == playersNeededToStart && PhotonNetwork.IsMasterClient)
+        if (playersReady == playersInRoom && PhotonNetwork.IsMasterClient && playersInRoom >= MINIMUM_PLAYERS_NEEDED)
         {
             PhotonNetwork.LoadLevel(sceneToLoad);
         }
+    }
+
+    /// <summary>
+    /// Updates the text in the center of the room.
+    /// </summary>
+    private void UpdateReadyText()
+    {
+        string message = "Players Ready: " + playersReady.ToString() + "/" + playersInRoom;
+
+        if (playersInRoom < MINIMUM_PLAYERS_NEEDED)
+        {
+            message += "\n<size=26>Not Enough Players To Start.</size>";
+        }
+
+        Debug.Log(message);
+        playerReadyText.text = message; // Display the message in the scene
+    }
+
+    /// <summary>
+    /// Check all of the lever values to see if everyone is ready.
+    /// </summary>
+    private int GetAllPlayersReady()
+    {
+        int playersReady = 0;
+
+        // Gets the amount of players that have a readied lever at lowest state.
+        foreach(var lever in allLevers)
+        {
+            if (lever.hingeJointState == LeverController.HingeJointState.Max)
+                playersReady++;
+        }
+
+        return playersReady;
     }
 }

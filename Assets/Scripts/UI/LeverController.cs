@@ -7,7 +7,7 @@ public class LeverController : MonoBehaviour
 {
     public enum HingeJointState { Min, Max, None }
 
-    [SerializeField, Tooltip("Angle Threshold If Limit Is Reached")] float angleBetweenThreshold = 1f;
+    [SerializeField, Tooltip("Angle Threshold If Limit Is Reached")] float angleBetweenThreshold = 8f;
     public HingeJointState hingeJointState = HingeJointState.None;  //The state of the hinge joint
     private HingeJoint hinge;
 
@@ -47,32 +47,13 @@ public class LeverController : MonoBehaviour
             //If the angle has hit the minimum limit and is not already at the limit
             if (angleWithMinLimit < angleBetweenThreshold)
             {
-                if (hingeJointState != HingeJointState.Max)
-                {
-                    Debug.Log(transform.name + "Maximum Limit Reached.");
-                    OnMaxLimitReached.Invoke();
-
-                    //Move the hinge to the upper limit
-                    hinge.transform.localEulerAngles = new Vector3(hinge.limits.min, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z);
-
-                    if (lockOnMaximumLimit)
-                    {
-                        LockLever(true);
-                    }
-                }
-
-                hingeJointState = HingeJointState.Max;
-            }
-            //If the angle has hit the maximum limit and is not already at the limit
-            else if (angleWithMaxLimit < angleBetweenThreshold)
-            {
                 if (hingeJointState != HingeJointState.Min)
                 {
                     Debug.Log(transform.name + "Minimum Limit Reached.");
                     OnMinLimitReached.Invoke();
 
-                    //Move the hinge to the lower limit
-                    hinge.transform.localEulerAngles = new Vector3(hinge.limits.max, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z);
+                    //Move the hinge to the upper limit
+                    hinge.transform.localEulerAngles = new Vector3(hinge.limits.min, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z);
 
                     if (lockOnMinimumLimit)
                     {
@@ -82,6 +63,26 @@ public class LeverController : MonoBehaviour
 
                 hingeJointState = HingeJointState.Min;
             }
+            //If the angle has hit the maximum limit and is not already at the limit
+            else if (angleWithMaxLimit < angleBetweenThreshold)
+            {
+                if (hingeJointState != HingeJointState.Max)
+                {
+                    Debug.Log(transform.name + "Maximum Limit Reached.");
+                    OnMaxLimitReached.Invoke();
+
+                    //Move the hinge to the lower limit
+                    hinge.transform.localEulerAngles = new Vector3(hinge.limits.max, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z);
+
+                    if (lockOnMaximumLimit)
+                    {
+                        LockLever(true);
+                    }
+                }
+
+                hingeJointState = HingeJointState.Max;
+            }
+
             else
             {
                 hingeJointState = HingeJointState.None;
