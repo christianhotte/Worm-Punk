@@ -19,9 +19,9 @@ public class PlayerEquipment : MonoBehaviour
     [System.Serializable]
     public struct HapticData
     {
-        [Range(0, 1), Tooltip("Base intensity of haptic impulse.")]                   public float amplitude;
-        [Min(0), Tooltip("Total length (in seconds) of haptic impulse.")]             public float duration;
-        [Tooltip("Curve used to modulate magnitude throughout duration of impulse.")] public AnimationCurve behaviorCurve;
+        [Min(0), Tooltip("Base intensity of haptic impulse (should be within range 0 - 1).")] public float amplitude;
+        [Min(0), Tooltip("Total length (in seconds) of haptic impulse.")]                     public float duration;
+        [Tooltip("Curve used to modulate magnitude throughout duration of impulse.")]         public AnimationCurve behaviorCurve;
     }
 
     //Objects & Components:
@@ -48,6 +48,10 @@ public class PlayerEquipment : MonoBehaviour
     /// Secondary modifier to follower offset position, used for animations such as recoil which involve moving IK hands (always aligned to hand orientation).
     /// </summary>
     private protected Vector3 currentAddOffset;
+    /// <summary>
+    /// Modifier to follower offset rotation, used for animations such as recoil which involve moving IK hands.
+    /// </summary>
+    private protected Vector3 currentAddRotOffset;
     /// <summary>
     /// Which hand this equipment is associated with (if any).
     /// </summary>
@@ -340,10 +344,21 @@ public class PlayerEquipment : MonoBehaviour
         if (jointSettings.offset != Vector3.zero) targetPos += transform.rotation * jointSettings.offset;                                        //Apply constant offset to keep equipment in desired position relative to player
         if (currentAddOffset != Vector3.zero) targetPos += transform.rotation * currentAddOffset;                                                //Apply secondary offset to target position, used by some equipment animations such as shotgun recoil
 
+        //Calculate follower rotation:
+        Quaternion targetRot = targetTransform.rotation; //Get base target rotation for rigidbody follower
+        if (currentAddRotOffset != Vector3.zero) //Weapon rotation is currently being affected by an offset
+        {
+            targetRot *= Quaternion.AngleAxis(currentAddRotOffset.x, Vector3.right);
+        }
+
         //Apply follower transforms:
-        followerBody.MovePosition(targetPos);                                                            //Apply target position through follower rigidbody
-        followerBody.MoveRotation(targetTransform.rotation);                                             //Apply target rotation through follower rigidbody
-        if (handAnchorMover != null && canMoveHandRig) handAnchorMover.localPosition = currentAddOffset; //Artificially add movement to player hand target if enabled
+        followerBody.MovePosition(targetPos); //Apply target position through follower rigidbody
+        followerBody.MoveRotation(targetRot); //Apply target rotation through follower rigidbody
+        if (handAnchorMover != null && canMoveHandRig) //Player hand re-targeting is enabled
+        {
+            handAnchorMover.localPosition = currentAddOffset;                      //Artificially add movement to player hand
+            handAnchorMover.localRotation = Quaternion.Euler(currentAddRotOffset); //Artificially add rotation to player hand
+        }
     }
     /// <summary>
     /// Sends a haptic impulse to this equipment's associated controller.
