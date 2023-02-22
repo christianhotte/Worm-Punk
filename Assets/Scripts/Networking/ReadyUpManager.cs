@@ -42,7 +42,11 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     // When a player leaves the room
     public override void OnLeftRoom()
     {
-        UpdateReadyText();
+        if(NetworkManagerScript.instance.GetMostRecentRoom().PlayerCount > 0)
+        {
+            playersInRoom = NetworkManagerScript.instance.GetMostRecentRoom().PlayerCount;
+            UpdateReadyText();
+        }
 
         // The room becomes open to let more people come in.
 /*        if (PhotonNetwork.CurrentRoom.PlayerCount < PhotonNetwork.CurrentRoom.MaxPlayers)
