@@ -302,7 +302,7 @@ public class Projectile : MonoBehaviourPunCallbacks
         if (homingMat != null) GetComponentInChildren<Renderer>().material = homingMat; //Change color to indicate that it has successfully locked on to target
         audioSource.loop = true;                                                        //Make audiosource loop
         audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
-        audioSource.Play();                                                             //Play homing sound on loop
+        if (audioSource.clip != null) audioSource.Play();                               //Play homing sound on loop
 
         //Have other projectiles acquire target:
         if (dumbFired) return;
@@ -513,9 +513,12 @@ public class Projectile : MonoBehaviourPunCallbacks
             if (targetObject != null) targetObject.IsHit(settings.damage);         //Indicate to targetable that it has been hit
 
             //Surface explosion:
-            ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate the explosion prefab and get reference to its script
-            explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
-            photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
+            if (settings.explosionPrefab != null) //Only explode if projectile has an explosion prefab
+            {
+                ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate the explosion prefab and get reference to its script
+                explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
+                photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
+            }
         }
 
         //Cleanup:
@@ -528,9 +531,12 @@ public class Projectile : MonoBehaviourPunCallbacks
     private protected virtual void BurnOut()
     {
         //Mid-air explosion:
-        ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate an explosion at burnout point
-        explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
-        photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
+        if (settings.explosionPrefab != null) //Only explode if projectile has an explosion prefab
+        {
+            ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate an explosion at burnout point
+            explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
+            photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
+        }
 
         //Cleanup:
         Delete(); //Destroy projectile
