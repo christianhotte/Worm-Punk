@@ -22,6 +22,7 @@ public class ShotgunSettings : ScriptableObject
     [Tooltip("Modulates additive velocity multiplier depending on how aligned shot is with current velocity.")]                       public AnimationCurve additiveVelocityCurve;
     [Header("Gunfeel:")]
     [Range(0, 1), Tooltip("How far back the player has to pull the trigger before it fires.")]     public float triggerThreshold = 1;
+    [Min(0), Tooltip("Dampens gun wobble when pressed to make aiming a bit easier.")]              public float triggerDamper = 20;
     [Min(0), Tooltip("Strength of force used to close breach when swinging guns vertically.")]     public float closerForce;
     [Min(0), Tooltip("Time to wait after opening breach before allowing swing-close assistance.")] public float swingCloseWait;
     [Space()]

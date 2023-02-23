@@ -59,6 +59,7 @@ MonoBehaviour:
   - RPC_MovePlayerToPoint
   - RPC_Launch
   - LoadPlayerStats
+  - RPC_Explode
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

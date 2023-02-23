@@ -35,7 +35,7 @@ public class PlayerEquipment : MonoBehaviour
 
     private protected Rigidbody rb;            //Rigidbody component attached to this script's gameobject
     private protected AudioSource audioSource; //Audio source component for playing sounds made by this equipment
-    private ConfigurableJoint joint;           //Physical joint connecting this weapon to the player
+    private protected ConfigurableJoint joint; //Physical joint connecting this weapon to the player
 
     //Settings:
     [Header("Settings:")]

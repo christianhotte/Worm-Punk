@@ -247,13 +247,14 @@ public class SecondaryWeapons : PlayerEquipment
         shootin = true;
         for (; shotsToFire > 0; shotsToFire--)
         {
-            GameObject projInstance = Instantiate(ProjectilePrefab);
+            
             Vector3 exitAngles = Random.insideUnitCircle * maxSpreadAngle;
             bulletSpredPoint.localEulerAngles = new Vector3(bladeTip.position.x + exitAngles.x, bladeTip.position.y + exitAngles.y, bladeTip.position.z + exitAngles.z);
-            projInstance.transform.position = bulletSpredPoint.position;
-            projInstance.transform.rotation = bulletSpredPoint.rotation;
-            projScript = projInstance.GetComponent<Projectile>();
-            projScript.Fire(bulletSpredPoint.position, bladeTip.rotation);
+
+            //NOTE: Hotte modified this so that it'd work with the new slightly different projectile deployment system
+            Projectile projectile = PhotonNetwork.Instantiate("Projectiles/HotteProjectile1", bulletSpredPoint.position, bulletSpredPoint.rotation).GetComponent<Projectile>(); //Instantiate projectile on network
+            projectile.photonView.RPC("RPC_Fire", RpcTarget.All, bulletSpredPoint.position, bulletSpredPoint.rotation, PlayerController.photonView.ViewID);                     //Initialize all projectiles simultaneously
+
             StoredShots[shotsToFire - 1].SetActive(false);
             yield return new WaitForSeconds(.05f);
         }
