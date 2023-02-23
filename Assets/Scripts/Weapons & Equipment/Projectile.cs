@@ -282,9 +282,9 @@ public class Projectile : MonoBehaviourPunCallbacks
         //Burnout check:
         if (photonView.IsMine || dumbFired) ////Only check if projectile is authoritative version
         {
-            timeAlive += Time.fixedDeltaTime;                                     //Update time tracker
-            if (timeAlive > estimatedLifeTime) BurnOut();                         //Burn projectile out if it has been alive for too long
-            if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); //Destroy projectile if it has reached its maximum range
+            timeAlive += Time.fixedDeltaTime;                                          //Update time tracker
+            if (timeAlive > estimatedLifeTime) BurnOut();                              //Burn projectile out if it has been alive for too long
+            else if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); //Destroy projectile if it has reached its maximum range
         }
     }
 

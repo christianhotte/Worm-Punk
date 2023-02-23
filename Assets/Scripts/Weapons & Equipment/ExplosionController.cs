@@ -45,26 +45,26 @@ public class ExplosionController : MonoBehaviour
         transform.localScale = Vector3.one * newScale;                    //Apply new scale to transform
 
         //Check for player hits:
-        Collider[] overlapColliders = Physics.OverlapSphere(transform.position, newScale / 2, LayerMask.NameToLayer("Player"), QueryTriggerInteraction.Ignore); //Check for overlapping player colliders
-        foreach (Collider collider in overlapColliders) //Iterate through list of colliders hit by explosion
+        foreach (NetworkPlayer player in NetworkPlayer.instances) //Iterate through all player instances in scene
         {
-            NetworkPlayer player = collider.GetComponentInParent<NetworkPlayer>(); //Try to get network player from collider
-            if (hitPlayers.Contains(player)) continue;                             //Skip if player has already been hit by this explosion
-            if (player != null) //Explosion has hit a player
-            {
-                //Initialization:
-                if (player.photonView.ViewID == originPlayerID) continue;                            //Do not allow explosion to damage the player who created it
-                float distance = Vector3.Distance(transform.position, collider.transform.position);  //Get distance between epicenter and player
-                Vector3 launchForce = (collider.transform.position - transform.position).normalized; //Initialize generated launch force as normalized direction from explosion to player
-                launchForce *= (distance / (newScale / 2)) * maxLaunchForce;                         //Modify launch force based on how close player is to epicenter of explosion
-                
-                //Send signals:
-                player.photonView.RPC("RPC_Launch", Photon.Pun.RpcTarget.All, launchForce);                  //Launch player using calculated force
-                if (distance <= damageRadius) player.photonView.RPC("RPC_Hit", Photon.Pun.RpcTarget.All, 1); //Damage player if inside radius
+            //Calidity checks:
+            if (player.photonView.ViewID == originPlayerID) continue; //Never hit origin player
+            if (hitPlayers.Contains(player)) continue;                //Do not re-hit players
 
-                //Cleanup:
-                hitPlayers.Add(player); //Add player to make sure it doesn't get hit again
-            }
+            //Initialization:
+            Vector3 playerPos = player.GetComponent<Targetable>().targetPoint.position; //Get exact position of center mass on player
+            float distance = Vector3.Distance(transform.position, playerPos);           //Get distance player is from explosion epicenter
+            if (distance > newScale / 2) continue;                                      //Skip players which are outside the radius of the explosion
+            Vector3 launchForce = (playerPos - transform.position).normalized;          //Initialize generated launch force as normalized direction from explosion to player
+            launchForce *= (distance / (newScale / 2)) * maxLaunchForce;                //Modify launch force based on how close player is to epicenter of explosion
+
+            //Send signals:
+            player.photonView.RPC("RPC_Launch", Photon.Pun.RpcTarget.All, launchForce);                  //Launch player using calculated force
+            if (distance <= damageRadius) player.photonView.RPC("RPC_Hit", Photon.Pun.RpcTarget.All, 1); //Damage player if inside radius
+
+            //Cleanup:
+            hitPlayers.Add(player); //Add player to list to make sure that it does not get hit multiple times by the same explosion
         }
+        //Collider[] overlapColliders = Physics.OverlapSphere(transform.position, newScale / 2, LayerMask.NameToLayer("Player"), QueryTriggerInteraction.Ignore); //Check for overlapping player colliders
     }
 }
