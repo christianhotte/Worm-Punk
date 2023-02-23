@@ -510,7 +510,6 @@ public class Projectile : MonoBehaviourPunCallbacks
             //Surface explosion:
             ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate the explosion prefab and get reference to its script
             explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
-            print("RPC exploding");
             photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
         }
 
@@ -526,7 +525,6 @@ public class Projectile : MonoBehaviourPunCallbacks
         //Mid-air explosion:
         ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate an explosion at burnout point
         explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
-        print("RPC exploding");
         photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
 
         //Cleanup:
