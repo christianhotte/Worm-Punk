@@ -510,6 +510,7 @@ public class Projectile : MonoBehaviourPunCallbacks
             //Surface explosion:
             ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate the explosion prefab and get reference to its script
             explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
+            print("RPC exploding");
             photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
         }
 
@@ -525,6 +526,7 @@ public class Projectile : MonoBehaviourPunCallbacks
         //Mid-air explosion:
         ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate an explosion at burnout point
         explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
+        print("RPC exploding");
         photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
 
         //Cleanup:
@@ -551,8 +553,8 @@ public class Projectile : MonoBehaviourPunCallbacks
     }
     private void Delete()
     {
-        if (!dumbFired && photonView.IsMine) PhotonNetwork.Destroy(gameObject); //Destroy networked projectiles on the network
-        else if (dumbFired && !photonView.IsMine) Destroy(gameObject);          //Use normal destruction for non-networked projectiles
+        if (!dumbFired && photonView.IsMine) PhotonNetwork.Destroy(photonView);                                     //Destroy networked projectiles on the network
+        else if (dumbFired && !photonView.IsMine) { print("Destroying projectile locally."); Destroy(gameObject); } //Use normal destruction for non-networked projectiles
         //NOTE: Remote networked projectiles cannot delete themselves, they must be deleted from the network by their master version
     }
 }
