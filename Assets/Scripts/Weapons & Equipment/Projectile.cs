@@ -485,6 +485,11 @@ public class Projectile : MonoBehaviourPunCallbacks
     /// <param name="hitInfo">Data about object struck.</param>
     private protected virtual void HitObject(RaycastHit hitInfo)
     {
+        //Initialization:
+        transform.position = hitInfo.point;                               //Move projectile to its hit position
+        totalDistance += hitInfo.distance;                                //Add the final amount of distance projectile had to travel to get there
+        photonView.RPC("RPC_Move", RpcTarget.Others, transform.position); //Move all networked projectiles to hit position
+
         //Look for strikeable scripts:
         NetworkPlayer targetPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>();     //Try to get network player from hit collider
         if (targetPlayer == null) targetPlayer = hitInfo.collider.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
