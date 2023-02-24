@@ -42,10 +42,13 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     // When a player leaves the room
     public override void OnLeftRoom()
     {
-        if(NetworkManagerScript.instance.GetMostRecentRoom().PlayerCount > 0)
+        if(NetworkManagerScript.instance.GetMostRecentRoom() != null)
         {
-            playersInRoom = NetworkManagerScript.instance.GetMostRecentRoom().PlayerCount;
-            UpdateReadyText();
+            if (NetworkManagerScript.instance.GetMostRecentRoom().PlayerCount > 0)
+            {
+                playersInRoom = NetworkManagerScript.instance.GetMostRecentRoom().PlayerCount;
+                UpdateReadyText();
+            }
         }
 
         // The room becomes open to let more people come in.
@@ -61,23 +64,24 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         if(leverValue == 1)
         {
             //The player is ready
-            PlayerSettings.Instance.playerStats.isReady = true;
+            NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady = true;
         }
 
         else
         {
             //The player is not ready
-            PlayerSettings.Instance.playerStats.isReady = false;
+            NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady = false;
         }
 
         NetworkManagerScript.localNetworkPlayer.SyncStats();
 
+        Debug.Log("Updating RPC...");
         photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered);
     }
 
     // Tells the master server the amount of players that are ready to start the match.
     [PunRPC]
-    private void RPC_UpdateReadyStatus()
+    public void RPC_UpdateReadyStatus()
     {
         // Get the number of players that have readied up
         playersReady = GetAllPlayersReady();
@@ -86,7 +90,7 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         UpdateReadyText();
 
         // If all players are ready, load the game scene
-        if (playersReady == playersInRoom && playersInRoom >= MINIMUM_PLAYERS_NEEDED)
+        if (playersReady == playersInRoom && playersInRoom >= MINIMUM_PLAYERS_NEEDED && PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.LoadLevel(sceneToLoad);
         }

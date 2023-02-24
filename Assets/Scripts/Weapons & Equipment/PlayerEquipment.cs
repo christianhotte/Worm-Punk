@@ -35,7 +35,7 @@ public class PlayerEquipment : MonoBehaviour
 
     private protected Rigidbody rb;            //Rigidbody component attached to this script's gameobject
     private protected AudioSource audioSource; //Audio source component for playing sounds made by this equipment
-    private ConfigurableJoint joint;           //Physical joint connecting this weapon to the player
+    private protected ConfigurableJoint joint; //Physical joint connecting this weapon to the player
 
     //Settings:
     [Header("Settings:")]
@@ -382,6 +382,7 @@ public class PlayerEquipment : MonoBehaviour
     public void SendHapticImpulse(Vector2 properties) { SendHapticImpulse(properties.x, properties.y); }
     public void SendHapticImpulse(HapticData properties)
     {
+        if (properties.duration == 0 || properties.amplitude == 0) return;                                           //Do nothing if player has given a null haptic setting
         if (properties.behaviorCurve.keys.Length <= 1) SendHapticImpulse(properties.amplitude, properties.duration); //Use simpler impulse method if no curve is given
         else StartCoroutine(HapticEvent(properties.behaviorCurve, properties.amplitude, properties.duration));       //Use coroutine to deploy more complex haptic impulses
     }
