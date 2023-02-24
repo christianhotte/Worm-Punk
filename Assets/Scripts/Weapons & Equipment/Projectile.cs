@@ -22,12 +22,13 @@ public class Projectile : MonoBehaviourPunCallbacks
 
     //Runtime Variables:
     private bool dumbFired;          //Indicates that this projectile was fired by a non-player
-    private float estimatedLifeTime; //Approximate projectile lifetime calculated based on velocity and range
     internal int originPlayerID;     //PhotonID of player which last fired this projectile
     private Vector3 velocity;        //Speed and direction at which projectile is traveling
     private Transform target;        //Transform which projectile is currently homing toward
-    private float totalDistance;     //Total travel distance covered by this projectile
-    private float timeAlive;         //How much time this projectile has been alive for
+
+    private float totalDistance;               //Total travel distance covered by this projectile
+    private float timeAlive;                   //How much time this projectile has been alive for
+    private protected float estimatedLifeTime; //Approximate projectile lifetime calculated based on velocity and range
 
     private Vector3 prevTargetPos; //Previous position of target, used for velocity prediction
     private Material origMat;      //Original material projectile had when spawned
@@ -283,71 +284,18 @@ public class Projectile : MonoBehaviourPunCallbacks
         if (photonView.IsMine || dumbFired) ////Only check if projectile is authoritative version
         {
             timeAlive += Time.fixedDeltaTime;                                          //Update time tracker
-            if (timeAlive > estimatedLifeTime) BurnOut();                              //Burn projectile out if it has been alive for too long
+            if (estimatedLifeTime > 0 && timeAlive > estimatedLifeTime) BurnOut();     //Burn projectile out if it has been alive for too long (if lifetime is being used)
             else if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); //Destroy projectile if it has reached its maximum range
         }
     }
 
     //FUNCTIONALITY METHODS:
     /// <summary>
-    /// Sets this projectile to home in toward designated target.
-    /// </summary>
-    public void AcquireTarget(Transform newTarget)
-    {
-        //Target initialization:
-        target = newTarget;              //Set potential target as chosen target
-        prevTargetPos = target.position; //Initialize target position tracker
-
-        //Effects:
-        if (homingMat != null) GetComponentInChildren<Renderer>().material = homingMat; //Change color to indicate that it has successfully locked on to target
-        audioSource.loop = true;                                                        //Make audiosource loop
-        audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
-        if (audioSource.clip != null) audioSource.Play();                               //Play homing sound on loop
-
-        //Have other projectiles acquire target:
-        if (dumbFired) return;
-        if (!target.TryGetComponent(out PhotonView targetView)) targetView = target.GetComponentInParent<PhotonView>(); //Try to get photonView from target
-        if (targetView != null) //Target has a photon view component
-        {
-            photonView.RPC("RPC_AcquireTarget", RpcTarget.Others, targetView.ViewID); //Use view ID to lock other projectiles onto this component
-            if (printDebug) print("Target Acquired: " + targetView.name);             //Indicate that a target has been acquired
-        }
-        else //Targeted object is not on network (in this case it should ideally be stationary)
-        {
-            Collider[] checkColliders = Physics.OverlapSphere(target.position, settings.dumbTargetAquisitionRadius); //Get list of colliders currently overlapping target position (hopefully just target)
-            foreach (Collider collider in checkColliders) //Iterate through identified colliders within target area
-            {
-                if (collider.transform == target) //Target can be acquired with this solution
-                {
-                    photonView.RPC("RPC_AcquireTargetDumb", RpcTarget.Others, target.position); //Send position of target as identifying acquisition data
-                    if (printDebug) print("Dumb Target Acquired: " + target.name);              //Indicate that a target has been acquired
-                    break;                                                                      //Exit collider iteration
-                }
-            }
-        }
-        photonView.RPC("RPC_Move", RpcTarget.Others, transform.position); //Sync up position and velocity between all versions of networked projectile
-    }
-    /// <summary>
-    /// Makes projectile lose its current target.
-    /// </summary>
-    public void LoseTarget()
-    {
-        //Effects:
-        GetComponentInChildren<Renderer>().material = origMat; //Change color back to original setting
-        audioSource.Stop();                                    //Stop playing homing sound
-
-        //Cleanup:
-        target = null;                                                      //Clear active target
-        if (!dumbFired) photonView.RPC("RPC_LostTarget", RpcTarget.Others); //Indicate to all other projectiles that target has been lost
-    }
-
-    //INPUT METHODS:
-    /// <summary>
     /// Call this method to fire this projectile from designated barrel.
     /// </summary>
     /// <param name="barrel">Determines starting position, orientation and velocity of projectile.</param>
     /// <param name="playerID">The ViewID number of the player who fired this projectile.</param>
-    public void Fire(Transform barrel, int playerID)
+    public virtual void Fire(Transform barrel, int playerID)
     {
         Fire(barrel.position, barrel.rotation, playerID); //Break transform apart and perform normal firing operation
     }
@@ -355,7 +303,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     /// Call this method if projectile needs to be fired without an object reference (safe for remote projectiles).
     /// </summary>
     /// <param name="playerID">The ViewID number of the player who fired this projectile.</param>
-    public void Fire(Vector3 startPosition, Quaternion startRotation, int playerID)
+    public virtual void Fire(Vector3 startPosition, Quaternion startRotation, int playerID)
     {
         //Initialize values:
         Vector3 targetPosition = startPosition;                  //Initialize value for ideal starting position
@@ -402,6 +350,119 @@ public class Projectile : MonoBehaviourPunCallbacks
     {
         dumbFired = true;                       //Indicate that projectile was fired without player
         Fire(startPosition, startRotation, -1); //Do normal firing procedure (give negative playerID to make sure systems know this is a non-player projectile)
+    }
+    /// <summary>
+    /// Called whenever projectile strikes an object.
+    /// </summary>
+    /// <param name="hitInfo">Data about object struck.</param>
+    /// <summary>
+    /// Sets this projectile to home in toward designated target.
+    /// </summary>
+    public void AcquireTarget(Transform newTarget)
+    {
+        //Target initialization:
+        target = newTarget;              //Set potential target as chosen target
+        prevTargetPos = target.position; //Initialize target position tracker
+
+        //Effects:
+        if (homingMat != null) GetComponentInChildren<Renderer>().material = homingMat; //Change color to indicate that it has successfully locked on to target
+        audioSource.loop = true;                                                        //Make audiosource loop
+        audioSource.clip = homingSound;                                                 //Set audiosource to play homing sound
+        if (audioSource.clip != null) audioSource.Play();                               //Play homing sound on loop
+
+        //Have other projectiles acquire target:
+        if (dumbFired) return;
+        if (!target.TryGetComponent(out PhotonView targetView)) targetView = target.GetComponentInParent<PhotonView>(); //Try to get photonView from target
+        if (targetView != null) //Target has a photon view component
+        {
+            photonView.RPC("RPC_AcquireTarget", RpcTarget.Others, targetView.ViewID); //Use view ID to lock other projectiles onto this component
+            if (printDebug) print("Target Acquired: " + targetView.name);             //Indicate that a target has been acquired
+        }
+        else //Targeted object is not on network (in this case it should ideally be stationary)
+        {
+            Collider[] checkColliders = Physics.OverlapSphere(target.position, settings.dumbTargetAquisitionRadius); //Get list of colliders currently overlapping target position (hopefully just target)
+            foreach (Collider collider in checkColliders) //Iterate through identified colliders within target area
+            {
+                if (collider.transform == target) //Target can be acquired with this solution
+                {
+                    photonView.RPC("RPC_AcquireTargetDumb", RpcTarget.Others, target.position); //Send position of target as identifying acquisition data
+                    if (printDebug) print("Dumb Target Acquired: " + target.name);              //Indicate that a target has been acquired
+                    break;                                                                      //Exit collider iteration
+                }
+            }
+        }
+        photonView.RPC("RPC_Move", RpcTarget.Others, transform.position); //Sync up position and velocity between all versions of networked projectile
+    }
+    /// <summary>
+    /// Makes projectile lose its current target.
+    /// </summary>
+    public void LoseTarget()
+    {
+        //Effects:
+        if (homingMat != null) GetComponentInChildren<Renderer>().material = origMat; //Change color back to original setting
+        audioSource.Stop();                                                           //Stop playing homing sound
+
+        //Cleanup:
+        target = null;                                                      //Clear active target
+        if (!dumbFired) photonView.RPC("RPC_LostTarget", RpcTarget.Others); //Indicate to all other projectiles that target has been lost
+    }
+    private protected virtual void HitObject(RaycastHit hitInfo)
+    {
+        //Initialization:
+        transform.position = hitInfo.point;                               //Move projectile to its hit position
+        totalDistance += hitInfo.distance;                                //Add the final amount of distance projectile had to travel to get there
+        photonView.RPC("RPC_Move", RpcTarget.Others, transform.position); //Move all networked projectiles to hit position
+
+        //Look for strikeable scripts:
+        NetworkPlayer targetPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>();     //Try to get network player from hit collider
+        if (targetPlayer == null) targetPlayer = hitInfo.collider.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
+        if (targetPlayer != null) //Hit object was a player
+        {
+            if (targetPlayer.photonView.ViewID == originPlayerID) { print("Projectile tried to hit own player (despite it all)."); return; } //Do one last hail mary check for player self-collision
+
+            //Hit through player:
+            targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);                                                //Indicate to player that it has been hit
+            if (!dumbFired && originPlayerID != 0) PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
+            if (settings.knockback > 0) //Projectile has player knockback
+            {
+                Vector3 knockback = transform.forward * settings.knockback;          //Get value by which to launch hit player
+                targetPlayer.photonView.RPC("RPC_Launch", RpcTarget.All, knockback); //Add force to player rigidbody based on knockback amount
+            }
+        }
+        else //Hit object is not a player
+        {
+            //Hit through targetable:
+            Targetable targetObject = hitInfo.collider.GetComponent<Targetable>(); //Try to get targetable script from target
+            if (targetObject != null) targetObject.IsHit(settings.damage);         //Indicate to targetable that it has been hit
+
+            //Surface explosion:
+            if (settings.explosionPrefab != null) //Only explode if projectile has an explosion prefab
+            {
+                ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate the explosion prefab and get reference to its script
+                explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
+                photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
+            }
+        }
+
+        //Cleanup:
+        if (printDebug) print("Projectile hit " + hitInfo.collider.name); //Indicate what the projectile hit if debug logging is on
+        Delete();                                                         //Destroy projectile
+    }
+    /// <summary>
+    /// Called if projectile range is exhausted and projectile hasn't hit anything.
+    /// </summary>
+    private protected virtual void BurnOut()
+    {
+        //Mid-air explosion:
+        if (settings.explosionPrefab != null) //Only explode if projectile has an explosion prefab
+        {
+            ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate an explosion at burnout point
+            explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
+            photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
+        }
+
+        //Cleanup:
+        Delete(); //Destroy projectile
     }
 
     //REMOTE METHODS:
@@ -478,76 +539,12 @@ public class Projectile : MonoBehaviourPunCallbacks
         explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
     }
 
-    //FUNCTIONALITY METHODS:
-    /// <summary>
-    /// Called whenever projectile strikes an object.
-    /// </summary>
-    /// <param name="hitInfo">Data about object struck.</param>
-    private protected virtual void HitObject(RaycastHit hitInfo)
-    {
-        //Initialization:
-        transform.position = hitInfo.point;                               //Move projectile to its hit position
-        totalDistance += hitInfo.distance;                                //Add the final amount of distance projectile had to travel to get there
-        photonView.RPC("RPC_Move", RpcTarget.Others, transform.position); //Move all networked projectiles to hit position
-
-        //Look for strikeable scripts:
-        NetworkPlayer targetPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>();     //Try to get network player from hit collider
-        if (targetPlayer == null) targetPlayer = hitInfo.collider.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
-        if (targetPlayer != null) //Hit object was a player
-        {
-            if (targetPlayer.photonView.ViewID == originPlayerID) { print("Projectile tried to hit own player (despite it all)."); return; } //Do one last hail mary check for player self-collision
-
-            //Hit through player:
-            targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);                                                //Indicate to player that it has been hit
-            if (!dumbFired && originPlayerID != 0) PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
-            if (settings.knockback > 0) //Projectile has player knockback
-            {
-                Vector3 knockback = transform.forward * settings.knockback;          //Get value by which to launch hit player
-                targetPlayer.photonView.RPC("RPC_Launch", RpcTarget.All, knockback); //Add force to player rigidbody based on knockback amount
-            }
-        }
-        else //Hit object is not a player
-        {
-            //Hit through targetable:
-            Targetable targetObject = hitInfo.collider.GetComponent<Targetable>(); //Try to get targetable script from target
-            if (targetObject != null) targetObject.IsHit(settings.damage);         //Indicate to targetable that it has been hit
-
-            //Surface explosion:
-            if (settings.explosionPrefab != null) //Only explode if projectile has an explosion prefab
-            {
-                ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate the explosion prefab and get reference to its script
-                explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
-                photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
-            }
-        }
-
-        //Cleanup:
-        if (printDebug) print("Projectile hit " + hitInfo.collider.name); //Indicate what the projectile hit if debug logging is on
-        Delete();                                                         //Destroy projectile
-    }
-    /// <summary>
-    /// Called if projectile range is exhausted and projectile hasn't hit anything.
-    /// </summary>
-    private protected virtual void BurnOut()
-    {
-        //Mid-air explosion:
-        if (settings.explosionPrefab != null) //Only explode if projectile has an explosion prefab
-        {
-            ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate an explosion at burnout point
-            explosion.originPlayerID = originPlayerID;                                                                                                         //Make sure explosion can't hit its own player
-            photonView.RPC("RPC_Explode", RpcTarget.Others);                                                                                                   //Create explosions from networked projectiles
-        }
-
-        //Cleanup:
-        Delete(); //Destroy projectile
-    }
-
     //UTILITY METHODS:
     /// <summary>
     /// Returns true if given RaycastHit is a hit on this projectile's own player.
     /// </summary>
     /// <returns></returns>
-    private bool HitsOwnPlayer(RaycastHit hit)
+    private protected bool HitsOwnPlayer(RaycastHit hit)
     {
         //Check network player:
         NetworkPlayer hitPlayer = hit.collider.GetComponentInParent<NetworkPlayer>();        //Try to get network player controller from collision

@@ -5282,7 +5282,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7875328458108522905}
   m_Layer: 0
-  m_Name: LArmForearm1
+  m_Name: LeftArmForearm1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
