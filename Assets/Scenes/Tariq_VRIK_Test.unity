@@ -3158,51 +3158,51 @@ PrefabInstance:
       objectReference: {fileID: 557915978}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[0].inSlope
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[1].inSlope
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[0].outSlope
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[1].outSlope
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[0].inSlope
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[1].inSlope
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[0].outSlope
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[1].outSlope
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[0].tangentMode
-      value: 0
+      value: 34
       objectReference: {fileID: 0}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[1].tangentMode
-      value: 0
+      value: 34
       objectReference: {fileID: 0}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[0].tangentMode
-      value: 0
+      value: 34
       objectReference: {fileID: 0}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[1].tangentMode
-      value: 0
+      value: 34
       objectReference: {fileID: 0}
     - target: {fileID: 9192784467403125212, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: m_RootOrder
