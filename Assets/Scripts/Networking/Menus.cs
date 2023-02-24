@@ -27,5 +27,11 @@ public class Menus : MonoBehaviour
     {
         open = false;
         gameObject.SetActive(false);
+
+        if (menuName == "tutorials")
+        {
+            open = true;
+            gameObject.SetActive(true);
+        }
     }
 }

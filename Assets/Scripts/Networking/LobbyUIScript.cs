@@ -18,6 +18,7 @@ public class LobbyUIScript : MonoBehaviour
     [SerializeField] private int roomNameLength = 5;
 
     [SerializeField] private GameObject goToLevelButton;
+    [SerializeField] private GameObject tutorialMenu;
 
     [SerializeField] Transform roomListContent;
     [SerializeField] Transform playerListContent;
@@ -40,12 +41,44 @@ public class LobbyUIScript : MonoBehaviour
             {
                 // Then we can open the menu
                 OpenMenu(menus[i]);
+
+                if (menuName == "title")
+                {
+                    tutorialMenu.SetActive(true);
+                }
+
+                else if (menuName == "tutorials")
+                {
+                    OpenMenu("title");
+                    tutorialMenu.SetActive(true);
+                }
+
+                else
+                {
+                    // Do nothing
+                }
             }
 
             // If it's not the menu we're trying to open, then we want to close it.
             else if (menus[i].open)
             {
                 CloseMenu(menus[i]);
+
+                if (menuName == "title")
+                {
+                    tutorialMenu.SetActive(true);
+                }
+
+                else if (menuName == "tutorials")
+                {
+                    OpenMenu("title");
+                    tutorialMenu.SetActive(true);
+                }
+
+                else
+                {
+                    // Do nothing
+                }
             }
         }
     }
@@ -75,12 +108,13 @@ public class LobbyUIScript : MonoBehaviour
         inputField.text = "";
     }
 
+    // Displays the error message to the player.
     public void UpdateErrorMessage(string errorMessage)
     {
         errorText.text = errorMessage;
     }
 
-    // Easier to call the  open menu method through hierarchy.
+    // Easier to call the open menu method through hierarchy.
     public void OpenMenu(Menus menu)
     {
         // If the menu is open, we want to close it because we only want one menu open at a time.
@@ -91,6 +125,22 @@ public class LobbyUIScript : MonoBehaviour
 
         // Opens the menu.
         menu.Open();
+
+        if (menu.name == "title")
+        {
+            tutorialMenu.SetActive(true);
+        }
+
+        else if (menu.name == "tutorials")
+        {
+            OpenMenu("title");
+            tutorialMenu.SetActive(true);
+        }
+
+        else
+        {
+            // Do nothing
+        }
     }
 
     // Closes the menu (easier through hierarchy).
@@ -214,6 +264,7 @@ public class LobbyUIScript : MonoBehaviour
         }
     }
 
+    // Returns a bool if the player with the name exists
     private bool DoesPlayerExist(string name)
     {
         foreach (var player in playerListItems)
@@ -221,5 +272,17 @@ public class LobbyUIScript : MonoBehaviour
                 return true;
 
         return false;
+    }
+
+    // Loads into the shotgun tutorial scene.
+    public void ShotGunTutorial()
+    {
+        PhotonNetwork.LoadLevel(3);
+    }
+
+    // Loads into the chainsaw tutorial scene.
+    public void ChainsawTutorial()
+    {
+        //PhotonNetwork.LoadLevel(4);
     }
 }
