@@ -59,6 +59,7 @@ public class HookProjectile : Projectile
 
         //Initialize runtime vars:
         lineCheckLayers = settings.ignoreLayers |= (1 << LayerMask.NameToLayer("Player")); //Add player to ignore layers to get layers ignored by line check (preventing self-collision)
+        isHook = true;                                                                     //Indicate that this is a hook projectile (for homing purposes)
     }
     private protected override void Update()
     {
