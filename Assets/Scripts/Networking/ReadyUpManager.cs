@@ -13,6 +13,8 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
 
     [SerializeField] private TextMeshProUGUI playerReadyText;
 
+    [SerializeField] private LockerTubeController[] lockerTubes;
+
     private const int MINIMUM_PLAYERS_NEEDED = 2;   // The minimum number of players needed for a round to start
     [SerializeField] private string sceneToLoad = "DM_0.11_Arena";
 
@@ -71,17 +73,20 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         }
 
         NetworkManagerScript.localNetworkPlayer.SyncStats();
+    }
 
-        currentLever.GetComponentInParent<LockerTubeController>().UpdateLights(NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady);
-
+    public void UpdateStatus(int tubeID)
+    {
         Debug.Log("Updating RPC...");
-        photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered);
+        photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered, tubeID);
     }
 
     // Tells the master server the amount of players that are ready to start the match.
     [PunRPC]
-    public void RPC_UpdateReadyStatus()
+    public void RPC_UpdateReadyStatus(int tubeID)
     {
+        lockerTubes[tubeID].UpdateLights(NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady);
+
         // Get the number of players that have readied up
         playersReady = GetAllPlayersReady();
         playersInRoom = PhotonNetwork.CurrentRoom.PlayerCount;
