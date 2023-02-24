@@ -23,6 +23,7 @@ public class NewGrapplerController : PlayerEquipment
     [SerializeField, Tooltip("Releases grappling hook.")] private bool debugRelease;
 
     //Runtime Variables:
+    internal Vector3 grappleHandPos; //Player hand position (relative to body) when grappling begins
 
     //EVENTS & COROUTINES:
     /// <summary>
@@ -62,6 +63,11 @@ public class NewGrapplerController : PlayerEquipment
 
         //Cleanup:
         base.Update(); //Always perform base update method
+    }
+    private protected override void OnDestroy()
+    {
+        base.OnDestroy();                                         //Call base destruction method
+        if (hook != null) PhotonNetwork.Destroy(hook.gameObject); //Destroy hook object when destroying this equipment
     }
 
     //INPUT METHODS:
@@ -125,6 +131,7 @@ public class NewGrapplerController : PlayerEquipment
 
         //Fire hook:
         hook.Fire(barrel.position, hand.rotation, PlayerController.photonView.ViewID); //Fire using the position of the barrel, but the rotation of the hand (to account for system being attached to the forearm)
+        //Vector3 currentHandVel = G
 
         //Effects:
         if (settings.launchSound != null) audioSource.PlayOneShot(settings.launchSound); //Play sound effect
