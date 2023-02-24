@@ -60,32 +60,21 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     // Once the level is pulled to signify that the player is ready...
     public void ReadyLeverPulled(LeverController currentLever)
     {
-        if(currentLever.GetLeverValue() == 1)
-        {
-            //The player is ready
-            NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady = true;
-        }
-
-        else
-        {
-            //The player is not ready
-            NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady = false;
-        }
-
+        NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady = currentLever.GetLeverValue() == 1;
         NetworkManagerScript.localNetworkPlayer.SyncStats();
     }
 
     public void UpdateStatus(int tubeID)
     {
         Debug.Log("Updating RPC...");
-        photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered, tubeID);
+        photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered, tubeID, NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady);
     }
 
     // Tells the master server the amount of players that are ready to start the match.
     [PunRPC]
-    public void RPC_UpdateReadyStatus(int tubeID)
+    public void RPC_UpdateReadyStatus(int tubeID, bool updatedPlayerReady)
     {
-        lockerTubes[tubeID].UpdateLights(NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady);
+        lockerTubes[tubeID].UpdateLights(updatedPlayerReady);
 
         // Get the number of players that have readied up
         playersReady = GetAllPlayersReady();

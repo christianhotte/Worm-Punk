@@ -47,7 +47,6 @@ public class NetworkPlayer : MonoBehaviour
         //Get objects & components:
         photonView = GetComponent<PhotonView>();                      //Get photonView component from local object
         bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>(); //Get body renderer component from model in children
-        PhotonNetwork.AutomaticallySyncScene = true;
 
         //Set up rig:
         foreach (PhotonTransformView view in GetComponentsInChildren<PhotonTransformView>()) //Iterate through each network-tracked component
@@ -119,8 +118,15 @@ public class NetworkPlayer : MonoBehaviour
             //Local scene setup:
             RigToActivePlayer(); //Re-apply rig to new scene's PlayerController
 
-            if (scene.name == NetworkManagerScript.instance.mainMenuScene) { photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered); } //Hide all remote players when entering main menu
-            else if (scene.name == NetworkManagerScript.instance.roomScene) { photonView.RPC("RPC_MakeVisible", RpcTarget.OthersBuffered); }  //Show all remote players when entering locker room
+            if (scene.name == NetworkManagerScript.instance.mainMenuScene) 
+            { 
+                photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered);  //Hide all remote players when entering main menu
+            }
+            else if (scene.name == NetworkManagerScript.instance.roomScene) 
+            {
+                PhotonNetwork.AutomaticallySyncScene = true;                    // Start syncing scene with other players
+                photonView.RPC("RPC_MakeVisible", RpcTarget.OthersBuffered);    //Show all remote players when entering locker room
+            }
         }
 
         //Generic scene load checks:
