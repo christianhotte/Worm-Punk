@@ -283,6 +283,6 @@ public class LobbyUIScript : MonoBehaviour
     // Loads into the chainsaw tutorial scene.
     public void ChainsawTutorial()
     {
-        //PhotonNetwork.LoadLevel(4);
+        PhotonNetwork.LoadLevel(4);
     }
 }
