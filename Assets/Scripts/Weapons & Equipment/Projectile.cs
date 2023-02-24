@@ -21,15 +21,16 @@ public class Projectile : MonoBehaviourPunCallbacks
     [SerializeField, Tooltip("Sound projectile makes when it's homing in on a player.")]                        private AudioClip homingSound;
 
     //Runtime Variables:
-    private bool dumbFired;          //Indicates that this projectile was fired by a non-player
-    internal int originPlayerID;     //PhotonID of player which last fired this projectile
-    private Vector3 velocity;        //Speed and direction at which projectile is traveling
-    private Transform target;        //Transform which projectile is currently homing toward
+    private bool dumbFired;      //Indicates that this projectile was fired by a non-player
+    internal int originPlayerID; //PhotonID of player which last fired this projectile
+    private Vector3 velocity;    //Speed and direction at which projectile is traveling
+    private Transform target;    //Transform which projectile is currently homing toward
 
     private float totalDistance;               //Total travel distance covered by this projectile
     private float timeAlive;                   //How much time this projectile has been alive for
     private protected float estimatedLifeTime; //Approximate projectile lifetime calculated based on velocity and range
 
+    private protected bool isHook; //Whether or not this projectile is a hook (set by hook script)
     private Vector3 prevTargetPos; //Previous position of target, used for velocity prediction
     private Material origMat;      //Original material projectile had when spawned
 
@@ -60,6 +61,12 @@ public class Projectile : MonoBehaviourPunCallbacks
         foreach (Targetable targetable in Targetable.instances) //Iterate through list of targetables
         {
             //Eliminate non-viable targets:
+            if (targetable.type == Targetable.TargetType.BulletsOnly && isHook || //Targetable object is only targetable by bullets
+                targetable.type == Targetable.TargetType.HooksOnly && !isHook)    //Targetable object is only targetable by hooks
+            {
+                if (printDebug) print("Target ignored, incompatible type."); //Indicate reason target was ignored
+                continue;                                                    //Ignore target
+            }
             Vector3 targetSep = targetable.targetPoint.position - transform.position; //Get distance and direction from projectile to target
             float targetDist = targetSep.magnitude;                                   //Distance from projectile to target
             if (targetDist > RemainingRange)                                          //Target is outside projectile's potential range

@@ -7,6 +7,20 @@ using UnityEngine;
 /// </summary>
 public class Targetable : MonoBehaviour
 {
+    //Classes, Eunums & Structs:
+    /// <summary>
+    /// Denotes which player projectiles will lock on to a target.
+    /// </summary>
+    public enum TargetType
+    {
+        /// <summary>Any projectile will be able to home in on this object.</summary>
+        All,
+        /// <summary>Only player bullets can lock on to this target.</summary>
+        BulletsOnly,
+        /// <summary>Only player grappling hooks can lock on to this target.</summary>
+        HooksOnly
+    }
+
     //Objects & Components:
     /// <summary>
     /// Master list of all targetable objects in scene.
@@ -15,6 +29,7 @@ public class Targetable : MonoBehaviour
 
     //Settings:
     [Tooltip("The point in space which projectiles will target (leave empty to make it this object's transform.")] public Transform targetPoint;
+    [Tooltip("Which projectiles will be able to lock on to this targetable instance.")]                            public TargetType type = TargetType.All;
 
     //Runtime Variables:
 

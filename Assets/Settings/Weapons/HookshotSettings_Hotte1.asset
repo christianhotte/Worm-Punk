@@ -15,8 +15,8 @@ MonoBehaviour:
   hookResourceName: GrapplingHook
   intersectBehavior: 0
   basePullSpeed: 100
-  baseRetractSpeed: 100
-  retractAcceleration: 10
+  baseRetractSpeed: 150
+  retractAcceleration: 50
   deployThreshold: 1
   releaseThreshold: 0.5
   bounceLayers:
