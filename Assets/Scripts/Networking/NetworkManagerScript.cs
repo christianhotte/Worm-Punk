@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.SceneManagement;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 /* Code was referenced from https://www.youtube.com/watch?v=KHWuTBmT1oI
  * https://www.youtube.com/watch?v=zPZK7C5_BQo&list=PLhsVv9Uw1WzjI8fEBjBQpTyXNZ6Yp1ZLw */
@@ -52,10 +52,15 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     public void OnCreateRoom(string roomName)
     {
         RoomOptions roomOptions = new RoomOptions();
+        Hashtable customRoomSettings = new Hashtable();
+
+        customRoomSettings.Add("RoundLength", 300);
+
         roomOptions.IsVisible = true; // The player is able to see the room
         roomOptions.IsOpen = true; // The room is open.
         roomOptions.EmptyRoomTtl = 0; // Leave the room open for 0 milliseconds after the room is empty
         roomOptions.MaxPlayers = 6;
+        roomOptions.CustomRoomProperties = customRoomSettings;
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
     }
     public void JoinRoom(string roomName)
