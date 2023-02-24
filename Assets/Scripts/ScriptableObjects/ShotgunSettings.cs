@@ -22,6 +22,7 @@ public class ShotgunSettings : ScriptableObject
     [Tooltip("Modulates additive velocity multiplier depending on how aligned shot is with current velocity.")]                       public AnimationCurve additiveVelocityCurve;
     [Header("Gunfeel:")]
     [Range(0, 1), Tooltip("How far back the player has to pull the trigger before it fires.")]     public float triggerThreshold = 1;
+    [Min(0), Tooltip("Dampens gun wobble when pressed to make aiming a bit easier.")]              public float triggerDamper = 20;
     [Min(0), Tooltip("Strength of force used to close breach when swinging guns vertically.")]     public float closerForce;
     [Min(0), Tooltip("Time to wait after opening breach before allowing swing-close assistance.")] public float swingCloseWait;
     [Space()]
@@ -35,6 +36,9 @@ public class ShotgunSettings : ScriptableObject
     [Space()]
     [Min(0), Tooltip("Distance barrels move backward when reciprocating after firing")]       public float barrelReciprocationDistance;
     [Tooltip("Curve describing the motion of barrel reciprocation throughout recoil phase.")] public AnimationCurve barrelReciproCurve;
+    [Min(0), Tooltip("Max distance ejector nubbins can move along their rails.")]             public float ejectorTraverseDistance;
+    [Min(0), Tooltip("Amount of time ejectors take to travel to their target positions.")]    public float ejectorTraverseTime;
+    [Tooltip("Describes motion of ejector during traversal.")]                                public AnimationCurve ejectorTraverseCurve;
     [Header("Effects:")]
     [Tooltip("Settings for configuring the vibration player feels when firing.")]             public PlayerEquipment.HapticData fireHaptics;
     [Tooltip("Settings for configuring the vibration player feels when ejecting shells.")]    public PlayerEquipment.HapticData ejectHaptics;

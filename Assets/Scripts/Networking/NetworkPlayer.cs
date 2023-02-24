@@ -17,6 +17,11 @@ using RootMotion.FinalIK;
 public class NetworkPlayer : MonoBehaviour
 {
     //Objects & Components:
+    /// <summary>
+    /// List of all instantiated network players in the room.
+    /// </summary>
+    public static List<NetworkPlayer> instances = new List<NetworkPlayer>();
+
     internal PhotonView photonView;           //PhotonView network component used by this NetworkPlayer to synchronize movement
     private SkinnedMeshRenderer bodyRenderer; //Renderer component for main player body/skin
     private PlayerStats networkPlayerStats = new PlayerStats(); //The stats for the network player
@@ -36,10 +41,12 @@ public class NetworkPlayer : MonoBehaviour
     //RUNTIME METHODS:
     private void Awake()
     {
+        //Initialize:
+        instances.Add(this); //Add network player to list of instances in scene
+
         //Get objects & components:
         photonView = GetComponent<PhotonView>();                      //Get photonView component from local object
         bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>(); //Get body renderer component from model in children
-
         PhotonNetwork.AutomaticallySyncScene = true;
 
         //Set up rig:
@@ -102,6 +109,7 @@ public class NetworkPlayer : MonoBehaviour
     private void OnDestroy()
     {
         //Reference cleanup:
+        instances.Remove(this);                                                                                 //Remove from instance list
         if (photonView.IsMine && PlayerController.photonView == photonView) PlayerController.photonView = null; //Clear client photonView reference
     }
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
