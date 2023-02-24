@@ -28,7 +28,7 @@ public class BattingCage : MonoBehaviour
         GameObject projInstance= Instantiate(ProjectilePrefab);
         projInstance.transform.position = spawnPos.position;
         projScript = projInstance.GetComponent<Projectile>();
-        projScript.Fire(spawnPos.position,spawnPos.rotation);
+        projScript.FireDumb(spawnPos.position,spawnPos.rotation);
         //projScript.localOnly = true;
         yield return new WaitForSeconds(2.0f);
         cooldown = false;

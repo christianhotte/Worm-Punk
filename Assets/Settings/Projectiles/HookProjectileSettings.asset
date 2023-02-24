@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7faa7af77b7e587419bba59ae685ea14, type: 3}
-  m_Name: HotteProjectileSettings
+  m_Name: HookProjectileSettings
   m_EditorClassIdentifier: 
-  damage: 1
-  knockback: 10
-  explosionPrefab: {fileID: 5470892112642989696, guid: a01fa86dc420545488942b0fe674d939, type: 3}
+  damage: 0
+  knockback: 5
+  explosionPrefab: {fileID: 0}
   initialVelocity: 230
   range: 200
   barrelGap: 0.7
@@ -121,9 +121,9 @@ MonoBehaviour:
     m_Bits: 4832
   ignoreLayers:
     serializedVersion: 2
-    m_Bits: 5184
+    m_Bits: 5192
   radiusIgnoreLayers:
     serializedVersion: 2
     m_Bits: 5440
   dumbTargetAquisitionRadius: 1
-  radius: 0.6
+  radius: 0.1

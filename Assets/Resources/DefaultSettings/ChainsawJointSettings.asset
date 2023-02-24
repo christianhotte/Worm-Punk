@@ -21,4 +21,6 @@ MonoBehaviour:
   angularDampening: 0
   linearDrive: 0
   angularDrive: 0
-  angularDriveDamper: 0
+  angularDriveDamper: 100
+  maxAngularSpeed: 15
+  positionMemory: 10
