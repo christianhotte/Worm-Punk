@@ -17,9 +17,9 @@ public class LevelTimer : MonoBehaviour
 
     private void Start()
     {
-        SetLevelTime(60);
-
+        SetLevelTime(300);
         timerText = GetComponent<TextMeshProUGUI>();
+
         currentTime = levelTime;
     }
 
