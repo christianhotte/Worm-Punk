@@ -3141,13 +3141,69 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 650118049}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: references.leftForearm
+      value: 
+      objectReference: {fileID: 2093738572}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.rightArm.target
       value: 
       objectReference: {fileID: 821482002}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: references.rightForearm
+      value: 
+      objectReference: {fileID: 2087742262}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.spine.headTarget
       value: 
       objectReference: {fileID: 557915978}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[0].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[1].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[0].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[1].outSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[0].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[1].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[0].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[1].outSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[0].tangentMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.leftArm.stretchCurve.m_Curve.Array.data[1].tangentMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[0].tangentMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: solver.rightArm.stretchCurve.m_Curve.Array.data[1].tangentMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9192784467403125212, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -4113,6 +4169,16 @@ Transform:
   m_Father: {fileID: 2018237754}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &2087742262 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5457676482694320271, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+  m_PrefabInstance: {fileID: 1539157790}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2093738572 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 497220423270337893, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+  m_PrefabInstance: {fileID: 1539157790}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2109393278
 GameObject:
   m_ObjectHideFlags: 0
