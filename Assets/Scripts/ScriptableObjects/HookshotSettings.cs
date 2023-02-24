@@ -31,6 +31,9 @@ public class HookshotSettings : ScriptableObject
     [Header("Feel:")]
     [Range(0, 1), Tooltip("How much the player must squeeze the grip in order to launch the grappling hook.")] public float deployThreshold = 1;
     [Range(0, 1), Tooltip("How much the player must release the grip for the grappling hook to reel back.")]   public float releaseThreshold = 0.5f;
+    [Space()]
+    [Tooltip("Range of speeds at which player can swing their arm to curve the hook through the air.")]            public Vector2 minMaxSwingSpeed;
+    [Tooltip("Range of curve forces applied continuously to hook while flying after player has swung their arm.")] public Vector2 minMaxCurveForce;
     [Header("Collision:")]
     [Tooltip("Layers which hookshot will bounce off of automatically and cannot be used on.")] public LayerMask bounceLayers;
     [Header("Haptics:")]

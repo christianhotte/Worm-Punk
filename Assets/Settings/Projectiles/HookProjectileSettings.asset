@@ -16,9 +16,9 @@ MonoBehaviour:
   knockback: 5
   explosionPrefab: {fileID: 0}
   initialVelocity: 400
-  range: 1000
+  range: 500
   barrelGap: 0.7
-  drop: 10
+  drop: 20
   homingStrength: 150
   homingStrengthCurve:
     serializedVersion: 2
@@ -121,9 +121,9 @@ MonoBehaviour:
     m_Bits: 4832
   ignoreLayers:
     serializedVersion: 2
-    m_Bits: 5192
+    m_Bits: 3221233352
   radiusIgnoreLayers:
     serializedVersion: 2
-    m_Bits: 5440
+    m_Bits: 3221233600
   dumbTargetAquisitionRadius: 1
   radius: 0.05
