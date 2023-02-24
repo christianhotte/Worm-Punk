@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   duration: 0.2
-  maxScale: 500
+  maxScale: 13
   transparencyCurve:
     serializedVersion: 2
     m_Curve:
@@ -105,8 +105,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  maxLaunchForce: 30
-  damageRadius: 50
+  maxLaunchForce: 40
+  damage: 1
+  damageRadius: 6
 --- !u!33 &850727393920491880
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -114,7 +115,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5470892112642989696}
-  m_Mesh: {fileID: 4300000, guid: 04fd0bf4f67ef0c4ba2d528359cc1727, type: 3}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &8690114604468955395
 MeshRenderer:
   m_ObjectHideFlags: 0

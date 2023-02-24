@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 853b7de1fa8d5b44d87d256559d6ab0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  wormEnterRange: 2
   entrancePos: {fileID: 1620262601156547262}
 --- !u!1 &1620262601031258323
 GameObject:
@@ -198,8 +199,12 @@ MonoBehaviour:
   holePos1: {fileID: 1620262600561972270}
   holePos2: {fileID: 1620262601479060463}
   wormZone: {fileID: 1620262601096244179}
+  playerHead: {fileID: 0}
+  wormZoneShifted: {fileID: 0}
+  wormZoneParticles: {fileID: 5120769077581133618, guid: 4f62d637fc7968845b5980a817dd33ac, type: 3}
   waitTime: 2
   exitSpeed: 30
+  playerOrigin: {fileID: 0}
 --- !u!1 &1620262601096244178
 GameObject:
   m_ObjectHideFlags: 0
@@ -387,4 +392,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 853b7de1fa8d5b44d87d256559d6ab0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  wormEnterRange: 2
   entrancePos: {fileID: 1620262600103442328}

@@ -7,6 +7,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class PlayerSetup : MonoBehaviour
 {
     //FUNCTIONALITY METHODS:
+
     /// <summary>
     /// Applies all settings to local player instance (using local PlayerSettings instance).
     /// </summary>
