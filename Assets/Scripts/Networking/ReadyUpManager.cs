@@ -17,13 +17,10 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     [SerializeField] private string sceneToLoad = "DM_0.11_Arena";
 
     private int playersReady, playersInRoom;
-
-    private LeverController[] allLevers;
     
     // Is called upon the first frame.
     private void Start()
     {
-        allLevers = FindObjectsOfType<LeverController>();
         UpdateReadyText();
     }
 
@@ -59,9 +56,9 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     }
 
     // Once the level is pulled to signify that the player is ready...
-    public void ReadyLeverPulled(float leverValue)
+    public void ReadyLeverPulled(LeverController currentLever)
     {
-        if(leverValue == 1)
+        if(currentLever.GetLeverValue() == 1)
         {
             //The player is ready
             NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady = true;
@@ -74,6 +71,8 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         }
 
         NetworkManagerScript.localNetworkPlayer.SyncStats();
+
+        currentLever.GetComponentInParent<LockerTubeController>().UpdateLights(NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady);
 
         Debug.Log("Updating RPC...");
         photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered);
