@@ -714,6 +714,11 @@ Transform:
   m_Father: {fileID: 208647257}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &442178507 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1829050522786480358, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+  m_PrefabInstance: {fileID: 1539157790}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &443118815
 GameObject:
   m_ObjectHideFlags: 0
@@ -3127,6 +3132,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wormy
       objectReference: {fileID: 0}
+    - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
+      propertyPath: references.pelvis
+      value: 
+      objectReference: {fileID: 442178507}
     - target: {fileID: 8654209542004397625, guid: 81fc0acd682813c478f66b4046c4cbe2, type: 3}
       propertyPath: solver.leftArm.target
       value: 
