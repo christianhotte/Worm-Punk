@@ -15,7 +15,6 @@ public class WormHole : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var num = ActiveWormholes.Count;
     }
 
     // Update is called once per frame
@@ -33,8 +32,9 @@ public class WormHole : MonoBehaviour
         else exitPos = holePos1.transform;                                           // or the corresponding one
         //NSC = playerOBJ.GetComponentInChildren<NewShotgunController>(); 
         //NSC.locked = true;
-        playerRB = playerOBJ.GetComponent<Rigidbody>();
-        PC = playerOBJ.GetComponent<PlayerController>();
+        PC = PlayerController.instance;
+        playerRB = PC.bodyRb;
+        
         //playerCam = PC.cam.gameObject;
         ActiveWormholes.Add(this);
         wormZoneShifted = wormZone;
@@ -43,13 +43,14 @@ public class WormHole : MonoBehaviour
         playerRB.useGravity = false;                                                //Turn off Gravity
         playerRB.isKinematic = true;
         playerOBJ.transform.position = wormZoneShifted.position;
-        playerOBJ.transform.rotation = exitPos.rotation;//Banish player to the shadow realm
+       //Banish player to the shadow realm
         wormZoneInstance =Instantiate(wormZoneParticles);
         wormZoneInstance.transform.position = new Vector3(playerOBJ.transform.position.x , playerOBJ.transform.position.y, playerOBJ.transform.position.z);
         Vector3 camDir = PC.cam.transform.forward;
         camDir = Vector3.ProjectOnPlane(camDir, Vector3.up);
         wormZoneInstance.transform.forward = camDir;
         yield return new WaitForSeconds(waitTime);
+        playerOBJ.transform.rotation = exitPos.rotation;
         playerOBJ.transform.position = exitPos.position;                            // BRing player back
         playerRB.useGravity = true;                                                 //Bring back Gravity
         playerRB.isKinematic = false;
