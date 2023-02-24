@@ -20,15 +20,23 @@ public class PlayerSettings : MonoBehaviour
 
     //UTILITY METHODS:
     public string CharDataToString() => JsonUtility.ToJson(charData); //Sends player settings to a string (transmissible over RPC)
+    public static string PlayerStatsToString(PlayerStats playerStats) => JsonUtility.ToJson(playerStats); //Sends player stats to a string (transmissible over RPC)
 }
 
 /// <summary>
 /// Defines runtime information about a player which needs to / can be sent over the network.
-/// </summary>
+/// </summary>;
 public class CharacterData
 {
     //Settings:
     public int playerID;                            //Unique number differentiating this player from others on the network
     public string playerName;                       //Name chosen by user to be displayed for other players on the network
     public Color testColor = new Color(1, 1, 1, 1); //DEMO SETTING: Color chosen by player to be seen by all other players over the network (defaults to white)
+}
+
+public class PlayerStats
+{
+    public bool isReady = false;
+
+    public int numOfKills = 0;
 }

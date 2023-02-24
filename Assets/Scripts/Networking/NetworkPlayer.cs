@@ -17,8 +17,14 @@ using RootMotion.FinalIK;
 public class NetworkPlayer : MonoBehaviour
 {
     //Objects & Components:
+    /// <summary>
+    /// List of all instantiated network players in the room.
+    /// </summary>
+    public static List<NetworkPlayer> instances = new List<NetworkPlayer>();
+
     internal PhotonView photonView;           //PhotonView network component used by this NetworkPlayer to synchronize movement
     private SkinnedMeshRenderer bodyRenderer; //Renderer component for main player body/skin
+    private PlayerStats networkPlayerStats = new PlayerStats(); //The stats for the network player
 
     private Transform headTarget;      //True local position of player head
     private Transform leftHandTarget;  //True local position of player left hand
@@ -35,9 +41,13 @@ public class NetworkPlayer : MonoBehaviour
     //RUNTIME METHODS:
     private void Awake()
     {
+        //Initialize:
+        instances.Add(this); //Add network player to list of instances in scene
+
         //Get objects & components:
         photonView = GetComponent<PhotonView>();                      //Get photonView component from local object
         bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>(); //Get body renderer component from model in children
+        PhotonNetwork.AutomaticallySyncScene = true;
 
         //Set up rig:
         foreach (PhotonTransformView view in GetComponentsInChildren<PhotonTransformView>()) //Iterate through each network-tracked component
@@ -99,6 +109,7 @@ public class NetworkPlayer : MonoBehaviour
     private void OnDestroy()
     {
         //Reference cleanup:
+        instances.Remove(this);                                                                                 //Remove from instance list
         if (photonView.IsMine && PlayerController.photonView == photonView) PlayerController.photonView = null; //Clear client photonView reference
     }
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -141,6 +152,13 @@ public class NetworkPlayer : MonoBehaviour
         modelTarget = attachedPlayer.bodyRig.transform;       //Get base model transform from player script
     }
 
+    public void SyncStats()
+    {
+        Debug.Log("Syncing Player Stats...");
+        string statsData = PlayerSettings.PlayerStatsToString(networkPlayerStats);
+        photonView.RPC("LoadPlayerStats", RpcTarget.AllBuffered, statsData);
+    }
+
     /// <summary>
     /// Syncs and applies settings data (such as color) between all versions of this network player (only call this on the network player local to the client who's settings you want to use).
     /// </summary>
@@ -152,6 +170,15 @@ public class NetworkPlayer : MonoBehaviour
     }
 
     //REMOTE METHODS:
+    [PunRPC]
+    public void LoadPlayerStats(string data)
+    {
+        //Initialization:
+        Debug.Log("Applying Synced Stats...");                           //Indicate that message has been received
+        PlayerStats stats = JsonUtility.FromJson<PlayerStats>(data);    //Decode stats into PlayerStats object
+        networkPlayerStats = stats;
+    }
+
     /// <summary>
     /// Loads given settings (as CharacterData) and applies them to this network player instance.
     /// </summary>
@@ -230,4 +257,6 @@ public class NetworkPlayer : MonoBehaviour
         target.position = reference.position; //Map position
         target.rotation = reference.rotation; //Map orientation
     }
+
+    public PlayerStats GetNetworkPlayerStats() => networkPlayerStats;
 }
