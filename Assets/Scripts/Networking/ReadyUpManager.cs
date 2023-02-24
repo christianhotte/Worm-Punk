@@ -83,9 +83,9 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         UpdateReadyText();
 
         // If all players are ready, load the game scene
-        if (playersReady == playersInRoom && playersInRoom >= MINIMUM_PLAYERS_NEEDED && PhotonNetwork.IsMasterClient)
+        if (playersReady == playersInRoom && (playersInRoom >= MINIMUM_PLAYERS_NEEDED || GameSettings.debugMode))
         {
-            PhotonNetwork.LoadLevel(sceneToLoad);
+            NetworkManagerScript.instance.LoadSceneWithFade(sceneToLoad);
         }
     }
 
@@ -96,7 +96,7 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     {
         string message = "Players Ready: " + playersReady.ToString() + "/" + playersInRoom;
 
-        if (playersInRoom < MINIMUM_PLAYERS_NEEDED)
+        if (playersInRoom < MINIMUM_PLAYERS_NEEDED && !GameSettings.debugMode)
         {
             message += "\n<size=26>Not Enough Players To Start.</size>";
         }
