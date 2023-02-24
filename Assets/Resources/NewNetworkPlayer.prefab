@@ -777,6 +777,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPoint: {fileID: 8359820835116723838}
+  type: 0
 --- !u!1 &1582608167865522411
 GameObject:
   m_ObjectHideFlags: 0

@@ -111,8 +111,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerRb: {fileID: 0}
-  jumpForce: 75
-  jumpPadRange: 1
+  jumpForce: 100
+  jumpPadRange: 12
   jumpDirection: {fileID: 8585161889459152013}
 --- !u!114 &181838491
 MonoBehaviour:
@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPoint: {fileID: 0}
+  type: 2
 --- !u!1 &8585161889459152014
 GameObject:
   m_ObjectHideFlags: 0
