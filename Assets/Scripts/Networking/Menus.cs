@@ -9,12 +9,6 @@ public class Menus : MonoBehaviour
     public string menuName;
     public bool open;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Opens the menu UI
     public void Open()
     {
@@ -27,5 +21,11 @@ public class Menus : MonoBehaviour
     {
         open = false;
         gameObject.SetActive(false);
+
+        if (menuName == "tutorials")
+        {
+            open = true;
+            gameObject.SetActive(true);
+        }
     }
 }
