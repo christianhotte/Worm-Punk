@@ -38,15 +38,17 @@ public class LevelTimer : MonoBehaviour
         if(currentTime > 0)
         {
             currentTime -= Time.deltaTime;
+            DisplayTime();
         }
         else if(!timerEnded)
         {
+            currentTime = 0;
+            DisplayTime();
+
             Debug.Log("Time Is Up!");
             OnTimerEnd.Invoke();
             timerEnded = true;
         }
-
-        DisplayTime();
     }
 
     private void DisplayTime()
