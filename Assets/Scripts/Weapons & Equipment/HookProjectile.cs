@@ -335,8 +335,8 @@ public class HookProjectile : Projectile
     /// </summary>
     private void PointLock(Vector3 lockPosition)
     {
-        Vector3 pointDirection = (controller.barrel.position - lockPosition).normalized;    //Get direction from lock point to end of player grappling arm
-        transform.forward = -pointDirection;                                                //Always point grappling hook in direction of player
-        transform.position = lockPosition - (transform.rotation * lockPoint.localPosition); //Move hook so that lockPoint is at target position
+        Vector3 pointDirection = ((photonView.IsMine ? controller.barrel.position : originPlayerBody.position) - lockPosition).normalized; //Get direction from lock point to end of player grappling arm
+        transform.forward = -pointDirection;                                                                                               //Always point grappling hook in direction of player
+        transform.position = lockPosition - (transform.rotation * lockPoint.localPosition);                                                //Move hook so that lockPoint is at target position
     }
 }
