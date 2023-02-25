@@ -17,6 +17,7 @@ public class ShotgunSettings : ScriptableObject
     [Min(1), Tooltip("DEPRECATED: Fire velocity multiplier used when shotguns are double-fired.")]                                           public float doubleFireBoost = 1.8f;
     [Header("Locomotion:")]
     [Min(0), Tooltip("Magnitude of velocity imparted on player when weapon is fired (primary locomotion setting).")]                  public float fireVelocity;
+    [Min(1), Tooltip("Multiplier applied to launch velocity when player is firing backwards.")]                                       public float reverseFireBoost;
     [Min(1), Tooltip("If player fires within this angle of their current velocity, shot will add velocity instead of replacing it.")] public float additiveVelocityMaxAngle;
     [Range(0, 1), Tooltip("Multiplier applied to velocity addition when player is firing multiple times in the same direction.")]     public float additiveVelocityMultiplier;
     [Tooltip("Modulates additive velocity multiplier depending on how aligned shot is with current velocity.")]                       public AnimationCurve additiveVelocityCurve;

@@ -298,10 +298,12 @@ public class NewShotgunController : PlayerEquipment
             player.ShakeScreen(gunSettings.fireScreenShake); //Shake screen (gently)
 
             //Player launching:
-            float effectiveFireVel = gunSettings.fireVelocity;                                                      //Store fire velocity so it can be optionally modified
-            if (otherGun != null && otherGun.doubleFireWindow > 0) effectiveFireVel *= gunSettings.doubleFireBoost; //Apply boost if player is firing both weapons simultaneously
-            Vector3 newVelocity = -currentBarrel.forward * effectiveFireVel;                                        //Store new velocity for player (always directly away from barrel that fired latest shot, unless reverse firing)
-            float velocityAngleDelta = Vector3.Angle(newVelocity, player.bodyRb.velocity);                          //Get angle between current velocity and new velocity
+            float effectiveFireVel = gunSettings.fireVelocity;                                                  //Store fire velocity so it can be optionally modified
+            if (otherGun != null && otherGun.doubleFireWindow > 0 &&                                            //Player is firing both weapons simultaneously...
+                otherGun.reverseFireStage == reverseFireStage) effectiveFireVel *= gunSettings.doubleFireBoost; //And both weapons are in the same firing mode, apply double-fire boost
+            if (reverseFireStage == 2) effectiveFireVel *= gunSettings.reverseFireBoost;                        //Add reverse firing boost
+            Vector3 newVelocity = -currentBarrel.forward * effectiveFireVel;                                    //Store new velocity for player (always directly away from barrel that fired latest shot, unless reverse firing)
+            float velocityAngleDelta = Vector3.Angle(newVelocity, player.bodyRb.velocity);                      //Get angle between current velocity and new velocity
             if (velocityAngleDelta <= gunSettings.additiveVelocityMaxAngle) //Player is firing to push themself in the direction they are generally already going
             {
                 float velAngleInterpolant = 1 - (velocityAngleDelta / gunSettings.additiveVelocityMaxAngle); //Get interpolant value for closeness of velocity angles

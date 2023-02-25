@@ -21,7 +21,8 @@ MonoBehaviour:
   basePullSpeed: 60
   baseRetractSpeed: 600
   retractAcceleration: 300
-  travelManeuverForce: 10
+  lateralManeuverForce: 0
+  yankForce: 0
   deployThreshold: 1
   releaseThreshold: 0.5
   punchWhipSpeed: 2.15
@@ -29,8 +30,8 @@ MonoBehaviour:
   punchWhipBoost: 1.7
   punchWhipCooldown: 0
   launchHaptics:
-    amplitude: 0
-    duration: 0
+    amplitude: 1
+    duration: 0.1
     behaviorCurve:
       serializedVersion: 2
       m_Curve: []
