@@ -52,6 +52,7 @@ public class SecondaryWeapons : PlayerEquipment
             {
                 float bulletDistance = Vector3.Distance(bladeTip.position, hit.transform.position);
                 projScript = hit.gameObject.GetComponent<Projectile>();
+                if (hit.gameObject.TryGetComponent(out HookProjectile hook)) continue;
                 if (bulletDistance <= blockRadius&&shotsHeld<shotCap)
                 {
                     if (projScript != null && projScript.originPlayerID == PlayerController.photonView.ViewID) return;

@@ -61,6 +61,11 @@ public class NewGrapplerController : PlayerEquipment
         if (debugLaunch) { debugLaunch = false; Launch(); }    //Launch hook manually
         if (debugRelease) { debugRelease = false; Release(); } //Release hook manually
 
+        Vector3 currentHandVel = RelativeVelocity;                                     //Get current relative velocity of hand
+        Vector3 lateralHandVel = Vector3.ProjectOnPlane(currentHandVel, hand.forward); //Get sideways hand velocity
+        Vector3 forwardHandVel = Vector3.Project(currentHandVel, hand.forward);        //Get forward hand velocity
+        //if (handedness == Handedness.Left) print("LatHandVel = " + lateralHandVel.magnitude + " | ForwardHandVel = " + forwardHandVel.magnitude);
+
         //Cleanup:
         base.Update(); //Always perform base update method
     }
@@ -127,11 +132,13 @@ public class NewGrapplerController : PlayerEquipment
     private void Launch()
     {
         //Validation & initialization:
+        if (hook == null) print("Tried to launch without hook!");
         if (hook.state != HookProjectile.HookState.Stowed) return; //Do not allow hook to be launched if it is not stowed
 
         //Fire hook:
+        
         hook.Fire(barrel.position, hand.rotation, PlayerController.photonView.ViewID); //Fire using the position of the barrel, but the rotation of the hand (to account for system being attached to the forearm)
-        //Vector3 currentHandVel = G
+        
 
         //Effects:
         if (settings.launchSound != null) audioSource.PlayOneShot(settings.launchSound); //Play sound effect

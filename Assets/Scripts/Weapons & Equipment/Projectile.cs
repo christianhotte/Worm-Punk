@@ -276,8 +276,8 @@ public class Projectile : MonoBehaviourPunCallbacks
                     if (!HitsOwnPlayer(hit)) //Do not acnowledge hits on own player
                     {
                         totalDistance -= velocity.magnitude - hit.distance; //Update totalDistance to reflect actual distance traveled at exact point of contact
-                        HitObject(hit);                                 //Trigger hit procedure
-                        return;                                         //Do nothing else
+                        HitObject(hit);                                     //Trigger hit procedure
+                        return;                                             //Do nothing else
                     }
                 }
             }
@@ -427,7 +427,8 @@ public class Projectile : MonoBehaviourPunCallbacks
         {
             if (targetPlayer.photonView.ViewID == originPlayerID) { print("Projectile tried to hit own player (despite it all)."); return; } //Do one last hail mary check for player self-collision
 
-            //Hit through player:
+            //Hit using player:
+            print("Projectile with origin ID " + originPlayerID + " hit player with ID " + targetPlayer.photonView.ViewID);
             targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);                                                //Indicate to player that it has been hit
             if (!dumbFired && originPlayerID != 0) PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
             if (settings.knockback > 0) //Projectile has player knockback
@@ -461,6 +462,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     private protected virtual void BurnOut()
     {
         //Mid-air explosion:
+        if (!photonView.IsMine) return; //Make sure non-main projectiles cannot burn out
         if (settings.explosionPrefab != null) //Only explode if projectile has an explosion prefab
         {
             ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate an explosion at burnout point
@@ -566,8 +568,8 @@ public class Projectile : MonoBehaviourPunCallbacks
     }
     private void Delete()
     {
-        if (!dumbFired && photonView.IsMine) PhotonNetwork.Destroy(photonView);                                     //Destroy networked projectiles on the network
-        else if (dumbFired && !photonView.IsMine) { print("Destroying projectile locally."); Destroy(gameObject); } //Use normal destruction for non-networked projectiles
+        if (!dumbFired && photonView.IsMine) PhotonNetwork.Destroy(photonView);               //Destroy networked projectiles on the network
+        else if (dumbFired) { print("Destroying projectile locally."); Destroy(gameObject); } //Use normal destruction for non-networked projectiles
         //NOTE: Remote networked projectiles cannot delete themselves, they must be deleted from the network by their master version
     }
 }

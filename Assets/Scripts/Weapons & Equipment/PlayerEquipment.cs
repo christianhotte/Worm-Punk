@@ -356,8 +356,9 @@ public class PlayerEquipment : MonoBehaviour
         followerBody.MoveRotation(targetRot); //Apply target rotation through follower rigidbody
         if (handAnchorMover != null && canMoveHandRig) //Player hand re-targeting is enabled
         {
-            handAnchorMover.localPosition = currentAddOffset;                      //Artificially add movement to player hand
-            handAnchorMover.localRotation = Quaternion.Euler(currentAddRotOffset); //Artificially add rotation to player hand
+            handAnchorMover.localPosition = currentAddOffset;                                                               //Artificially add movement to player hand
+            if (currentAddRotOffset.magnitude <= 90) handAnchorMover.localRotation = Quaternion.Euler(currentAddRotOffset); //Artificially add rotation to player hand (if it won't break wrist rig)
+            else handAnchorMover.localRotation = Quaternion.identity;                                                       //Use normal rotation otherwise
         }
     }
     /// <summary>

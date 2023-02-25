@@ -23,8 +23,10 @@ public class HookshotSettings : ScriptableObject
     //SETTINGS:
     [Header("General:")]
     [Tooltip("Name of hook prefab used by this tool (make sure this refers to a projectile in the Resources/Projectiles folder).")] public string hookResourceName;
-    [Tooltip("Determines what happens when a non-player collider intersects with the tether line (while hook is traveling).")]      public LineIntersectBehavior intersectBehavior;
+    [Tooltip("Determines what happens when a non-player collider intersects the tether line while hook is traveling.")]             public LineIntersectBehavior travelIntersectBehavior = LineIntersectBehavior.Ignore;
+    [Tooltip("Determines what happens when a non-player collider intersects the tether line while hook is locked on.")]             public LineIntersectBehavior hookedIntersectBehavior = LineIntersectBehavior.Ignore;
     [Min(0), Tooltip("Base speed at which hook pulls player toward hooked objects.")]                                               public float basePullSpeed;
+    [Min(0), Tooltip("How quickly player naturally gains speed while hook is pulling them forward.")]                               public float pullAcceleration;
     [Space()]
     [Min(0), Tooltip("Speed at which hook returns to player while retracting.")]                                                    public float baseRetractSpeed;
     [Min(0), Tooltip("Amount by which retract speed increases every second hook is retracting.")]                                   public float retractAcceleration;

@@ -44,7 +44,6 @@ public class RemoteShotgunController : MonoBehaviourPunCallbacks
             if (clientGun == null) { Debug.LogError("RemoteShotgunController could not find matching client weapon on player!"); Destroy(gameObject); } //Post warning if client weapon could not be found
 
             //Initialize:
-            clientGun.networkedGun = this; //Give client gun a reference to this weapon
         }
     }
 

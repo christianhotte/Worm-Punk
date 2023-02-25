@@ -96,13 +96,13 @@ public class HookProjectile : Projectile
         {
             case HookState.Deployed: //Hook has been launched and is flying through the air
                 base.FixedUpdate(); //Use normal projectile movement and homing
-                if (controller.settings.intersectBehavior != HookshotSettings.LineIntersectBehavior.Ignore) //Hook needs to check if anything is intersecting its line
+                if (controller.settings.travelIntersectBehavior != HookshotSettings.LineIntersectBehavior.Ignore) //Hook needs to check if anything is intersecting its line
                 {
                     if (Physics.Linecast(controller.barrel.position, transform.position, out RaycastHit hitInfo, lineCheckLayers)) //Check along line for collisions
                     {
                         if (HitsOwnPlayer(hitInfo)) { Debug.LogWarning("Grappling hook line just tried to hit player for some reason, check lineCheckLayers."); break; } //Super make sure line can't hit own player
-                        if (controller.settings.intersectBehavior == HookshotSettings.LineIntersectBehavior.Release) { Release(); break; }                               //Behavior is set to release on line intersection
-                        if (controller.settings.intersectBehavior == HookshotSettings.LineIntersectBehavior.Grab) { HitObject(hitInfo); break; }                         //Behavior is set to grab on line intersection
+                        if (controller.settings.travelIntersectBehavior == HookshotSettings.LineIntersectBehavior.Release) { Release(); break; }                         //Behavior is set to release on line intersection
+                        if (controller.settings.travelIntersectBehavior == HookshotSettings.LineIntersectBehavior.Grab) { HitObject(hitInfo); break; }                   //Behavior is set to grab on line intersection
                     }
                 }
                 break;
@@ -126,6 +126,18 @@ public class HookProjectile : Projectile
                 PointLock(hitPlayer.GetComponent<Targetable>().targetPoint.position); //Rotate hook toward controlling player, maintaining position at center mass of tethered player
                 break;
             default: break;
+        }
+        if (state != HookState.Deployed && state != HookState.Stowed) //Hook is hooked onto something
+        {
+            if (controller.settings.hookedIntersectBehavior != HookshotSettings.LineIntersectBehavior.Ignore) //Hook needs to check if anything is intersecting its line
+            {
+                if (Physics.Linecast(controller.barrel.position, tetherPoint.position, out RaycastHit hitInfo, lineCheckLayers)) //Check along line for collisions
+                {
+                    if (HitsOwnPlayer(hitInfo)) Debug.LogWarning("Grappling hook line just tried to hit player for some reason, check lineCheckLayers."); //Super make sure line can't hit own player
+                    else if (controller.settings.hookedIntersectBehavior == HookshotSettings.LineIntersectBehavior.Release) Release();                    //Behavior is set to release on line intersection
+                    else if (controller.settings.hookedIntersectBehavior == HookshotSettings.LineIntersectBehavior.Grab) HitObject(hitInfo);              //Behavior is set to grab on line intersection
+                }
+            }
         }
     }
 
