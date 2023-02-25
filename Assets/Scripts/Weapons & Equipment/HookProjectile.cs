@@ -39,11 +39,11 @@ public class HookProjectile : Projectile
     internal HookState state = HookState.Stowed;
     internal NetworkPlayer hitPlayer;  //The player this hook is currently locked into (usually null)
     private Vector3 hitPosition;       //Position this hook is currently locked into (usually irrelevant)
-    private LayerMask lineCheckLayers; //Layermask for checking intersections with the line (does not count for players)
+    private Vector3 hitDirection;      //Direction to player when hook is initially locked in
     
     internal float timeInState; //Indicates how long it has been since hook state has last changed (always counting up)
     private float retractSpeed; //Current speed (in meters per second) at which hook is being retracted
-    internal Vector3 spinForce; //Directional force added to hook (during travel) by player's initial arm swing
+    internal bool punchWhipped; //True when projectile has been launched using punch-whip technique
 
     //RUNTIME METHODS:
     private protected override void Awake()
@@ -57,8 +57,7 @@ public class HookProjectile : Projectile
         tether = GetComponent<LineRenderer>(); if (tether == null) { Debug.LogWarning("Grappling Hook projectile needs a line renderer."); } //Get line renderer component
 
         //Initialize runtime vars:
-        lineCheckLayers = settings.ignoreLayers |= (1 << LayerMask.NameToLayer("Player")); //Add player to ignore layers to get layers ignored by line check (preventing self-collision)
-        isHook = true;                                                                     //Indicate that this is a hook projectile (for homing purposes)
+        isHook = true; //Indicate that this is a hook projectile (for homing purposes)
     }
     private protected override void Update()
     {
@@ -96,13 +95,13 @@ public class HookProjectile : Projectile
         {
             case HookState.Deployed: //Hook has been launched and is flying through the air
                 base.FixedUpdate(); //Use normal projectile movement and homing
-                if (controller.settings.intersectBehavior != HookshotSettings.LineIntersectBehavior.Ignore) //Hook needs to check if anything is intersecting its line
+                if (controller.settings.travelIntersectBehavior != HookshotSettings.LineIntersectBehavior.Ignore) //Hook needs to check if anything is intersecting its line
                 {
-                    if (Physics.Linecast(controller.barrel.position, transform.position, out RaycastHit hitInfo, lineCheckLayers)) //Check along line for collisions
+                    if (Physics.Linecast(controller.barrel.position, transform.position, out RaycastHit hitInfo, controller.settings.lineCheckLayers)) //Check along line for collisions
                     {
                         if (HitsOwnPlayer(hitInfo)) { Debug.LogWarning("Grappling hook line just tried to hit player for some reason, check lineCheckLayers."); break; } //Super make sure line can't hit own player
-                        if (controller.settings.intersectBehavior == HookshotSettings.LineIntersectBehavior.Release) { Release(); break; }                               //Behavior is set to release on line intersection
-                        if (controller.settings.intersectBehavior == HookshotSettings.LineIntersectBehavior.Grab) { HitObject(hitInfo); break; }                         //Behavior is set to grab on line intersection
+                        if (controller.settings.travelIntersectBehavior == HookshotSettings.LineIntersectBehavior.Release) { Release(); break; }                         //Behavior is set to release on line intersection
+                        if (controller.settings.travelIntersectBehavior == HookshotSettings.LineIntersectBehavior.Grab) { HitObject(hitInfo); break; }                   //Behavior is set to grab on line intersection
                     }
                 }
                 break;
@@ -119,13 +118,29 @@ public class HookProjectile : Projectile
                 PointLock(hitPosition); //Rotate hook toward controlling player, maintaining world position of lock point
 
                 //Move player:
-                Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * controller.settings.basePullSpeed; //Get base speed at which grappling hook pulls you toward target
-                controller.player.bodyRb.velocity = newVelocity;                                                                        //Apply new velocity
+                float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1);                 //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
+                Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                                //Get base speed at which grappling hook pulls you toward target
+                Vector3 handDiff = controller.RelativePosition - controller.hookedHandPos;                                                              //Get difference between current position of hand and position when it initially hooked something
+                if (Vector3.Angle(handDiff, hitDirection) > 90) newVelocity -= Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Apply additional velocity to player based on how much they are pulling their arm back
+                if (!punchWhipped) newVelocity -= Vector3.ProjectOnPlane(handDiff, hitDirection) * controller.settings.lateralManeuverForce;            //Apply additional velocity to player based on how much they are pulling their arm to the side
+                controller.player.bodyRb.velocity = newVelocity;                                                                                        //Apply new velocity
                 break;
             case HookState.PlayerTethered: //Grappling hook is attached to an enemy player
                 PointLock(hitPlayer.GetComponent<Targetable>().targetPoint.position); //Rotate hook toward controlling player, maintaining position at center mass of tethered player
                 break;
             default: break;
+        }
+        if (state == HookState.Hooked || state == HookState.PlayerTethered) //Hook is hooked onto something
+        {
+            if (controller.settings.hookedIntersectBehavior != HookshotSettings.LineIntersectBehavior.Ignore) //Hook needs to check if anything is intersecting its line
+            {
+                if (Physics.Linecast(controller.barrel.position, tetherPoint.position, out RaycastHit hitInfo, controller.settings.lineCheckLayers)) //Check along line for collisions
+                {
+                    if (HitsOwnPlayer(hitInfo)) Debug.LogWarning("Grappling hook line just tried to hit player for some reason, check lineCheckLayers."); //Super make sure line can't hit own player
+                    else if (controller.settings.hookedIntersectBehavior == HookshotSettings.LineIntersectBehavior.Release) Release();                    //Behavior is set to release on line intersection
+                    else if (controller.settings.hookedIntersectBehavior == HookshotSettings.LineIntersectBehavior.Grab) HitObject(hitInfo);              //Behavior is set to grab on line intersection
+                }
+            }
         }
     }
 
@@ -148,6 +163,7 @@ public class HookProjectile : Projectile
 
         //Cleanup:
         ChangeVisibility(true);     //Make projectile visible
+        punchWhipped = false;       //Clear punch-whipped status (used for cooldown during Stowed state)
         state = HookState.Deployed; //Indicate that hook is now deployed
         timeInState = 0;            //Reset state timer
     }
@@ -164,6 +180,8 @@ public class HookProjectile : Projectile
         transform.parent = controller.stowPoint;   //Child hook to stow point
         transform.localPosition = Vector3.zero;    //Zero out position relative to stow point
         transform.localEulerAngles = Vector3.zero; //Zero out rotation relative to stow point
+
+        //NOTE: Add an RPC call here for remote hooks
 
         //Cleanup:
         tether.enabled = false;   //Hide tether
@@ -186,7 +204,8 @@ public class HookProjectile : Projectile
     public void Release(bool bounce = false)
     {
         //Begin retraction:
-        retractSpeed = controller.settings.baseRetractSpeed; //Get retraction speed from controller settings
+        retractSpeed = controller.settings.baseRetractSpeed;                  //Get retraction speed from controller settings
+        if (punchWhipped) retractSpeed *= controller.settings.punchWhipBoost; //Increase retraction speed if player is using a punch-whip
 
         //Effects:
         if (bounce) controller.Bounced(); //Indicate to controller that hook has bounced off of something
@@ -197,7 +216,6 @@ public class HookProjectile : Projectile
         hitPlayer = null;                   //Clear any references to tethered players
         state = HookState.Retracting;       //Indicate that hook is now returning to its owner
         timeInState = 0;                    //Reset state timer
-        
     }
     /// <summary>
     /// Hook has hit something.
@@ -211,33 +229,48 @@ public class HookProjectile : Projectile
             return;        //Hit resolution has finished
         }
         
-        //Check for player:
+        //Check hook type:
+        hitDirection = (transform.position - controller.barrel.position).normalized;       //Get direction from hook to hit object
         hitPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>();                //Try to get network player from hit collider
         if (hitPlayer == null) hitPlayer = hitInfo.collider.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
-        if (hitPlayer != null) //Hit object was a player
-        {
-            //Validity checks:
-            if (hitPlayer.photonView.ViewID == PlayerController.photonView.ViewID) { print("Grappling hook hit own player, despite it all."); Release(); return; } //Prevent hook from ever hitting its own player
-            
-            //Move to target:
-            Transform targetPoint = hitPlayer.GetComponent<Targetable>().targetPoint; //Get target point from hit player (should be approximately center mass)
-            transform.parent = targetPoint;                                           //Child hook to player target point
-            PointLock(targetPoint.position);                                          //Lock hook to position on target
-
-            //Cleanup
-            print("Hooked player!");
-            controller.HookedPlayer();        //Indicate to controller that a player has been successfully hooked
-            state = HookState.PlayerTethered; //Indicate that a player has been successfully tethered
-            timeInState = 0;                  //Reset state timer
-            return;                           //Hit resolution has finished
-        }
-
-        //Normal hit:
-        hitPosition = hitInfo.point; //Mark position hook hit as location to lock at
-        PointLock(hitPosition);      //Lock hook to point
+        if (hitPlayer != null) HookToPlayer(hitPlayer);                                    //Hook is attaching to a player
+        else HookToPoint(hitInfo.point);                                                   //Hook to given point
+    }
+    /// <summary>
+    /// Makes projectile think that it has hit target object.
+    /// </summary>
+    public void AutoHitObject(RaycastHit hitInfo) { HitObject(hitInfo); }
+    /// <summary>
+    /// Immediately attaches grappling hook to given point.
+    /// </summary>
+    public void HookToPoint(Vector3 point)
+    {
+        hitPosition = point;         //Mark position of hit
+        PointLock(point);            //Lock hook to point
         controller.HookedObstacle(); //Indicate to controller that an obstacle has been successfully hooked
         state = HookState.Hooked;    //Indicate that hook is now latched onto a surface
         timeInState = 0;             //Reset state timer
+    }
+    /// <summary>
+    /// Immediately attaches grappling hook to given player.
+    /// </summary>
+    public void HookToPlayer(NetworkPlayer player)
+    {
+        //Validity checks:
+        hitPlayer = player;                                                                                                                                    //Store reference to hit player
+        if (hitPlayer.photonView.ViewID == PlayerController.photonView.ViewID) { print("Grappling hook hit own player, despite it all."); Release(); return; } //Prevent hook from ever hitting its own player
+
+        //Move to target:
+        Transform targetPoint = hitPlayer.GetComponent<Targetable>().targetPoint; //Get target point from hit player (should be approximately center mass)
+        transform.parent = targetPoint;                                           //Child hook to player target point
+        PointLock(targetPoint.position);                                          //Lock hook to position on target
+
+        //Cleanup
+        print("Hooked player!");
+        controller.HookedPlayer();        //Indicate to controller that a player has been successfully hooked
+        state = HookState.PlayerTethered; //Indicate that a player has been successfully tethered
+        timeInState = 0;                  //Reset state timer
+        return;                           //Hit resolution has finished
     }
     /// <summary>
     /// Hooks are never destroyed and begin retracting when they run out of range (instead of burning out)

@@ -133,8 +133,8 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     }
 
     //List of random adjectives and nouns to name random players
-    private string[] wormAdjectives = { "Unfortunate", "Sad", "Desolate", "Slimy", "Grotesque", "Manic", "Slippery", "Moist", "Lugubrious", "Tubular", "Flaccid", "Erratic", "Animalistic", "Pathetic" };
-    private string[] wormNouns = { "Worm", "Invertebrate", "Earth Creature", "Specimen", "Grub", "Wormling", "Nightcrawler", "Crawler", "Larva", "Wiggler", "Maggot", "Creepy-Crawlie", "Parasite", "Organism" };
+    private string[] wormAdjectives = { "Unfortunate", "Sad", "Despairing", "Grotesque", "Despicable", "Abhorrent", "Regrettable", "Platonic", "Hideous", "Fleshy", "Glum", "Erect", "Sopping", "Throbbing", "Undulating", "Treacherous", "Hostile", "Slimy", "Squirming", "Blubbering", "Twisted", "Manic", "Slippery", "Wet", "Moist", "Lugubrious", "Tubular", "Flaccid", "Little", "Erratic", "Pathetic" };
+    private string[] wormNouns = { "Invertebrate", "Creature", "Critter", "Specimen", "Homonculus", "Grubling", "Wormling", "Nightcrawler", "Stinker", "Rapscallion", "Scalliwag", "Beastling", "Crawler", "Larva", "Freak", "Blighter", "Cretin", "Unit", "Denizen", "Wiggler", "Maggot", "Creepy-Crawlie", "Parasite", "Organism" };
 
     /// <summary>
     /// Generates a random nickname for the player.

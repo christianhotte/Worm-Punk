@@ -237,7 +237,7 @@ public class PlayerController : MonoBehaviour
     {
         //Hit effects:
         currentHealth -= damage; //Deal projectile damage, floor at 0
-        print(damage + " damage dealt");
+        print(damage + " damage dealt to player with ID " + photonView.ViewID);
 
         //Death check:
         if (currentHealth <= 0) //Player is being killed by this projectile hit

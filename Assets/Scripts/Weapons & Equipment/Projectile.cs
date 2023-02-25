@@ -21,12 +21,12 @@ public class Projectile : MonoBehaviourPunCallbacks
     [SerializeField, Tooltip("Sound projectile makes when it's homing in on a player.")]                        private AudioClip homingSound;
 
     //Runtime Variables:
-    private bool dumbFired;      //Indicates that this projectile was fired by a non-player
-    internal int originPlayerID; //PhotonID of player which last fired this projectile
-    private Vector3 velocity;    //Speed and direction at which projectile is traveling
-    private Transform target;    //Transform which projectile is currently homing toward
+    private bool dumbFired;             //Indicates that this projectile was fired by a non-player
+    internal int originPlayerID;        //PhotonID of player which last fired this projectile
+    private protected Vector3 velocity; //Speed and direction at which projectile is traveling
+    private protected Transform target; //Transform which projectile is currently homing toward
 
-    private float totalDistance;               //Total travel distance covered by this projectile
+    internal float totalDistance;              //Total travel distance covered by this projectile
     private float timeAlive;                   //How much time this projectile has been alive for
     private protected float estimatedLifeTime; //Approximate projectile lifetime calculated based on velocity and range
 
@@ -128,7 +128,7 @@ public class Projectile : MonoBehaviourPunCallbacks
                     //Check for obstructions:
                     if (settings.LOSTargeting) //System is using line-of-sight targeting
                     {
-                        if (Physics.Linecast(transform.position, potentialTarget.position, settings.targetingIgnoreLayers)) //Object is obstructed
+                        if (Physics.Linecast(transform.position, potentialTarget.position, ~settings.targetingIgnoreLayers)) //Object is obstructed
                         {
                             if (potentialTarget == target) //Active target has been obstructed
                             {
@@ -276,8 +276,8 @@ public class Projectile : MonoBehaviourPunCallbacks
                     if (!HitsOwnPlayer(hit)) //Do not acnowledge hits on own player
                     {
                         totalDistance -= velocity.magnitude - hit.distance; //Update totalDistance to reflect actual distance traveled at exact point of contact
-                        HitObject(hit);                                 //Trigger hit procedure
-                        return;                                         //Do nothing else
+                        HitObject(hit);                                     //Trigger hit procedure
+                        return;                                             //Do nothing else
                     }
                 }
             }
@@ -317,6 +317,7 @@ public class Projectile : MonoBehaviourPunCallbacks
         transform.rotation = startRotation;                      //Rotate to initial orientation
         velocity = transform.forward * settings.initialVelocity; //Give projectile initial velocity (aligned with forward direction of barrel)
         originPlayerID = playerID;                               //Record ID of player firing this projectile
+        totalDistance = 0;                                       //Reset total distance value (in case this is not the first time projectile has been fired)
 
         //Check barrel gap:
         if (settings.barrelGap > 0) //Projectile is spawning slightly ahead of barrel
@@ -344,19 +345,19 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
     }
     /// <summary>
-    /// Safely fires projectile with no player reference.
-    /// </summary>
-    public void FireDumb(Transform barrel)
-    {
-        FireDumb(barrel.position, barrel.rotation); //Pass to more granular FireDumb method
-    }
-    /// <summary>
     /// Overload for FireDumb which safely fires projectile with no player reference or specific barrel transform.
     /// </summary>
     public void FireDumb(Vector3 startPosition, Quaternion startRotation)
     {
         dumbFired = true;                       //Indicate that projectile was fired without player
         Fire(startPosition, startRotation, -1); //Do normal firing procedure (give negative playerID to make sure systems know this is a non-player projectile)
+    }
+    /// <summary>
+    /// Safely fires projectile with no player reference.
+    /// </summary>
+    public void FireDumb(Transform barrel)
+    {
+        FireDumb(barrel.position, barrel.rotation); //Pass to more granular FireDumb method
     }
     /// <summary>
     /// Called whenever projectile strikes an object.
@@ -427,7 +428,8 @@ public class Projectile : MonoBehaviourPunCallbacks
         {
             if (targetPlayer.photonView.ViewID == originPlayerID) { print("Projectile tried to hit own player (despite it all)."); return; } //Do one last hail mary check for player self-collision
 
-            //Hit through player:
+            //Hit using player:
+            print("Projectile with origin ID " + originPlayerID + " hit player with ID " + targetPlayer.photonView.ViewID);
             targetPlayer.photonView.RPC("RPC_Hit", RpcTarget.All, settings.damage);                                                //Indicate to player that it has been hit
             if (!dumbFired && originPlayerID != 0) PhotonNetwork.GetPhotonView(originPlayerID).RPC("RPC_HitEnemy", RpcTarget.All); //Indicate to origin player that it has shot something
             if (settings.knockback > 0) //Projectile has player knockback
@@ -461,6 +463,7 @@ public class Projectile : MonoBehaviourPunCallbacks
     private protected virtual void BurnOut()
     {
         //Mid-air explosion:
+        if (!photonView.IsMine) return; //Make sure non-main projectiles cannot burn out
         if (settings.explosionPrefab != null) //Only explode if projectile has an explosion prefab
         {
             ExplosionController explosion = Instantiate(settings.explosionPrefab, transform.position, transform.rotation).GetComponent<ExplosionController>(); //Instantiate an explosion at burnout point
@@ -566,8 +569,8 @@ public class Projectile : MonoBehaviourPunCallbacks
     }
     private void Delete()
     {
-        if (!dumbFired && photonView.IsMine) PhotonNetwork.Destroy(photonView);                                     //Destroy networked projectiles on the network
-        else if (dumbFired && !photonView.IsMine) { print("Destroying projectile locally."); Destroy(gameObject); } //Use normal destruction for non-networked projectiles
+        if (!dumbFired && photonView.IsMine) PhotonNetwork.Destroy(photonView);               //Destroy networked projectiles on the network
+        else if (dumbFired) { print("Destroying projectile locally."); Destroy(gameObject); } //Use normal destruction for non-networked projectiles
         //NOTE: Remote networked projectiles cannot delete themselves, they must be deleted from the network by their master version
     }
 }

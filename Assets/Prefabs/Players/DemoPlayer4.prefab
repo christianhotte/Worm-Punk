@@ -2701,7 +2701,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6537042036464432027
 Transform:
   m_ObjectHideFlags: 0
@@ -7815,6 +7815,10 @@ PrefabInstance:
     - target: {fileID: 2131844743722543912, guid: 40109f34130fc0146bdfbf7dbb998fba, type: 3}
       propertyPath: m_Name
       value: HookshotB
+      objectReference: {fileID: 0}
+    - target: {fileID: 2131844743722543912, guid: 40109f34130fc0146bdfbf7dbb998fba, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7666980383762839507, guid: 40109f34130fc0146bdfbf7dbb998fba, type: 3}
       propertyPath: m_RootOrder
