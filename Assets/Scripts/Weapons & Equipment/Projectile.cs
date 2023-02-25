@@ -21,12 +21,12 @@ public class Projectile : MonoBehaviourPunCallbacks
     [SerializeField, Tooltip("Sound projectile makes when it's homing in on a player.")]                        private AudioClip homingSound;
 
     //Runtime Variables:
-    private bool dumbFired;      //Indicates that this projectile was fired by a non-player
-    internal int originPlayerID; //PhotonID of player which last fired this projectile
-    private Vector3 velocity;    //Speed and direction at which projectile is traveling
-    private Transform target;    //Transform which projectile is currently homing toward
+    private bool dumbFired;             //Indicates that this projectile was fired by a non-player
+    internal int originPlayerID;        //PhotonID of player which last fired this projectile
+    private protected Vector3 velocity; //Speed and direction at which projectile is traveling
+    private protected Transform target; //Transform which projectile is currently homing toward
 
-    private float totalDistance;               //Total travel distance covered by this projectile
+    internal float totalDistance;              //Total travel distance covered by this projectile
     private float timeAlive;                   //How much time this projectile has been alive for
     private protected float estimatedLifeTime; //Approximate projectile lifetime calculated based on velocity and range
 
@@ -128,7 +128,7 @@ public class Projectile : MonoBehaviourPunCallbacks
                     //Check for obstructions:
                     if (settings.LOSTargeting) //System is using line-of-sight targeting
                     {
-                        if (Physics.Linecast(transform.position, potentialTarget.position, settings.targetingIgnoreLayers)) //Object is obstructed
+                        if (Physics.Linecast(transform.position, potentialTarget.position, ~settings.targetingIgnoreLayers)) //Object is obstructed
                         {
                             if (potentialTarget == target) //Active target has been obstructed
                             {
@@ -317,6 +317,7 @@ public class Projectile : MonoBehaviourPunCallbacks
         transform.rotation = startRotation;                      //Rotate to initial orientation
         velocity = transform.forward * settings.initialVelocity; //Give projectile initial velocity (aligned with forward direction of barrel)
         originPlayerID = playerID;                               //Record ID of player firing this projectile
+        totalDistance = 0;                                       //Reset total distance value (in case this is not the first time projectile has been fired)
 
         //Check barrel gap:
         if (settings.barrelGap > 0) //Projectile is spawning slightly ahead of barrel
@@ -344,19 +345,19 @@ public class Projectile : MonoBehaviourPunCallbacks
         }
     }
     /// <summary>
-    /// Safely fires projectile with no player reference.
-    /// </summary>
-    public void FireDumb(Transform barrel)
-    {
-        FireDumb(barrel.position, barrel.rotation); //Pass to more granular FireDumb method
-    }
-    /// <summary>
     /// Overload for FireDumb which safely fires projectile with no player reference or specific barrel transform.
     /// </summary>
     public void FireDumb(Vector3 startPosition, Quaternion startRotation)
     {
         dumbFired = true;                       //Indicate that projectile was fired without player
         Fire(startPosition, startRotation, -1); //Do normal firing procedure (give negative playerID to make sure systems know this is a non-player projectile)
+    }
+    /// <summary>
+    /// Safely fires projectile with no player reference.
+    /// </summary>
+    public void FireDumb(Transform barrel)
+    {
+        FireDumb(barrel.position, barrel.rotation); //Pass to more granular FireDumb method
     }
     /// <summary>
     /// Called whenever projectile strikes an object.

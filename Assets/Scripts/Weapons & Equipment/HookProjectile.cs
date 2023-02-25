@@ -43,7 +43,7 @@ public class HookProjectile : Projectile
     
     internal float timeInState; //Indicates how long it has been since hook state has last changed (always counting up)
     private float retractSpeed; //Current speed (in meters per second) at which hook is being retracted
-    internal Vector3 spinForce; //Directional force added to hook (during travel) by player's initial arm swing
+    internal bool punchWhipped; //True when projectile has been launched using punch-whip technique
 
     //RUNTIME METHODS:
     private protected override void Awake()
@@ -119,7 +119,11 @@ public class HookProjectile : Projectile
                 PointLock(hitPosition); //Rotate hook toward controlling player, maintaining world position of lock point
 
                 //Move player:
-                Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * controller.settings.basePullSpeed; //Get base speed at which grappling hook pulls you toward target
+                float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1); //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
+                Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                //Get base speed at which grappling hook pulls you toward target
+
+                //newVelocity += (controller.RelativePosition - controller.markedHandPos) * controller.settings.travelManeuverForce;
+
                 controller.player.bodyRb.velocity = newVelocity;                                                                        //Apply new velocity
                 break;
             case HookState.PlayerTethered: //Grappling hook is attached to an enemy player
@@ -160,6 +164,7 @@ public class HookProjectile : Projectile
 
         //Cleanup:
         ChangeVisibility(true);     //Make projectile visible
+        punchWhipped = false;       //Clear punch-whipped status (used for cooldown during Stowed state)
         state = HookState.Deployed; //Indicate that hook is now deployed
         timeInState = 0;            //Reset state timer
     }
@@ -198,7 +203,8 @@ public class HookProjectile : Projectile
     public void Release(bool bounce = false)
     {
         //Begin retraction:
-        retractSpeed = controller.settings.baseRetractSpeed; //Get retraction speed from controller settings
+        retractSpeed = controller.settings.baseRetractSpeed;                  //Get retraction speed from controller settings
+        if (punchWhipped) retractSpeed *= controller.settings.punchWhipBoost; //Increase retraction speed if player is using a punch-whip
 
         //Effects:
         if (bounce) controller.Bounced(); //Indicate to controller that hook has bounced off of something
@@ -209,7 +215,6 @@ public class HookProjectile : Projectile
         hitPlayer = null;                   //Clear any references to tethered players
         state = HookState.Retracting;       //Indicate that hook is now returning to its owner
         timeInState = 0;                    //Reset state timer
-        
     }
     /// <summary>
     /// Hook has hit something.

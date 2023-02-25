@@ -13,17 +13,21 @@ MonoBehaviour:
   m_Name: HookshotSettings_Hotte1
   m_EditorClassIdentifier: 
   hookResourceName: GrapplingHook
-  intersectBehavior: 0
-  basePullSpeed: 60
-  baseRetractSpeed: 600
-  retractAcceleration: 300
-  deployThreshold: 1
-  releaseThreshold: 0.5
-  minMaxSwingSpeed: {x: 0, y: 0}
-  minMaxCurveForce: {x: 0, y: 0}
   bounceLayers:
     serializedVersion: 2
     m_Bits: 0
+  travelIntersectBehavior: 0
+  hookedIntersectBehavior: 0
+  basePullSpeed: 60
+  baseRetractSpeed: 600
+  retractAcceleration: 300
+  travelManeuverForce: 10
+  deployThreshold: 1
+  releaseThreshold: 0.5
+  punchWhipSpeed: 2.15
+  minPunchWhipDist: 2
+  punchWhipBoost: 1.7
+  punchWhipCooldown: 0
   launchHaptics:
     amplitude: 0
     duration: 0
@@ -61,6 +65,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   launchSound: {fileID: 0}
+  whipSound: {fileID: 8300000, guid: 0a1f0db4823577d4bb7b69d63b9ac65f, type: 3}
   reelSound: {fileID: 0}
   releaseSound: {fileID: 0}
   hitSound: {fileID: 0}

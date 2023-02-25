@@ -69,7 +69,7 @@ public class PlayerEquipment : MonoBehaviour
     /// <summary>
     /// Current position of transform target relative to player body.
     /// </summary>
-    private protected Vector3 RelativePosition
+    internal Vector3 RelativePosition
     {
         get
         {
@@ -80,7 +80,7 @@ public class PlayerEquipment : MonoBehaviour
     /// <summary>
     /// Current velocity (in units per second) of transform target relative to player body.
     /// </summary>
-    private protected Vector3 RelativeVelocity
+    internal Vector3 RelativeVelocity
     {
         get
         {
