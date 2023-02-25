@@ -31,7 +31,8 @@ public class NewGrapplerController : PlayerEquipment
     /// </summary>
     public IEnumerator TryToInitialize()
     {
-        yield return new WaitUntil(() => PhotonNetwork.InRoom);                                                                                      //Wait until equipment is in a room
+        //yield return new WaitUntil(() => PhotonNetwork.InRoom);                                                                                      //Wait until equipment is in a room
+        yield return new WaitUntil(() => PlayerController.photonView != null);                                                                       //Wait until player's network player has been spawned
         hook = PhotonNetwork.Instantiate("Projectiles/" + settings.hookResourceName, barrel.position, hand.rotation).GetComponent<HookProjectile>(); //Instantiate hook projectile on the network
         hook.Stow(this);                                                                                                                             //Immediately do a stow initialization on new projectile
     }

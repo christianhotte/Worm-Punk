@@ -21,16 +21,16 @@ MonoBehaviour:
     m_Bits: 257
   travelIntersectBehavior: 2
   hookedIntersectBehavior: 2
-  basePullSpeed: 55
+  basePullSpeed: 50
   baseRetractSpeed: 600
   retractAcceleration: 300
   lateralManeuverForce: 50
-  yankForce: 70
+  yankForce: 60
   deployThreshold: 1
   releaseThreshold: 0.5
   punchWhipSpeed: 2.15
   minPunchWhipDist: 2
-  punchWhipBoost: 1.95
+  punchWhipBoost: 2
   punchWhipCooldown: 0
   launchHaptics:
     amplitude: 1

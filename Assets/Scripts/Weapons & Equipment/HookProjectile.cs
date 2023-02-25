@@ -31,6 +31,7 @@ public class HookProjectile : Projectile
     private Transform lockPoint;               //Physical point on projectile which locks onto hit objects. Hook is rotated around this point while it is in pull mode.
     private Transform tetherPoint;             //Physical point on hook which tether line is attached to
     private LineRenderer tether;               //Component which draws the line between projectile and launcher
+    internal Transform originPlayerBody;       //Body position of controller's equivalent networkPlayer
 
     //Runtime Variables:
     /// <summary>
@@ -61,7 +62,7 @@ public class HookProjectile : Projectile
     }
     private protected override void Update()
     {
-        if (state == HookState.Deployed) base.Update(); //Do base projectile homing debug while hook is deployed and homing
+        if (state == HookState.Deployed) base.Update(); //Do base update stuff
 
         //Update tether:
         if (state != HookState.Stowed) //Hook is currently out and about
@@ -90,12 +91,11 @@ public class HookProjectile : Projectile
     private protected override void FixedUpdate()
     {
         //Determine hook behavior:
-        if (!photonView.IsMine) return; //Don't let networked versions do any movement (leave it all up to the transformView)
         switch (state) //Determine update behavior of projectile depending on which state it is in
         {
             case HookState.Deployed: //Hook has been launched and is flying through the air
                 base.FixedUpdate(); //Use normal projectile movement and homing
-                if (controller.settings.travelIntersectBehavior != HookshotSettings.LineIntersectBehavior.Ignore) //Hook needs to check if anything is intersecting its line
+                if (photonView.IsMine && controller.settings.travelIntersectBehavior != HookshotSettings.LineIntersectBehavior.Ignore) //Hook needs to check if anything is intersecting its line
                 {
                     if (Physics.Linecast(controller.barrel.position, transform.position, out RaycastHit hitInfo, controller.settings.lineCheckLayers)) //Check along line for collisions
                     {
@@ -107,23 +107,27 @@ public class HookProjectile : Projectile
                 break;
             case HookState.Retracting: //Hook is released and is being pulled back toward player
                 //Point away from player:
-                Vector3 pointDirection = (controller.barrel.position - transform.position).normalized; //Get direction from projectile to player
+                Vector3 retractionTarget = photonView.IsMine ? controller.barrel.position : originPlayerBody.position; //Determine which point to retract toward depending on whether or not projectile is remote
+                Vector3 pointDirection = (retractionTarget - transform.position).normalized; //Get direction from projectile to player
                 transform.forward = -pointDirection;                                                   //Always point grappling hook in direction of player
 
                 //Move toward player:
-                transform.position = Vector3.MoveTowards(transform.position, controller.barrel.position, retractSpeed * Time.fixedDeltaTime); //Retract toward player at given speed
-                if (transform.position == controller.barrel.position) Stow();                                                                 //Stow once hook has gotten close enough to destination
+                transform.position = Vector3.MoveTowards(transform.position, retractionTarget, retractSpeed * Time.fixedDeltaTime); //Retract toward player at given speed
+                if (photonView.IsMine && transform.position == retractionTarget) Stow();                                            //Stow once hook has gotten close enough to destination
                 break;
             case HookState.Hooked: //Grappling hook is attached to a stationary object
                 PointLock(hitPosition); //Rotate hook toward controlling player, maintaining world position of lock point
 
                 //Move player:
-                float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1);                 //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
-                Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                                //Get base speed at which grappling hook pulls you toward target
-                Vector3 handDiff = controller.RelativePosition - controller.hookedHandPos;                                                              //Get difference between current position of hand and position when it initially hooked something
-                if (Vector3.Angle(handDiff, hitDirection) > 90) newVelocity -= Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Apply additional velocity to player based on how much they are pulling their arm back
-                if (!punchWhipped) newVelocity -= Vector3.ProjectOnPlane(handDiff, hitDirection) * controller.settings.lateralManeuverForce;            //Apply additional velocity to player based on how much they are pulling their arm to the side
-                controller.player.bodyRb.velocity = newVelocity;                                                                                        //Apply new velocity
+                if (photonView.IsMine) //Only master version needs to be able to pull the player
+                {
+                    float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1);                 //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
+                    Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                                //Get base speed at which grappling hook pulls you toward target
+                    Vector3 handDiff = controller.RelativePosition - controller.hookedHandPos;                                                              //Get difference between current position of hand and position when it initially hooked something
+                    if (Vector3.Angle(handDiff, hitDirection) > 90) newVelocity -= Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Apply additional velocity to player based on how much they are pulling their arm back
+                    if (!punchWhipped) newVelocity -= Vector3.ProjectOnPlane(handDiff, hitDirection) * controller.settings.lateralManeuverForce;            //Apply additional velocity to player based on how much they are pulling their arm to the side
+                    controller.player.bodyRb.velocity = newVelocity;                                                                                        //Apply new velocity
+                }
                 break;
             case HookState.PlayerTethered: //Grappling hook is attached to an enemy player
                 PointLock(hitPlayer.GetComponent<Targetable>().targetPoint.position); //Rotate hook toward controlling player, maintaining position at center mass of tethered player
@@ -157,9 +161,9 @@ public class HookProjectile : Projectile
         estimatedLifeTime = -1;                            //Do not use lifetime system for this type of projectile
 
         //Initialize tether:
-        tether.SetPosition(0, controller.barrel.position); //Move start of line to current position of launcher (on player arm)
-        tether.SetPosition(1, tetherPoint.position);       //Move end of line to current position of this projectile
-        tether.enabled = true;                             //Make tether visible
+        tether.SetPosition(0, photonView.IsMine ? controller.barrel.position : originPlayerBody.position); //Move start of line to current position of launcher (on player arm)
+        tether.SetPosition(1, tetherPoint.position);                                                       //Move end of line to current position of this projectile
+        tether.enabled = true;                                                                             //Make tether visible
 
         //Cleanup:
         ChangeVisibility(true);     //Make projectile visible
@@ -177,11 +181,14 @@ public class HookProjectile : Projectile
     public void Stow()
     {
         //Move to position:
-        transform.parent = controller.stowPoint;   //Child hook to stow point
+        if (photonView.IsMine) //This is the master version of this hook
+        {
+            transform.parent = controller.stowPoint;              //Child hook to stow point
+            photonView.RPC("RPC_Stow", RpcTarget.OthersBuffered); //Stow remote hooks
+        }
+        else transform.parent = originPlayerBody; //Child remote hooks to networkplayer's center mass
         transform.localPosition = Vector3.zero;    //Zero out position relative to stow point
         transform.localEulerAngles = Vector3.zero; //Zero out rotation relative to stow point
-
-        //NOTE: Add an RPC call here for remote hooks
 
         //Cleanup:
         tether.enabled = false;   //Hide tether
@@ -195,21 +202,26 @@ public class HookProjectile : Projectile
     /// </summary>
     public void Stow(NewGrapplerController newController)
     {
-        controller = newController; //Store controller reference
-        Stow();                     //Call base method
+        controller = newController;                                                                     //Store controller reference
+        photonView.RPC("RPC_Initialize", RpcTarget.OthersBuffered, PlayerController.photonView.ViewID); //Initialize remote hooks in other scenes
+        Stow();                                                                                         //Call base method
     }
     /// <summary>
     /// Causes hook to let go of whatever it is attached to and begin retracting back toward the player.
     /// </summary>
     public void Release(bool bounce = false)
     {
-        //Begin retraction:
-        retractSpeed = controller.settings.baseRetractSpeed;                  //Get retraction speed from controller settings
-        if (punchWhipped) retractSpeed *= controller.settings.punchWhipBoost; //Increase retraction speed if player is using a punch-whip
+        if (photonView.IsMine) //Master-only release procedure
+        {
+            //Begin retraction:
+            retractSpeed = controller.settings.baseRetractSpeed;                   //Get retraction speed from controller settings
+            if (punchWhipped) retractSpeed *= controller.settings.punchWhipBoost;  //Increase retraction speed if player is using a punch-whip
+            photonView.RPC("RPC_Release", RpcTarget.OthersBuffered, retractSpeed); //Tell remote hooks to release and feed them the calculated release speed
 
-        //Effects:
-        if (bounce) controller.Bounced(); //Indicate to controller that hook has bounced off of something
-        else controller.ForceReleased();  //Indicate to controller that hook has been released
+            //Effects:
+            if (bounce) controller.Bounced(); //Indicate to controller that hook has bounced off of something
+            else controller.ForceReleased();  //Indicate to controller that hook has been released
+        }
 
         //Cleanup:
         transform.localScale = Vector3.one; //Make sure projectile is at its base scale
@@ -222,13 +234,16 @@ public class HookProjectile : Projectile
     /// </summary>
     private protected override void HitObject(RaycastHit hitInfo)
     {
+        //Initialization:
+        target = null; //Clear target
+
         //Check for bounce:
         if (controller.settings.bounceLayers == (controller.settings.bounceLayers | (1 << hitInfo.collider.gameObject.layer))) //Hook is bouncing off of a non-hookable layer
         {
             Release(true); //Release hook immediately
             return;        //Hit resolution has finished
         }
-        
+
         //Check hook type:
         hitDirection = (transform.position - controller.barrel.position).normalized;       //Get direction from hook to hit object
         hitPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>();                //Try to get network player from hit collider
@@ -245,11 +260,15 @@ public class HookProjectile : Projectile
     /// </summary>
     public void HookToPoint(Vector3 point)
     {
-        hitPosition = point;         //Mark position of hit
-        PointLock(point);            //Lock hook to point
-        controller.HookedObstacle(); //Indicate to controller that an obstacle has been successfully hooked
-        state = HookState.Hooked;    //Indicate that hook is now latched onto a surface
-        timeInState = 0;             //Reset state timer
+        hitPosition = point; //Mark position of hit
+        PointLock(point);    //Lock hook to point
+        if (photonView.IsMine)
+        {
+            photonView.RPC("RPC_HookToPoint", RpcTarget.OthersBuffered, point); //
+            controller.HookedObstacle();                                        //Indicate to controller that an obstacle has been successfully hooked
+        }
+        state = HookState.Hooked; //Indicate that hook is now latched onto a surface
+        timeInState = 0;          //Reset state timer
     }
     /// <summary>
     /// Immediately attaches grappling hook to given player.
@@ -267,7 +286,11 @@ public class HookProjectile : Projectile
 
         //Cleanup
         print("Hooked player!");
-        controller.HookedPlayer();        //Indicate to controller that a player has been successfully hooked
+        if (photonView.IsMine)
+        {
+            controller.HookedPlayer();                                                              //Indicate to controller that a player has been successfully hooked
+            photonView.RPC("RPC_HookToPlayer", RpcTarget.OthersBuffered, player.photonView.ViewID); //Call remote hook method
+        }
         state = HookState.PlayerTethered; //Indicate that a player has been successfully tethered
         timeInState = 0;                  //Reset state timer
         return;                           //Hit resolution has finished
@@ -281,6 +304,23 @@ public class HookProjectile : Projectile
     }
 
     //REMOTE METHODS:
+    [PunRPC]
+    public void RPC_Initialize(int originPlayerID)
+    {
+        originPlayerBody = PhotonNetwork.GetPhotonView(originPlayerID).GetComponent<Targetable>().targetPoint; //Get center mass of controller player
+    }
+    [PunRPC]
+    public void RPC_Stow() { Stow(); }
+    [PunRPC]
+    public void RPC_Release(float speed)
+    {
+        retractSpeed = speed; //Get retraction speed from master version (calculated based on local controller settings)
+        Release();            //Call base release method (already protected for remote versions)
+    }
+    [PunRPC]
+    public void RPC_HookToPoint(Vector3 point) { HookToPoint(point); }
+    [PunRPC]
+    public void RPC_HookToPlayer(int playerID) { HookToPlayer(PhotonNetwork.GetPhotonView(playerID).GetComponent<NetworkPlayer>()); }
 
     //UTILITY METHODS:
     /// <summary>

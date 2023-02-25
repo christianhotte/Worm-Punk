@@ -61,6 +61,10 @@ MonoBehaviour:
   - LoadPlayerStats
   - RPC_UpdateLights
   - RPC_Explode
+  - RPC_HookToPlayer
+  - RPC_HookToPoint
+  - RPC_Release
+  - RPC_Stow
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
