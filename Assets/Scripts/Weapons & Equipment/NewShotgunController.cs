@@ -297,11 +297,18 @@ public class NewShotgunController : PlayerEquipment
             SendHapticImpulse(gunSettings.fireHaptics);      //Play haptic impulse
             player.ShakeScreen(gunSettings.fireScreenShake); //Shake screen (gently)
 
-            //Player launching:
+            //Exit velocity modifiers:
             float effectiveFireVel = gunSettings.fireVelocity;                                                  //Store fire velocity so it can be optionally modified
             if (otherGun != null && otherGun.doubleFireWindow > 0 &&                                            //Player is firing both weapons simultaneously...
                 otherGun.reverseFireStage == reverseFireStage) effectiveFireVel *= gunSettings.doubleFireBoost; //And both weapons are in the same firing mode, apply double-fire boost
             if (reverseFireStage == 2) effectiveFireVel *= gunSettings.reverseFireBoost;                        //Add reverse firing boost
+            if (Physics.Raycast(currentBarrel.position, currentBarrel.forward, out RaycastHit hit, gunSettings.maxWallBoostDist, gunSettings.wallBoostLayers)) //Weapon is firing at a nearby wall
+            {
+                float distInterpolant =  1 - (hit.distance / gunSettings.maxWallBoostDist); //Get interpolant value representing how close weapon barrel is to a wall (the closer the higher)
+                effectiveFireVel *= gunSettings.maxWallBoost * distInterpolant;             //Apply multiplier to shot power based on how close player is to the wall
+            }
+
+            //Apply velocity to player
             Vector3 newVelocity = -currentBarrel.forward * effectiveFireVel;                                    //Store new velocity for player (always directly away from barrel that fired latest shot, unless reverse firing)
             float velocityAngleDelta = Vector3.Angle(newVelocity, player.bodyRb.velocity);                      //Get angle between current velocity and new velocity
             if (velocityAngleDelta <= gunSettings.additiveVelocityMaxAngle) //Player is firing to push themself in the direction they are generally already going

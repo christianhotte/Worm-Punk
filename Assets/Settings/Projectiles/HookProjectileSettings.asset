@@ -18,7 +18,7 @@ MonoBehaviour:
   initialVelocity: 300
   range: 500
   barrelGap: 0.7
-  drop: 20
+  drop: 0
   homingStrength: 150
   homingStrengthCurve:
     serializedVersion: 2

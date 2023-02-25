@@ -103,6 +103,8 @@ public class NewGrapplerController : PlayerEquipment
     /// </summary>
     public void HookedPlayer()
     {
+        hookedHandPos = RelativePosition; //Get position of hand at moment of contact
+
         if (settings.playerHitSound != null) audioSource.PlayOneShot(settings.playerHitSound); //Play sound effect
         SendHapticImpulse(settings.hitHaptics);                                                //Play haptic impulse
     }
@@ -143,12 +145,14 @@ public class NewGrapplerController : PlayerEquipment
         {
             if (Physics.Raycast(barrel.position, barrel.forward, out RaycastHit hit, hook.settings.range, ~hook.settings.ignoreLayers)) //Player can immediately hit something with the hook
             {
-                if (hit.distance > settings.minPunchWhipDist) //Punch whip will hit something within range
+                hook.totalDistance = hit.distance; //Indicate to projectile how far it has traveled
+                hook.AutoHitObject(hit);           //Have projectile automatically hit target object
+                /*if (hit.distance > settings.minPunchWhipDist) //Punch whip will hit something within range
                 {
                     float whipDist = hit.distance - settings.minPunchWhipDist; //Get distance whip action is causing projectile to instantly travel
                     hook.transform.position += barrel.forward * whipDist;      //Place hook just in front of punch whip target
                     hook.totalDistance = whipDist;                             //Make sure projectile knows exactly how far it has traveled
-                }
+                }*/
             }
             else //Punch whip hit absolutely nothing
             {

@@ -18,6 +18,9 @@ public class ShotgunSettings : ScriptableObject
     [Header("Locomotion:")]
     [Min(0), Tooltip("Magnitude of velocity imparted on player when weapon is fired (primary locomotion setting).")]                  public float fireVelocity;
     [Min(1), Tooltip("Multiplier applied to launch velocity when player is firing backwards.")]                                       public float reverseFireBoost;
+    [Min(1), Tooltip("Greatest multiplier which can be applied to fire velocity due to closeness to a wall")]                         public float maxWallBoost;
+    [Min(0), Tooltip("Distance from wall at which wall boost power will begin to take effect (closer means more power).")]            public float maxWallBoostDist;
+    [Tooltip("Layers which weapon will consider a wall for the purposes of wallboosting.")]                                           public LayerMask wallBoostLayers;
     [Min(1), Tooltip("If player fires within this angle of their current velocity, shot will add velocity instead of replacing it.")] public float additiveVelocityMaxAngle;
     [Range(0, 1), Tooltip("Multiplier applied to velocity addition when player is firing multiple times in the same direction.")]     public float additiveVelocityMultiplier;
     [Tooltip("Modulates additive velocity multiplier depending on how aligned shot is with current velocity.")]                       public AnimationCurve additiveVelocityCurve;

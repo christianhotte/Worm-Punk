@@ -16,18 +16,21 @@ MonoBehaviour:
   bounceLayers:
     serializedVersion: 2
     m_Bits: 0
-  travelIntersectBehavior: 0
-  hookedIntersectBehavior: 0
-  basePullSpeed: 60
+  lineCheckLayers:
+    serializedVersion: 2
+    m_Bits: 257
+  travelIntersectBehavior: 2
+  hookedIntersectBehavior: 2
+  basePullSpeed: 55
   baseRetractSpeed: 600
   retractAcceleration: 300
-  lateralManeuverForce: 0
-  yankForce: 0
+  lateralManeuverForce: 50
+  yankForce: 70
   deployThreshold: 1
   releaseThreshold: 0.5
   punchWhipSpeed: 2.15
   minPunchWhipDist: 2
-  punchWhipBoost: 1.7
+  punchWhipBoost: 1.95
   punchWhipCooldown: 0
   launchHaptics:
     amplitude: 1
