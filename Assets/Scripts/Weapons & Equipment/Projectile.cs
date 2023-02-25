@@ -10,7 +10,8 @@ using Photon.Pun;
 public class Projectile : MonoBehaviourPunCallbacks
 {
     //Objects & Components:
-    private AudioSource audioSource; //Audiosource component used by this projectile to make sound effects
+    private AudioSource audioSource;       //Audiosource component used by this projectile to make sound effects
+    private protected TrailRenderer trail; //Renderer component for trail projectile leaves in its wake
 
     //Settings:
     [Tooltip("Settings object determining base properties of projectile.")]                      public ProjectileSettings settings;
@@ -172,8 +173,9 @@ public class Projectile : MonoBehaviourPunCallbacks
             settings = (ProjectileSettings)Resources.Load("DefaultSettings/DefaultProjectileSettings"); //Load default settings from Resources folder
         }
 
-        //Get runtime vars:
+        //Objects & components:
         if (!TryGetComponent(out audioSource)) audioSource = gameObject.AddComponent<AudioSource>(); //Make sure projectile has an audiosource component
+        if (!TryGetComponent(out trail)) trail = GetComponentInChildren<TrailRenderer>();            //Try to get projectile trail renderer
         origMat = GetComponentInChildren<Renderer>().material;                                       //Get original version of material on projectile
         
     }

@@ -28,7 +28,7 @@ MonoBehaviour:
   yankForce: 60
   deployThreshold: 1
   releaseThreshold: 0.5
-  punchWhipSpeed: 2.15
+  punchWhipSpeed: 2
   minPunchWhipDist: 2
   punchWhipBoost: 2
   punchWhipCooldown: 0

@@ -8,6 +8,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
 using RootMotion.FinalIK;
+using UnityEngine.Events;
 
 /// <summary>
 /// Manages overall player stats and abilities.
@@ -54,20 +55,19 @@ public class PlayerController : MonoBehaviour
     private bool inMenu;          //Whether the player is actively in a menu scene
     private float timeUntilRegen; //Time (in seconds) until health regeneration can begin
     private bool centeredInScene; //Made false whenever player loads into a scene, triggers camera centering in the first update
+    internal bool isDead;         //True while player is dead and is kinda in limbo
 
-    internal bool Launchin = false;
-
-    private GameObject[] weapons;   //A list of active weapons on the player
-    private GameObject[] tools;     //A list of active tools on the player
+    //Misc:
+    internal bool Launchin = false; //NOTE: What references this and where is it modified?
+    private GameObject[] weapons;   //A list of active weapons on the player NOTE: Can this be replaced by attachedEquipment?
+    private GameObject[] tools;     //A list of active tools on the player NOTE: Can this be replaced by attachedEquipment?
 
     //RUNTIME METHODS:
     private void Awake()
     {
         //Check validity / get objects & components:
-        //if (instance == null) { instance = this; } else { Debug.LogError("Tried to spawn a second instance of PlayerController in scene."); Destroy(gameObject); }             //Singleton-ize player object
+        //if (instance == null) { instance = this; } else { Debug.LogError("Tried to spawn a second instance of PlayerController in scene."); Destroy(gameObject); }           //Singleton-ize player object
         if (instance != null) { print("Replacing player " + instance.gameObject.name + " with player " + gameObject.name + " from previous scene"); } instance = this;         //Use newest instance of PlayerController script as authoritative version, and indicate when an old playerController script is being replaced
-
-        if (instance == null) print("oog!!!");
 
         if (!TryGetComponent(out input)) { Debug.LogError("PlayerController could not find PlayerInput component!"); Destroy(gameObject); }                                    //Make sure player input component is present on same object
         xrOrigin = GetComponentInChildren<XROrigin>(); if (xrOrigin == null) { Debug.LogError("PlayerController could not find XROrigin in children."); Destroy(gameObject); } //Make sure XROrigin is present inside player
@@ -236,8 +236,8 @@ public class PlayerController : MonoBehaviour
     public void IsHit(int damage)
     {
         //Hit effects:
-        currentHealth -= damage; //Deal projectile damage, floor at 0
-        print(damage + " damage dealt to player with ID " + photonView.ViewID);
+        currentHealth -= Mathf.Max((float)damage, 0);                           //Deal projectile damage, floor at 0
+        print(damage + " damage dealt to player with ID " + photonView.ViewID); //Indicate that damage has been dealt
 
         //Death check:
         if (currentHealth <= 0) //Player is being killed by this projectile hit
@@ -246,8 +246,8 @@ public class PlayerController : MonoBehaviour
         }
         else //Player is being hurt by this projectile hit
         {
-            audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Default_Hurt_Sound"));   //TEMP play hurt sound
-            if (healthSettings.regenSpeed > 0) timeUntilRegen = healthSettings.regenPauseTime; //Begin regeneration sequence (of set)
+            audioSource.PlayOneShot(healthSettings.hurtSound != null ? healthSettings.hurtSound : (AudioClip)Resources.Load("Sounds/Default_Hurt_Sound")); //Play hurt sound
+            if (healthSettings.regenSpeed > 0) timeUntilRegen = healthSettings.regenPauseTime;                                                             //Optionally begin regeneration sequence
         }
     }
     /// <summary>
@@ -255,16 +255,29 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void IsKilled()
     {
-        //TEMP DEATH SEQUENCE:
-        audioSource.PlayOneShot((AudioClip)Resources.Load("Sounds/Temp_Death_Sound"));
-        bodyRb.velocity = Vector3.zero; //Reset player velocity
+        //Effects:
+        audioSource.PlayOneShot(healthSettings.deathSound != null ? healthSettings.deathSound : (AudioClip)Resources.Load("Sounds/Temp_Death_Sound")); //Play death sound
+        
+        //Weapon cleanup:
+        foreach (NewGrapplerController hookShot in GetComponentsInChildren<NewGrapplerController>()) //Iterate through any hookshots player may have equipped
+        {
+            if (hookShot.hook != null) hookShot.hook.Stow(); //Stow hook to make sure it doesn't get lost
+        }
+
+        //Put player in limbo:
+        bodyRb.velocity = Vector3.zero;                              //Reset player velocity
+        CenterCamera();                                              //Center camera (this is worth doing during any major transition)
+        photonView.RPC("RPC_MakeVisible", RpcTarget.OthersBuffered); //Reset trail
+
+        //Cleanup:
+        isDead = true; //Indicate that this player is dead
         if (SpawnManager.current != null && useSpawnPoint) //Spawn manager is present in scene
         {
             Transform spawnpoint = SpawnManager.current.GetRandomSpawnPoint(); //Get spawnpoint from spawnpoint manager
-            xrOrigin.transform.position = spawnpoint.position;            //Move spawned player to target position
+            xrOrigin.transform.position = spawnpoint.position;                 //Move spawned player to target position
         }
         currentHealth = healthSettings.defaultHealth; //Reset to max health
-        print("Player Killed!");
+        print("Local player has been killed!");
     }
     /// <summary>
     /// Safely shakes the player's eyeballs.
@@ -284,4 +297,8 @@ public class PlayerController : MonoBehaviour
         UpdateWeaponry();
     }
     public void SetInMenu(bool menu) => inMenu = menu;
+    /// <summary>
+    /// Generic method to make sure UnityActions always have something subscribed to them.
+    /// </summary>
+    private void SubscriptionDummy() { }
 }

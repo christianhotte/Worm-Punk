@@ -67,25 +67,15 @@ public class HookProjectile : Projectile
         //Update tether:
         if (state != HookState.Stowed) //Hook is currently out and about
         {
-            if (photonView.IsMine) //Local tether update
-            {
-                tether.SetPosition(0, controller.barrel.position); //Move start of line to current position of launcher (on player arm)
-                tether.SetPosition(1, tetherPoint.position);       //Move end of line to current position of this projectile
-            }
-            else //Remote tether update
-            {
-
-            }
+            tether.SetPosition(0, photonView.IsMine ? controller.barrel.position : originPlayerBody.position); //Move start of line to current position of launcher (on player arm)
+            tether.SetPosition(1, tetherPoint.position);                                                       //Move end of line to current position of this projectile
         }
 
         //Update timers:
-        if (photonView.IsMine) //Only update master version's timers
+        timeInState += Time.deltaTime; //Increment timer tracking time spent in current behavior state
+        if (state == HookState.Retracting) //Hook is currently being retracted
         {
-            timeInState += Time.deltaTime; //Increment timer tracking time spent in current behavior state
-            if (state == HookState.Retracting) //Hook is currently being retracted
-            {
-                retractSpeed += controller.settings.retractAcceleration * Time.deltaTime; //Add acceleration to retraction speed
-            }
+            retractSpeed += controller.settings.retractAcceleration * Time.deltaTime; //Add acceleration to retraction speed
         }
     }
     private protected override void FixedUpdate()
@@ -131,10 +121,21 @@ public class HookProjectile : Projectile
                 break;
             case HookState.PlayerTethered: //Grappling hook is attached to an enemy player
                 PointLock(hitPlayer.GetComponent<Targetable>().targetPoint.position); //Rotate hook toward controlling player, maintaining position at center mass of tethered player
+
+                //Move player:
+                if (photonView.IsMine) //NOTE: This is temporarily an exact copy of the normal pull logic
+                {
+                    float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1);                 //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
+                    Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                                //Get base speed at which grappling hook pulls you toward target
+                    Vector3 handDiff = controller.RelativePosition - controller.hookedHandPos;                                                              //Get difference between current position of hand and position when it initially hooked something
+                    if (Vector3.Angle(handDiff, hitDirection) > 90) newVelocity -= Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Apply additional velocity to player based on how much they are pulling their arm back
+                    if (!punchWhipped) newVelocity -= Vector3.ProjectOnPlane(handDiff, hitDirection) * controller.settings.lateralManeuverForce;            //Apply additional velocity to player based on how much they are pulling their arm to the side
+                    controller.player.bodyRb.velocity = newVelocity;                                                                                        //Apply new velocity
+                }
                 break;
             default: break;
         }
-        if (state == HookState.Hooked || state == HookState.PlayerTethered) //Hook is hooked onto something
+        if (photonView.IsMine && (state == HookState.Hooked || state == HookState.PlayerTethered)) //Hook is hooked onto something
         {
             if (controller.settings.hookedIntersectBehavior != HookshotSettings.LineIntersectBehavior.Ignore) //Hook needs to check if anything is intersecting its line
             {
@@ -164,6 +165,7 @@ public class HookProjectile : Projectile
         tether.SetPosition(0, photonView.IsMine ? controller.barrel.position : originPlayerBody.position); //Move start of line to current position of launcher (on player arm)
         tether.SetPosition(1, tetherPoint.position);                                                       //Move end of line to current position of this projectile
         tether.enabled = true;                                                                             //Make tether visible
+        if (trail != null) { trail.enabled = true; trail.Clear(); }                                        //Enable and clear particle trail
 
         //Cleanup:
         ChangeVisibility(true);     //Make projectile visible
@@ -183,6 +185,10 @@ public class HookProjectile : Projectile
         //Move to position:
         if (photonView.IsMine) //This is the master version of this hook
         {
+            if (hitPlayer != null) //Hook is currently latched onto a player which needs to be released
+            {
+                hitPlayer = null; //Indicate that hook is no longer tethered to a player
+            }
             transform.parent = controller.stowPoint;              //Child hook to stow point
             photonView.RPC("RPC_Stow", RpcTarget.OthersBuffered); //Stow remote hooks
         }
@@ -191,11 +197,12 @@ public class HookProjectile : Projectile
         transform.localEulerAngles = Vector3.zero; //Zero out rotation relative to stow point
 
         //Cleanup:
-        tether.enabled = false;   //Hide tether
-        ChangeVisibility(false);  //Immediately make projectile invisible
-        state = HookState.Stowed; //Indicate that projectile is stowed
-        timeInState = 0;          //Reset state timer
-        retractSpeed = 0;         //Reset retraction speed
+        if (trail != null) trail.enabled = false; //Hide trail
+        tether.enabled = false;                   //Hide tether
+        ChangeVisibility(false);                  //Immediately make projectile invisible
+        state = HookState.Stowed;                 //Indicate that projectile is stowed
+        timeInState = 0;                          //Reset state timer
+        retractSpeed = 0;                         //Reset retraction speed
     }
     /// <summary>
     /// Version of stow method meant to be the first thing called on new hook projectile by its controller. Passes along the reference so everything runs smoothly.
@@ -213,6 +220,12 @@ public class HookProjectile : Projectile
     {
         if (photonView.IsMine) //Master-only release procedure
         {
+            //Player release:
+            if (hitPlayer != null) //Hook is currently tethered to a player
+            {
+                hitPlayer = null; //Indicate to player that it is no longer tethered
+            }
+
             //Begin retraction:
             retractSpeed = controller.settings.baseRetractSpeed;                   //Get retraction speed from controller settings
             if (punchWhipped) retractSpeed *= controller.settings.punchWhipBoost;  //Increase retraction speed if player is using a punch-whip
@@ -224,10 +237,9 @@ public class HookProjectile : Projectile
         }
 
         //Cleanup:
-        transform.localScale = Vector3.one; //Make sure projectile is at its base scale
-        hitPlayer = null;                   //Clear any references to tethered players
-        state = HookState.Retracting;       //Indicate that hook is now returning to its owner
-        timeInState = 0;                    //Reset state timer
+        transform.localScale = Vector3.one;       //Make sure projectile is at its base scale
+        state = HookState.Retracting;             //Indicate that hook is now returning to its owner
+        timeInState = 0;                          //Reset state timer
     }
     /// <summary>
     /// Hook has hit something.
@@ -244,12 +256,23 @@ public class HookProjectile : Projectile
             return;        //Hit resolution has finished
         }
 
+        PlayerController.instance.bodyRb.velocity = Vector3.zero;
+       /* float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1);                 //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
+        Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                                //Get base speed at which grappling hook pulls you toward target
+        Vector3 handDiff = controller.RelativePosition - controller.hookedHandPos;                                                              //Get difference between current position of hand and position when it initially hooked something
+        if (Vector3.Angle(handDiff, hitDirection) > 90) newVelocity -= Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Apply additional velocity to player based on how much they are pulling their arm back
+        if (!punchWhipped) newVelocity -= Vector3.ProjectOnPlane(handDiff, hitDirection) * controller.settings.lateralManeuverForce;            //Apply additional velocity to player based on how much they are pulling their arm to the side
+        controller.player.bodyRb.velocity = newVelocity;                                                                                        //Apply new velocity*/
+
         //Check hook type:
         hitDirection = (transform.position - controller.barrel.position).normalized;       //Get direction from hook to hit object
         hitPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>();                //Try to get network player from hit collider
         if (hitPlayer == null) hitPlayer = hitInfo.collider.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
         if (hitPlayer != null) HookToPlayer(hitPlayer);                                    //Hook is attaching to a player
         else HookToPoint(hitInfo.point);                                                   //Hook to given point
+
+        //Cleanup:
+        if (trail != null) trail.enabled = false; //Hide trail on hit
     }
     /// <summary>
     /// Makes projectile think that it has hit target object.

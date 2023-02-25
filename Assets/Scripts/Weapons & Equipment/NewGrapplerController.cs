@@ -11,7 +11,7 @@ using CustomEnums;
 public class NewGrapplerController : PlayerEquipment
 {
     //Objects & Components:
-    private HookProjectile hook;  //The projectile this weapon fires and recalls to perform its actions (never destroyed)
+    internal HookProjectile hook; //The projectile this weapon fires and recalls to perform its actions (never destroyed)
     internal Transform stowPoint; //Point on launcher at which hook projectile is invisibly stowed
     private Transform hand;       //Real position of player hand used by this equipment
     internal Transform barrel;    //Position hook is launched from, and point where the line begins
@@ -31,7 +31,6 @@ public class NewGrapplerController : PlayerEquipment
     /// </summary>
     public IEnumerator TryToInitialize()
     {
-        //yield return new WaitUntil(() => PhotonNetwork.InRoom);                                                                                      //Wait until equipment is in a room
         yield return new WaitUntil(() => PlayerController.photonView != null);                                                                       //Wait until player's network player has been spawned
         hook = PhotonNetwork.Instantiate("Projectiles/" + settings.hookResourceName, barrel.position, hand.rotation).GetComponent<HookProjectile>(); //Instantiate hook projectile on the network
         hook.Stow(this);                                                                                                                             //Immediately do a stow initialization on new projectile
