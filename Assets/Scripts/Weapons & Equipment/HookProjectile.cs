@@ -73,7 +73,7 @@ public class HookProjectile : Projectile
 
         //Update timers:
         timeInState += Time.deltaTime; //Increment timer tracking time spent in current behavior state
-        if (state == HookState.Retracting) //Hook is currently being retracted
+        if (photonView.IsMine && state == HookState.Retracting) //Hook is currently being retracted
         {
             retractSpeed += controller.settings.retractAcceleration * Time.deltaTime; //Add acceleration to retraction speed
         }
@@ -156,10 +156,12 @@ public class HookProjectile : Projectile
     public override void Fire(Vector3 startPosition, Quaternion startRotation, int playerID)
     {
         //Deployment:
-        transform.parent = null;                           //Un-child from stow point
-        transform.localScale = Vector3.one;                //Make sure scale is right after unchilding
-        base.Fire(startPosition, startRotation, playerID); //Use base fire method to physically launch hook
-        estimatedLifeTime = -1;                            //Do not use lifetime system for this type of projectile
+        transform.parent = null;                                                                                             //Un-child from stow point
+        transform.localScale = Vector3.one;                                                                                  //Make sure scale is right after unchilding
+        base.Fire(startPosition, startRotation, playerID);                                                                   //Use base fire method to physically launch hook
+        estimatedLifeTime = -1;                                                                                              //Do not use lifetime system for this type of projectile
+        if (photonView.IsMine) photonView.RPC("RPC_Fire", RpcTarget.OthersBuffered, startPosition, startRotation, playerID); //Fire hooks on the network
+        else originPlayerBody = PhotonNetwork.GetPhotonView(playerID).GetComponent<Targetable>().targetPoint;                //Have remote projectiles get their player body from given playerID
 
         //Initialize tether:
         tether.SetPosition(0, photonView.IsMine ? controller.barrel.position : originPlayerBody.position); //Move start of line to current position of launcher (on player arm)
@@ -209,9 +211,8 @@ public class HookProjectile : Projectile
     /// </summary>
     public void Stow(NewGrapplerController newController)
     {
-        controller = newController;                                                                     //Store controller reference
-        photonView.RPC("RPC_Initialize", RpcTarget.OthersBuffered, PlayerController.photonView.ViewID); //Initialize remote hooks in other scenes
-        Stow();                                                                                         //Call base method
+        controller = newController; //Store controller reference
+        Stow();                     //Call base method
     }
     /// <summary>
     /// Causes hook to let go of whatever it is attached to and begin retracting back toward the player.
@@ -256,7 +257,6 @@ public class HookProjectile : Projectile
             return;        //Hit resolution has finished
         }
 
-        PlayerController.instance.bodyRb.velocity = Vector3.zero;
        /* float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1);                 //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
         Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                                //Get base speed at which grappling hook pulls you toward target
         Vector3 handDiff = controller.RelativePosition - controller.hookedHandPos;                                                              //Get difference between current position of hand and position when it initially hooked something
@@ -287,7 +287,7 @@ public class HookProjectile : Projectile
         PointLock(point);    //Lock hook to point
         if (photonView.IsMine)
         {
-            photonView.RPC("RPC_HookToPoint", RpcTarget.OthersBuffered, point); //
+            photonView.RPC("RPC_HookToPoint", RpcTarget.OthersBuffered, point); //Indicate to remote projectiles that they are being hooked to given point
             controller.HookedObstacle();                                        //Indicate to controller that an obstacle has been successfully hooked
         }
         state = HookState.Hooked; //Indicate that hook is now latched onto a surface
@@ -327,11 +327,6 @@ public class HookProjectile : Projectile
     }
 
     //REMOTE METHODS:
-    [PunRPC]
-    public void RPC_Initialize(int originPlayerID)
-    {
-        originPlayerBody = PhotonNetwork.GetPhotonView(originPlayerID).GetComponent<Targetable>().targetPoint; //Get center mass of controller player
-    }
     [PunRPC]
     public void RPC_Stow() { Stow(); }
     [PunRPC]
