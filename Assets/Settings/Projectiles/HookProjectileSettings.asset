@@ -17,9 +17,9 @@ MonoBehaviour:
   explosionPrefab: {fileID: 0}
   initialVelocity: 300
   range: 500
-  barrelGap: 0.7
+  barrelGap: 0.2
   drop: 0
-  homingStrength: 150
+  homingStrength: 170
   homingStrengthCurve:
     serializedVersion: 2
     m_Curve:

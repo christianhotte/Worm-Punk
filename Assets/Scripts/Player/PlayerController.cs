@@ -48,9 +48,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Tooltip("Click to snap camera back to center of player rigidbody (ignoring height).")]                private bool debugCenterCamera;
     [SerializeField, Tooltip("Manually isntantiate a network player.")]                                                    private bool debugSpawnNetworkPlayer;
     [SerializeField, Tooltip("Manually destroy client network player.")]                                                   private bool debugDeSpawnNetworkPlayer;
+    [SerializeField, Tooltip("Deals one damage to this player.")]                                                          private bool debugHarm;
 
     //Runtime Variables:
-    private float currentHealth;  //How much health player currently has
+    internal float currentHealth; //How much health player currently has
     private bool inCombat;        //Whether the player is actively in combat
     private bool inMenu;          //Whether the player is actively in a menu scene
     private float timeUntilRegen; //Time (in seconds) until health regeneration can begin
@@ -153,6 +154,11 @@ public class PlayerController : MonoBehaviour
             {
                 debugCenterCamera = false; //Immediately unpress button
                 CenterCamera();            //Center camera to rigidbody
+            }
+            if (debugHarm)
+            {
+                debugHarm = false;
+                IsHit(1);
             }
         }
 

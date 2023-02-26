@@ -62,29 +62,18 @@ public class HookProjectile : Projectile
     }
     private protected override void Update()
     {
-        if (state == HookState.Deployed) base.Update(); //Do base update stuff
-
-        //Update tether:
-        if (state != HookState.Stowed) //Hook is currently out and about
-        {
-            tether.SetPosition(0, photonView.IsMine ? controller.barrel.position : originPlayerBody.position); //Move start of line to current position of launcher (on player arm)
-            tether.SetPosition(1, tetherPoint.position);                                                       //Move end of line to current position of this projectile
-        }
-
         //Update timers:
         timeInState += Time.deltaTime; //Increment timer tracking time spent in current behavior state
         if (photonView.IsMine && state == HookState.Retracting) //Hook is currently being retracted
         {
             retractSpeed += controller.settings.retractAcceleration * Time.deltaTime; //Add acceleration to retraction speed
         }
-    }
-    private protected override void FixedUpdate()
-    {
-        //Determine hook behavior:
+
+        //Update position:
         switch (state) //Determine update behavior of projectile depending on which state it is in
         {
             case HookState.Deployed: //Hook has been launched and is flying through the air
-                base.FixedUpdate(); //Use normal projectile movement and homing
+                base.Update(); //Use normal projectile movement and homing
                 if (photonView.IsMine && controller.settings.travelIntersectBehavior != HookshotSettings.LineIntersectBehavior.Ignore) //Hook needs to check if anything is intersecting its line
                 {
                     if (Physics.Linecast(controller.barrel.position, transform.position, out RaycastHit hitInfo, controller.settings.lineCheckLayers)) //Check along line for collisions
@@ -102,8 +91,8 @@ public class HookProjectile : Projectile
                 transform.forward = -pointDirection;                                                   //Always point grappling hook in direction of player
 
                 //Move toward player:
-                transform.position = Vector3.MoveTowards(transform.position, retractionTarget, retractSpeed * Time.fixedDeltaTime); //Retract toward player at given speed
-                if (photonView.IsMine && transform.position == retractionTarget) Stow();                                            //Stow once hook has gotten close enough to destination
+                transform.position = Vector3.MoveTowards(transform.position, retractionTarget, retractSpeed * Time.deltaTime); //Retract toward player at given speed
+                if (photonView.IsMine && transform.position == retractionTarget) Stow();                                       //Stow once hook has gotten close enough to destination
                 break;
             case HookState.Hooked: //Grappling hook is attached to a stationary object
                 PointLock(hitPosition); //Rotate hook toward controlling player, maintaining world position of lock point
@@ -146,6 +135,13 @@ public class HookProjectile : Projectile
                     else if (controller.settings.hookedIntersectBehavior == HookshotSettings.LineIntersectBehavior.Grab) HitObject(hitInfo);              //Behavior is set to grab on line intersection
                 }
             }
+        }
+
+        //Update tether:
+        if (state != HookState.Stowed) //Hook is currently out and about
+        {
+            tether.SetPosition(0, photonView.IsMine ? controller.barrel.position : originPlayerBody.position); //Move start of line to current position of launcher (on player arm)
+            tether.SetPosition(1, tetherPoint.position);                                                       //Move end of line to current position of this projectile
         }
     }
 
@@ -309,7 +305,7 @@ public class HookProjectile : Projectile
 
         //Cleanup
         print("Hooked player!");
-        if (photonView.IsMine)
+        if (photonView.IsMine) //Master-only cleanup for hooking a player
         {
             controller.HookedPlayer();                                                              //Indicate to controller that a player has been successfully hooked
             photonView.RPC("RPC_HookToPlayer", RpcTarget.OthersBuffered, player.photonView.ViewID); //Call remote hook method

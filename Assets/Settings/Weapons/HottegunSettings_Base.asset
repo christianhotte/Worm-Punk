@@ -21,7 +21,7 @@ MonoBehaviour:
   fireVelocity: 18
   reverseFireBoost: 1.3
   maxWallBoost: 1.8
-  maxWallBoostDist: 5
+  maxWallBoostDist: 10
   wallBoostLayers:
     serializedVersion: 2
     m_Bits: 257

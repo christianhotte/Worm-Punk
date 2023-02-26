@@ -211,18 +211,16 @@ public class Projectile : MonoBehaviourPunCallbacks
                 }
             }
         }
-    }
-    private protected virtual void FixedUpdate()
-    {
+
         //Modify velocity:
-        if (settings.drop > 0) velocity.y -= settings.drop * Time.fixedDeltaTime; //Perform bullet drop (downward acceleration) if relevant
+        if (settings.drop > 0) velocity.y -= settings.drop * Time.deltaTime; //Perform bullet drop (downward acceleration) if relevant
         if (target != null) //Projectile has a target
         {
             //Get effective target position:
             Vector3 targetPos = target.position; //Initialize target position marker
             if (settings.predictionStrength > 0) //Projectile is using velocity prediction
             {
-                Vector3 targetVelocity = (targetPos - prevTargetPos) / Time.fixedDeltaTime;                    //Approximate velocity of target object
+                Vector3 targetVelocity = (targetPos - prevTargetPos) / Time.deltaTime;                         //Approximate velocity of target object
                 float currentSpeed = velocity.magnitude;                                                       //Get current speed here so it only has to be calculated once
                 float distanceToTarget = Vector3.Distance(transform.position, targetPos);                      //Get distance between projectile and target
                 float timeToTarget = distanceToTarget / currentSpeed;                                          //Approximate time it would take to reach target
@@ -236,12 +234,12 @@ public class Projectile : MonoBehaviourPunCallbacks
             //Curve to meet target:
             Vector3 newVelocity = (targetPos - transform.position).normalized * velocity.magnitude;                      //Get velocity which would point projectile directly at target
             float realHomingStrength = settings.homingStrengthCurve.Evaluate(DistancePercent) * settings.homingStrength; //Evaluate strength curve to get actual current projectile homing strength
-            velocity = Vector3.MoveTowards(velocity, newVelocity, realHomingStrength * Time.fixedDeltaTime);             //Incrementally adjust toward target velocity
+            velocity = Vector3.MoveTowards(velocity, newVelocity, realHomingStrength * Time.deltaTime);                  //Incrementally adjust toward target velocity
         }
 
         //Get target position:
-        Vector3 newPosition = transform.position + (velocity * Time.fixedDeltaTime); //Get target projectile position
-        float travelDistance = Vector3.Distance(transform.position, newPosition);    //Get distance this projectile is moving this update
+        Vector3 newPosition = transform.position + (velocity * Time.deltaTime);   //Get target projectile position
+        float travelDistance = Vector3.Distance(transform.position, newPosition); //Get distance this projectile is moving this update
 
         //Check range:
         totalDistance += travelDistance; //Add motion to total distance traveled (NOTE: may briefly end up being greater than actual distance traveled)
@@ -292,7 +290,7 @@ public class Projectile : MonoBehaviourPunCallbacks
         //Burnout check:
         if (photonView.IsMine || dumbFired) ////Only check if projectile is authoritative version
         {
-            timeAlive += Time.fixedDeltaTime;                                          //Update time tracker
+            timeAlive += Time.deltaTime;                                               //Update time tracker
             if (estimatedLifeTime > 0 && timeAlive > estimatedLifeTime) BurnOut();     //Burn projectile out if it has been alive for too long (if lifetime is being used)
             else if (settings.range > 0 && totalDistance >= settings.range) BurnOut(); //Destroy projectile if it has reached its maximum range
         }
