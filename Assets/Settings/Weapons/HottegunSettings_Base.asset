@@ -246,7 +246,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  ejectorTraverseDistance: 1.25
+  ejectorTraverseDistance: 0.15
   ejectorTraverseTime: 0.6
   ejectorTraverseCurve:
     serializedVersion: 2
