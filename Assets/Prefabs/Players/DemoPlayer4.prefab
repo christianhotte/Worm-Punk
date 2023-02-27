@@ -1013,6 +1013,7 @@ MonoBehaviour:
   debugCenterCamera: 0
   debugSpawnNetworkPlayer: 0
   debugDeSpawnNetworkPlayer: 0
+  debugHarm: 0
 --- !u!114 &4754151018597248020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7913,7 +7914,7 @@ PrefabInstance:
     - target: {fileID: 1340893549523156267, guid: 40109f34130fc0146bdfbf7dbb998fba, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2100000, guid: d304aa21942627348848cd4edd12ef92, type: 2}
     - target: {fileID: 2131844743722543912, guid: 40109f34130fc0146bdfbf7dbb998fba, type: 3}
       propertyPath: m_Name
       value: HookshotB

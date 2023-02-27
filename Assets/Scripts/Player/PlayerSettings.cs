@@ -39,4 +39,5 @@ public class PlayerStats
     public bool isReady = false;
 
     public int numOfKills = 0;
+    public int numOfDeaths = 0;
 }

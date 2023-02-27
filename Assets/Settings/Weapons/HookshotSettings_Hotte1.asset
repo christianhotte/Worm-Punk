@@ -24,8 +24,8 @@ MonoBehaviour:
   basePullSpeed: 50
   baseRetractSpeed: 600
   retractAcceleration: 300
-  lateralManeuverForce: 50
-  yankForce: 60
+  lateralManeuverForce: 60
+  yankForce: 67
   deployThreshold: 1
   releaseThreshold: 0.5
   punchWhipSpeed: 2
