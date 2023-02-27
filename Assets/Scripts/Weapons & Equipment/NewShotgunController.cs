@@ -18,11 +18,13 @@ public class NewShotgunController : PlayerEquipment
 
     //Settings:
     [SerializeField, Tooltip("Transforms representing position and direction of weapon barrels.")] private Transform[] barrels;
-    [Tooltip("Settings object which determines general weapon behavior.")] public ShotgunSettings gunSettings;
+    [Tooltip("Settings object which determines general weapon behavior.")]                         public ShotgunSettings gunSettings;
     [Header("Animated Components:")]
     [SerializeField, Tooltip("The forward part of the weapon which jolts backward when weapon fires.")] private Transform reciprocatingAssembly;
-    [SerializeField, Tooltip("Part on the side of the weapon which indicates barrel load status.")] private Transform leftEjectorAssembly;
-    [SerializeField, Tooltip("Part on the side of the weapon which indicates barrel load status.")] private Transform rightEjectorAssembly;
+    [SerializeField, Tooltip("Part on the side of the weapon which indicates barrel load status.")]     private Transform leftEjectorAssembly;
+    [SerializeField, Tooltip("Part on the side of the weapon which indicates barrel load status.")]     private Transform rightEjectorAssembly;
+    [SerializeField, Tooltip("Pin on the back of the weapon which indicates when it is fired.")]        private Transform leftFiringPin;
+    [SerializeField, Tooltip("Pin on the back of the weapon which indicates when it is fired.")]        private Transform rightFiringPin;
     [Header("Debug Settings:")]
     [SerializeField, Tooltip("Makes it so that weapon fires from the gun itself and not on the netwrok.")] private bool debugFireLocal = false;
 
@@ -43,6 +45,7 @@ public class NewShotgunController : PlayerEquipment
     private Vector3 baseReciproPos;  //Base position of reciprocating barrel assembly
     private Vector3 baseEjectorLPos; //Base position of left ejector
     private Vector3 baseEjectorRPos; //Base position of right ejector
+    private Vector3 basePinPos;      //Base position of both firing pins
 
     //Events & Coroutines:
     /// <summary>
@@ -140,6 +143,7 @@ public class NewShotgunController : PlayerEquipment
         baseReciproPos = reciprocatingAssembly.localPosition; //Get base local position of reciprocating barrel assembly
         baseEjectorLPos = leftEjectorAssembly.localPosition;  //Get base local position of left ejector assembly
         baseEjectorRPos = rightEjectorAssembly.localPosition; //Get base local position of right ejector assembly
+        basePinPos = leftFiringPin.localPosition;             //Get base local position of both firing pins
     }
     private void Start()
     {
@@ -289,8 +293,16 @@ public class NewShotgunController : PlayerEquipment
         //Effects:
         audioSource.PlayOneShot(gunSettings.fireSound); //Play fire sound
         StartCoroutine(DoRecoil());                     //Begin recoil phase
-        if (loadedShots == 2) StartCoroutine(MoveEjector(handedness, true));          //Move inner ejector when one shot is fired
-        if (loadedShots == 1) StartCoroutine(MoveEjector(otherGun.handedness, true)); //Move outer ejector when both shots are fired
+        if (loadedShots == 2) //Weapon is firing its first shot
+        {
+            StartCoroutine(MoveEjector(handedness, true)); //Move inner ejector when one shot is fired
+            MovePin(handedness, true);
+        }
+        else if (loadedShots == 1) //Weapon is firing its second shot
+        {
+            StartCoroutine(MoveEjector(otherGun.handedness, true)); //Move outer ejector when both shots are fired
+            MovePin(otherGun.handedness, true);
+        }
         if (player != null) //Effects which need a playerController
         {
             //Direct player feedback:
@@ -354,6 +366,7 @@ public class NewShotgunController : PlayerEquipment
 
         //Effects:
         StartCoroutine(MoveEjector(Handedness.None, false)); //Move ejectors back to forward positions
+        MovePin(Handedness.None, false);                     //Move pins to backward positions
 
         //Cleanup:
         if (gunSettings.ejectSound != null) audioSource.PlayOneShot(gunSettings.ejectSound); //Play sound effect
@@ -409,5 +422,16 @@ public class NewShotgunController : PlayerEquipment
         JointDrive newDrive = joint.angularXDrive;                       //Duplicate current angular X drive setting
         newDrive.positionDamper = damperValue;                           //Apply interpolated damper value to drive setting
         joint.angularXDrive = newDrive; joint.angularYZDrive = newDrive; //Apply damper change to all angular drive axes
+    }
+    /// <summary>
+    /// Moves one or both firing pins on weapon to given position.
+    /// </summary>
+    /// <param name="side">Which pin to move (moves both if None is given).</param>
+    /// <param name="inward">Pass true to move pin inward, false to move it back out.</param>
+    private void MovePin(Handedness side, bool inward)
+    {
+        Vector3 targetPinPos = basePinPos + (inward ? (Vector3.forward * gunSettings.pinTraverseDistance) : Vector3.zero); //Get position pin(s) are being moved to
+        if (side == Handedness.Left || side == Handedness.None) leftFiringPin.localPosition = targetPinPos;                //Left pin is being moved
+        if (side == Handedness.Right || side == Handedness.None) rightFiringPin.localPosition = targetPinPos;              //Right pin is being moved
     }
 }
