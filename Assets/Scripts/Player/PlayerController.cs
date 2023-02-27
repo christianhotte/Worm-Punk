@@ -9,6 +9,7 @@ using Photon.Realtime;
 using UnityEngine.SceneManagement;
 using RootMotion.FinalIK;
 using UnityEngine.Events;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// Manages overall player stats and abilities.
@@ -35,6 +36,7 @@ public class PlayerController : MonoBehaviour
     private Transform camOffset;               //Object used to offset camera position in case of weirdness
     private InputActionMap inputMap;           //Input map which player uses
     private ScreenShakeVR screenShaker;        //Component used to safely shake player's screen without causing nausea
+    private Volume healthVolume;               //Post-processing volume used to visualize player health
 
     //Settings:
     [Header("Settings:")]
@@ -63,6 +65,12 @@ public class PlayerController : MonoBehaviour
     internal bool Launchin = false; //NOTE: What references this and where is it modified?
     private GameObject[] weapons;   //A list of active weapons on the player NOTE: Can this be replaced by attachedEquipment?
     private GameObject[] tools;     //A list of active tools on the player NOTE: Can this be replaced by attachedEquipment?
+
+    //Utility Variables:
+    /// <summary>
+    /// What percentage of maximum player health they currently have.
+    /// </summary>
+    public float HealthPercent { get { return currentHealth / (float)healthSettings.defaultHealth; } }
 
     //RUNTIME METHODS:
     private void Awake()
@@ -171,6 +179,7 @@ public class PlayerController : MonoBehaviour
             else if (currentHealth < healthSettings.defaultHealth) //Regen wait time is zero and player has lost health
             {
                 currentHealth = Mathf.Min(currentHealth + (healthSettings.regenSpeed * Time.deltaTime), healthSettings.defaultHealth); //Regenerate until player is back to default health
+                healthVolume.weight = 1 - HealthPercent;                                                                               //Update health visualization
             }
         }
     }
@@ -245,6 +254,7 @@ public class PlayerController : MonoBehaviour
     {
         //Hit effects:
         currentHealth -= Mathf.Max((float)damage, 0);                           //Deal projectile damage, floor at 0
+        healthVolume.weight = 1 - HealthPercent;                                //Update health visualization
         print(damage + " damage dealt to player with ID " + photonView.ViewID); //Indicate that damage has been dealt
 
         //Death check:
@@ -287,6 +297,7 @@ public class PlayerController : MonoBehaviour
             xrOrigin.transform.position = spawnpoint.position;                 //Move spawned player to target position
         }
         currentHealth = healthSettings.defaultHealth; //Reset to max health
+        healthVolume.weight = 0;                      //Reset health volume weight
         print("Local player has been killed!");
     }
     /// <summary>
