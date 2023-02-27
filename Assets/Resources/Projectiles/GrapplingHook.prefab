@@ -515,7 +515,6 @@ GameObject:
   - component: {fileID: 2565103271569943414}
   - component: {fileID: 3551875485185414350}
   - component: {fileID: 583530828441493081}
-  - component: {fileID: 5448782764442087593}
   - component: {fileID: 5725642578052019867}
   - component: {fileID: 8156615070136153016}
   m_Layer: 7
@@ -556,7 +555,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: c3150a35527918942a158a6443a7f368, type: 2}
   printDebug: 0
-  debugDrawHoming: 1
+  debugDrawHoming: 0
   homingMat: {fileID: 0}
   homingSound: {fileID: 0}
 --- !u!114 &583530828441493081
@@ -577,27 +576,10 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents:
-  - {fileID: 5448782764442087593}
+  ObservedComponents: []
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &5448782764442087593
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5990455804588303578}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
-  m_UseLocal: 0
 --- !u!82 &5725642578052019867
 AudioSource:
   m_ObjectHideFlags: 0
