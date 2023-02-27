@@ -55,6 +55,8 @@ public class PlayerController : MonoBehaviour
     private float timeUntilRegen; //Time (in seconds) until health regeneration can begin
     private bool centeredInScene; //Made false whenever player loads into a scene, triggers camera centering in the first update
 
+    internal bool Launchin = false;
+
     private GameObject[] weapons;   //A list of active weapons on the player
     private GameObject[] tools;     //A list of active tools on the player
 

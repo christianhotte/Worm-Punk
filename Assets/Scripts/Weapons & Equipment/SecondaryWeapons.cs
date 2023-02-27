@@ -34,24 +34,18 @@ public class SecondaryWeapons : PlayerEquipment
         sawAud = this.GetComponent<AudioSource>();
         energyBladeBaseScale = energyBlade.transform.localScale;
         energyBlade.transform.localScale = energyBladeStartSize;
-        //bladeRB = this.gameObject.GetComponent<Rigidbody>();
         base.Awake();
         NSC = rightGun.GetComponent<NewShotgunController>();
-        //StartCoroutine(StartCooldown());
     }
     // Update is called once per frame
     private protected override void Update()
     {
-
-
         if (shotsToFire > 0 && !shootin)
         {
-            StartCoroutine(ShootAbsorbed());
+            //StartCoroutine(ShootAbsorbed());
         }
         if (deployed)
         {
-            //Debug.Log("checkstart");
-
             tipPos = bladeTip.transform.position;
             GameObject[] bullethits = GameObject.FindGameObjectsWithTag("Bullet");
             foreach (var hit in bullethits)
@@ -60,13 +54,10 @@ public class SecondaryWeapons : PlayerEquipment
                 projScript = hit.gameObject.GetComponent<Projectile>();
                 if (bulletDistance <= blockRadius&&shotsHeld<shotCap)
                 {
-                    // Debug.Log(bulletDistance);
                     if (projScript != null && projScript.originPlayerID == PlayerController.photonView.ViewID) return;
-                    //grindin = true;
                     Destroy(hit);
                     shotsHeld++;
                     StoredShots[shotsHeld - 1].SetActive(true);
-
                     break;
                 }
             }
@@ -76,11 +67,8 @@ public class SecondaryWeapons : PlayerEquipment
         grindin = false;
         foreach (var hit in hits)
         {
-
-             //  Debug.Log(hit.name);
                 grindin = true;
-                break;
-            
+                break;            
         }
         if (deployed)
         {
@@ -89,9 +77,9 @@ public class SecondaryWeapons : PlayerEquipment
             if (checkBlade.collider == null) return;
             rayHitDistance = 999;
             rayHitDistance = Vector3.Distance(rayStartPoint.position, checkBlade.point);
-            if (rayHitDistance < sawDistance&&checkBlade.collider.tag!="Blade"&&checkBlade.collider.tag!="Player"&&checkBlade.collider.tag!="Barrel")
+            if (rayHitDistance < sawDistance&&checkBlade.collider.tag!="Blade"&&checkBlade.collider.tag!="Player"&&checkBlade.collider.tag!="Barrel"&&checkBlade.collider.name != "RightHand Controller"&& checkBlade.collider.name != "LeftHand Controller") // The detection for chainsaw movement
             {
-               // Debug.Log(checkBlade.collider.name);
+               Debug.Log(checkBlade.collider.name);
                 grindin = true;
             }
             else if (rayHitDistance > sawDistance)
@@ -99,34 +87,16 @@ public class SecondaryWeapons : PlayerEquipment
                 grindin = false;
 
             }
-
         }
-
         if (grindin&&deployed)
         {
-            //Debug.Log("Grindin");
             playerRB.velocity = bladeImpulsePosition.forward * grindSpeed;
             
         }
         Vector3 handPos,handMotion;
-        handPos = attachedHand.localPosition; //headpos.InverseTransformPoint(attachedHand.position);
+        handPos = attachedHand.localPosition; 
         handMotion = handPos - prevHandPos;
         float punchSpeed = handMotion.magnitude / Time.deltaTime;
-      //  Debug.Log(punchSpeed);
-        //if (deployed && punchSpeed >= activationSpeed&&!stabbin)
-        //{
-        //    storedScale = energyBlade.transform.localScale;
-        //    stabbin = true;
-        //    energyBlade.SetActive(true);
-        //    for (; shotsHeld > 0; shotsHeld--){
-        //        shotsCharged++;
-        //        Vector3 currentScale = energyBlade.transform.localScale;
-        //      //  energyBlade.transform.localScale = new Vector3(currentScale.x, currentScale.y * 1.2f, currentScale.z);
-        //        StoredShots[shotsHeld - 1].SetActive(false);
-        //    }
-
-        //    StartCoroutine(BladeSlice());
-        //}
         if (deployed)
         {
             NSC.locked = true;
@@ -136,12 +106,8 @@ public class SecondaryWeapons : PlayerEquipment
 
             Vector3 targetPosition = Vector3.Lerp(EnergyBladeStowed.position, EnergyBladeExtended.position, targetInterpolant);
             Vector3 targetScale = Vector3.Lerp(EnergyBladeStowed.localScale, EnergyBladeExtended.localScale, targetInterpolant);
-           // energyBlade.transform.localPosition = Vector3.Lerp(energyBlade.transform.position, targetPosition, energySpeed);
             energyBlade.transform.position = targetPosition;
             energyBlade.transform.localScale = targetScale;
-            // energyBlade.transform.localScale = targetScale;
-
-            //Vector3.Lerp(energyBlade.transform.localScale, targetScale, energySpeed * Time.deltaTime);
             prevInterpolant = targetInterpolant;
         }
         else
@@ -152,38 +118,7 @@ public class SecondaryWeapons : PlayerEquipment
             energyBlade.SetActive(false);
         }
         prevHandPos = handPos;
-        //float forwardAngle = Vector3.Angle(handMotion, transform.forward);
-
-        //if (forwardAngle < 90&&!cooldown) //|| (deployed && forwardAngle > 90&&!cooldown))                   Code for punch detection
-        //{
-
-        //    handMotion = Vector3.Project(handPos - prevHandPos, hand.transform.forward);
-
-        //    float punchSpeed = handMotion.magnitude / Time.deltaTime;
-
-        //    if ((!deployed&&punchSpeed >= activationSpeed))
-        //    {
-
-
-        //                // Deploy();
-
-        //         num++;
-        //        // Debug.Log("Punch"+num);
-        //        sawAud.PlayOneShot(punchSound);
-        //        StartCoroutine(DeflectTime());
-        //        StartCoroutine(StartCooldown());
-
-
-        //    }
-        //}
-        //else
-        //{
-        //   // timeAtSpeed = 0;
-        //}
-        //base.Update();
-        //prevHandPos = handPos;
     }
-
     private protected override void InputActionTriggered(InputAction.CallbackContext context)
     {
         if (context.action.name == "Grip")
@@ -210,26 +145,17 @@ public class SecondaryWeapons : PlayerEquipment
     }
     public void Deploy()
     {
-       // Debug.Log("Deploy");
-        //  blade.transform.LookAt(bladeTip);
         blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeDeployed.transform.position, deploySpeed);
-        //  bladeRB.velocity += blade.transform.forward*-deploySpeed;
         blade.transform.localRotation = bladeDeployed.transform.localRotation;
         deployed = true;
-        sawAud.PlayOneShot(chainsawDeploy);
-        
+        sawAud.PlayOneShot(chainsawDeploy);       
         StartCoroutine(StartCooldown());
-
     }
     public void Sheethe()
     {
-       // Debug.Log("Sheethe");
         blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeSheethed.transform.position, deploySpeed);
-
-       // blade.transform.position = bladeSheethed.transform.position;
         deployed = false;
         sawAud.PlayOneShot(chainsawSheethe);
-        //blade.transform.localRotation = bladeSheethed.transform.localRotation;
         StartCoroutine(StartCooldown());
         if (shotsHeld > 0)
         {
@@ -246,15 +172,12 @@ public class SecondaryWeapons : PlayerEquipment
     {
         shootin = true;
         for (; shotsToFire > 0; shotsToFire--)
-        {
-            
+        {            
             Vector3 exitAngles = Random.insideUnitCircle * maxSpreadAngle;
             bulletSpredPoint.localEulerAngles = new Vector3(bladeTip.position.x + exitAngles.x, bladeTip.position.y + exitAngles.y, bladeTip.position.z + exitAngles.z);
-
             //NOTE: Hotte modified this so that it'd work with the new slightly different projectile deployment system
             Projectile projectile = PhotonNetwork.Instantiate("Projectiles/HotteProjectile1", bulletSpredPoint.position, bulletSpredPoint.rotation).GetComponent<Projectile>(); //Instantiate projectile on network
             projectile.photonView.RPC("RPC_Fire", RpcTarget.All, bulletSpredPoint.position, bulletSpredPoint.rotation, PlayerController.photonView.ViewID);                     //Initialize all projectiles simultaneously
-
             StoredShots[shotsToFire - 1].SetActive(false);
             yield return new WaitForSeconds(.05f);
         }
@@ -268,7 +191,6 @@ public class SecondaryWeapons : PlayerEquipment
             StoredShots[shotsHeld - 1].SetActive(false);
             explosiveForce *= 1.5f;
         }
-        //  playerRB.AddExplosionForce(explosiveForce,bladeImpulsePosition.position,2);
         playerRB.velocity = stowedTip.forward * -explosiveForce;
         explosiveForce = prevExplosiveForce;
     }
@@ -277,27 +199,13 @@ public class SecondaryWeapons : PlayerEquipment
         deflectin = true;
         yield return new WaitForSeconds(0.3f);
         deflectin = false;
-       // yield return new WaitForSeconds(0.2f);
          Sheethe();
     }
     public IEnumerator BladeSlice()
-    {
-       
+    {      
         yield return new WaitForSeconds(1.5f);
         energyBlade.SetActive(false);
-       
-        // yield return new WaitForSeconds(5.0f);
         energyBlade.transform.localScale = energyBladeStartSize;
         stabbin = false;
     }
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    NetworkPlayer targetPlayer = other.GetComponentInParent<NetworkPlayer>();     //Try to get network player from hit collider
-    //    if (targetPlayer == null) targetPlayer = other.GetComponent<NetworkPlayer>(); //Try again for network player if it was not initially gotten
-    //    if (targetPlayer != null)
-    //    {
-    //        other.GetComponent<NetworkPlayer>().photonView.RPC("RPC_Hit", RpcTarget.All, 5);
-    //        sawAud.PlayOneShot(punchSound);
-    //    }
-    //}
 }

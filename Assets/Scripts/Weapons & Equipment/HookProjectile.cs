@@ -43,8 +43,7 @@ public class HookProjectile : Projectile
     
     internal float timeInState; //Indicates how long it has been since hook state has last changed (always counting up)
     private float retractSpeed; //Current speed (in meters per second) at which hook is being retracted
-
-    //EVENTS:
+    internal Vector3 spinForce; //Directional force added to hook (during travel) by player's initial arm swing
 
     //RUNTIME METHODS:
     private protected override void Awake()
@@ -59,6 +58,7 @@ public class HookProjectile : Projectile
 
         //Initialize runtime vars:
         lineCheckLayers = settings.ignoreLayers |= (1 << LayerMask.NameToLayer("Player")); //Add player to ignore layers to get layers ignored by line check (preventing self-collision)
+        isHook = true;                                                                     //Indicate that this is a hook projectile (for homing purposes)
     }
     private protected override void Update()
     {
@@ -117,6 +117,10 @@ public class HookProjectile : Projectile
                 break;
             case HookState.Hooked: //Grappling hook is attached to a stationary object
                 PointLock(hitPosition); //Rotate hook toward controlling player, maintaining world position of lock point
+
+                //Move player:
+                Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * controller.settings.basePullSpeed; //Get base speed at which grappling hook pulls you toward target
+                controller.player.bodyRb.velocity = newVelocity;                                                                        //Apply new velocity
                 break;
             case HookState.PlayerTethered: //Grappling hook is attached to an enemy player
                 PointLock(hitPlayer.GetComponent<Targetable>().targetPoint.position); //Rotate hook toward controlling player, maintaining position at center mass of tethered player

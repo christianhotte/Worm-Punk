@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hookResourceName: GrapplingHook
   intersectBehavior: 0
-  basePullSpeed: 100
-  baseRetractSpeed: 100
-  retractAcceleration: 10
+  basePullSpeed: 60
+  baseRetractSpeed: 400
+  retractAcceleration: 400
   deployThreshold: 1
   releaseThreshold: 0.5
   bounceLayers:

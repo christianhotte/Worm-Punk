@@ -5,16 +5,16 @@ using UnityEngine;
 public class WormHole : MonoBehaviour
 {
     public Transform holePos1, holePos2,wormZone,playerHead,wormZoneShifted;
-    public GameObject wormZoneParticles,wormZoneInstance;
+    public GameObject wormZoneParticles,wormZoneInstance,playerCam;
     public float waitTime,exitSpeed=30;
     internal bool locked = false;
     private NewShotgunController NSC;
+    public PlayerController PC;
     public GameObject playerOrigin;
     public static List<WormHole> ActiveWormholes = new List<WormHole>();
     // Start is called before the first frame update
     void Start()
     {
-        var num = ActiveWormholes.Count;
     }
 
     // Update is called once per frame
@@ -32,17 +32,25 @@ public class WormHole : MonoBehaviour
         else exitPos = holePos1.transform;                                           // or the corresponding one
         //NSC = playerOBJ.GetComponentInChildren<NewShotgunController>(); 
         //NSC.locked = true;
-        playerRB = playerOBJ.GetComponent<Rigidbody>();
+        PC = PlayerController.instance;
+        playerRB = PC.bodyRb;
+        
+        //playerCam = PC.cam.gameObject;
         ActiveWormholes.Add(this);
         wormZoneShifted = wormZone;
         wormZoneShifted.transform.position = new Vector3(wormZone.position.x + 100 * ActiveWormholes.Count,wormZone.position.y,wormZone.position.z);
         //Grab the Player RIgid BOdy
         playerRB.useGravity = false;                                                //Turn off Gravity
         playerRB.isKinematic = true;
-        playerOBJ.transform.position = wormZoneShifted.position;                    //Banish player to the shadow realm
+        playerOBJ.transform.position = wormZoneShifted.position;
+       //Banish player to the shadow realm
         wormZoneInstance =Instantiate(wormZoneParticles);
-        wormZoneInstance.transform.position = new Vector3(playerOBJ.transform.position.x - 20, playerOBJ.transform.position.y, playerOBJ.transform.position.z);
-        yield return new WaitForSeconds(waitTime);                                  //wait for waittime
+        wormZoneInstance.transform.position = new Vector3(playerOBJ.transform.position.x , playerOBJ.transform.position.y, playerOBJ.transform.position.z);
+        Vector3 camDir = PC.cam.transform.forward;
+        camDir = Vector3.ProjectOnPlane(camDir, Vector3.up);
+        wormZoneInstance.transform.forward = camDir;
+        yield return new WaitForSeconds(waitTime);
+        playerOBJ.transform.rotation = exitPos.rotation;
         playerOBJ.transform.position = exitPos.position;                            // BRing player back
         playerRB.useGravity = true;                                                 //Bring back Gravity
         playerRB.isKinematic = false;

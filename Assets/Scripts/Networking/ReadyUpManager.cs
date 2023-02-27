@@ -13,17 +13,16 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
 
     [SerializeField] private TextMeshProUGUI playerReadyText;
 
+    [SerializeField] private LockerTubeController[] lockerTubes;
+
     private const int MINIMUM_PLAYERS_NEEDED = 2;   // The minimum number of players needed for a round to start
     [SerializeField] private string sceneToLoad = "DM_0.11_Arena";
 
     private int playersReady, playersInRoom;
-
-    private LeverController[] allLevers;
     
     // Is called upon the first frame.
     private void Start()
     {
-        allLevers = FindObjectsOfType<LeverController>();
         UpdateReadyText();
     }
 
@@ -59,30 +58,24 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     }
 
     // Once the level is pulled to signify that the player is ready...
-    public void ReadyLeverPulled(float leverValue)
+    public void ReadyLeverPulled(LeverController currentLever)
     {
-        if(leverValue == 1)
-        {
-            //The player is ready
-            NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady = true;
-        }
-
-        else
-        {
-            //The player is not ready
-            NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady = false;
-        }
-
+        NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady = currentLever.GetLeverValue() == 1;
         NetworkManagerScript.localNetworkPlayer.SyncStats();
+    }
 
+    public void UpdateStatus(int tubeID)
+    {
         Debug.Log("Updating RPC...");
-        photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered);
+        photonView.RPC("RPC_UpdateReadyStatus", RpcTarget.AllBuffered, tubeID, NetworkManagerScript.localNetworkPlayer.GetNetworkPlayerStats().isReady);
     }
 
     // Tells the master server the amount of players that are ready to start the match.
     [PunRPC]
-    public void RPC_UpdateReadyStatus()
+    public void RPC_UpdateReadyStatus(int tubeID, bool updatedPlayerReady)
     {
+        lockerTubes[tubeID].UpdateLights(updatedPlayerReady);
+
         // Get the number of players that have readied up
         playersReady = GetAllPlayersReady();
         playersInRoom = PhotonNetwork.CurrentRoom.PlayerCount;
@@ -90,9 +83,9 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         UpdateReadyText();
 
         // If all players are ready, load the game scene
-        if (playersReady == playersInRoom && playersInRoom >= MINIMUM_PLAYERS_NEEDED && PhotonNetwork.IsMasterClient)
+        if (playersReady == playersInRoom && (playersInRoom >= MINIMUM_PLAYERS_NEEDED || GameSettings.debugMode))
         {
-            PhotonNetwork.LoadLevel(sceneToLoad);
+            NetworkManagerScript.instance.LoadSceneWithFade(sceneToLoad);
         }
     }
 
@@ -103,7 +96,7 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
     {
         string message = "Players Ready: " + playersReady.ToString() + "/" + playersInRoom;
 
-        if (playersInRoom < MINIMUM_PLAYERS_NEEDED)
+        if (playersInRoom < MINIMUM_PLAYERS_NEEDED && !GameSettings.debugMode)
         {
             message += "\n<size=26>Not Enough Players To Start.</size>";
         }
