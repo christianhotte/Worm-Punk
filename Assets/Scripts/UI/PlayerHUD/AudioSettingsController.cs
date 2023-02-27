@@ -23,7 +23,7 @@ public class AudioSettingsController : MonoBehaviour
     {
         masterSlider.value = PlayerPrefs.GetFloat("MasterVolume", 0.5f) * 10f;
         musicSlider.value = PlayerPrefs.GetFloat("MusicVolume", 0.5f) * 10f;
-        sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 0.5f) * 10f;
+        sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f) * 10f;
         voiceChatSlider.value = PlayerPrefs.GetFloat("VoiceChatVolume", 0.5f) * 10f;
         muteMicToggle.isOn = PlayerPrefs.GetInt("MuteMic", 0) == 1? true: false;
     }
