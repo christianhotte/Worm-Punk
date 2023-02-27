@@ -83,6 +83,7 @@ public class NetworkPlayer : MonoBehaviour
         {
             RigToActivePlayer();                                                                                                                                  //Rig to active player immediately
             foreach (Renderer r in GetComponentsInChildren<Renderer>()) r.enabled = false;                                                                        //Client NetworkPlayer is always invisible to them
+            trail.enabled = false;                                                                                                                                //Disable local player trail
             if (SceneManager.GetActiveScene().name == NetworkManagerScript.instance.mainMenuScene) photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered); //Remote instances are hidden while client is in the main menu
         }
 
@@ -95,7 +96,7 @@ public class NetworkPlayer : MonoBehaviour
             }
             collider.enabled = !GameManager.Instance.InMenu(); //Disable colliders altogether if network player is in any kind of menu
         }
-        if (GameManager.Instance.InMenu()) trail.enabled = false; //Disable trail in menu scenes
+        if (!photonView.IsMine) { if (GameManager.Instance.InMenu()) trail.enabled = false; } //Disable trail in menu scenes
     }
     void Update()
     {
@@ -131,10 +132,14 @@ public class NetworkPlayer : MonoBehaviour
                 photonView.RPC("RPC_MakeVisible", RpcTarget.OthersBuffered);    //Show all remote players when entering locker room
             }
         }
+        else
+        {
+            trail.enabled = !GameManager.Instance.InMenu(); //Disable trail while in menus
+        }
 
         //Generic scene load checks:
         foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = !GameManager.Instance.InMenu(); //Always disable colliders if networkPlayer is in a menu scene
-        trail.enabled = !GameManager.Instance.InMenu();                                                                   //Disable trail while in menus
+        
     }
 
     //FUNCTIONALITY METHODS:
@@ -249,6 +254,7 @@ public class NetworkPlayer : MonoBehaviour
     /// Indicates that this player has successfully killed an enemy.
     /// </summary>
     /// <param name="enemyID"></param>
+    [PunRPC]
     public void RPC_KilledEnemy(int enemyID)
     {
         if (photonView.IsMine)
