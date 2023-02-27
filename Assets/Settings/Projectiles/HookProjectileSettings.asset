@@ -15,11 +15,11 @@ MonoBehaviour:
   damage: 0
   knockback: 5
   explosionPrefab: {fileID: 0}
-  initialVelocity: 400
+  initialVelocity: 300
   range: 500
-  barrelGap: 0.7
-  drop: 20
-  homingStrength: 150
+  barrelGap: 0.2
+  drop: 0
+  homingStrength: 170
   homingStrengthCurve:
     serializedVersion: 2
     m_Curve:

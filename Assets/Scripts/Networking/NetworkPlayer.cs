@@ -22,8 +22,9 @@ public class NetworkPlayer : MonoBehaviour
     /// </summary>
     public static List<NetworkPlayer> instances = new List<NetworkPlayer>();
 
-    internal PhotonView photonView;           //PhotonView network component used by this NetworkPlayer to synchronize movement
-    private SkinnedMeshRenderer bodyRenderer; //Renderer component for main player body/skin
+    internal PhotonView photonView;                             //PhotonView network component used by this NetworkPlayer to synchronize movement
+    private SkinnedMeshRenderer bodyRenderer;                   //Renderer component for main player body/skin
+    private TrailRenderer trail;                                //Renderer for trail that makes players more visible to each other
     private PlayerStats networkPlayerStats = new PlayerStats(); //The stats for the network player
 
     private Transform headTarget;      //True local position of player head
@@ -47,6 +48,7 @@ public class NetworkPlayer : MonoBehaviour
         //Get objects & components:
         photonView = GetComponent<PhotonView>();                      //Get photonView component from local object
         bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>(); //Get body renderer component from model in children
+        trail = GetComponentInChildren<TrailRenderer>();              //Get trail renderer component from children (there should only be one)
 
         //Set up rig:
         foreach (PhotonTransformView view in GetComponentsInChildren<PhotonTransformView>()) //Iterate through each network-tracked component
@@ -59,7 +61,7 @@ public class NetworkPlayer : MonoBehaviour
         }
         if (headRig == null || leftHandRig == null || rightHandRig == null) { Debug.LogError("Network Player " + name + " was not able to successfully get its rigged components. Have the names of its children been changed?"); }
 
-        //Local-only setup:
+        //Alternate setup modes:
         if (photonView.IsMine) //This script is the master instance of this particular NetworkPlayer
         {
             //Object & component setup:
@@ -84,7 +86,7 @@ public class NetworkPlayer : MonoBehaviour
             if (SceneManager.GetActiveScene().name == NetworkManagerScript.instance.mainMenuScene) photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered); //Remote instances are hidden while client is in the main menu
         }
 
-        //Collision check:
+        //Component activity check:
         foreach (Collider collider in GetComponentsInChildren<Collider>()) //Iterate through each collider in this network player
         {
             if (photonView.IsMine) //Client-exclusive collision operations
@@ -93,6 +95,7 @@ public class NetworkPlayer : MonoBehaviour
             }
             collider.enabled = !GameManager.Instance.InMenu(); //Disable colliders altogether if network player is in any kind of menu
         }
+        if (GameManager.Instance.InMenu()) trail.enabled = false; //Disable trail in menu scenes
     }
     void Update()
     {
@@ -131,6 +134,7 @@ public class NetworkPlayer : MonoBehaviour
 
         //Generic scene load checks:
         foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = !GameManager.Instance.InMenu(); //Always disable colliders if networkPlayer is in a menu scene
+        trail.enabled = !GameManager.Instance.InMenu();                                                                   //Disable trail while in menus
     }
 
     //FUNCTIONALITY METHODS:
@@ -197,6 +201,10 @@ public class NetworkPlayer : MonoBehaviour
 
         //Apply settings:
         foreach (Material mat in bodyRenderer.materials) mat.color = settings.testColor; //Apply color to entire player body
+        for (int x = 0; x < trail.colorGradient.colorKeys.Length; x++) //Iterate through color keys in trail gradient
+        {
+            trail.colorGradient.colorKeys[x].color = settings.testColor; //Apply color setting to trail key
+        }
     }
     /// <summary>
     /// Indicates that this player has been hit by a networked projectile.
@@ -238,12 +246,13 @@ public class NetworkPlayer : MonoBehaviour
         print("why"); //This should never be called
     }
     /// <summary>
-    /// Makes this player visible to the whole network and enables remote collisions.
+    /// Makes this player visible to the whole network and enables remote collisions (can also be used to clear their trail).
     /// </summary>
     [PunRPC]
     public void RPC_MakeVisible()
     {
         ChangeVisibility(true); //Show renderers and enable colliders
+        trail.Clear();          //Clean up trail
     }
     /// <summary>
     /// Hides this player's renderers and disables all remote collision detection.
@@ -252,6 +261,14 @@ public class NetworkPlayer : MonoBehaviour
     public void RPC_MakeInvisible()
     {
         ChangeVisibility(false); //Hide renderers and disable colliders
+    }
+    /// <summary>
+    /// Connects player to given target and makes them move toward each other. Overrides previous target's tether state if valid. Pass again to same player to un-tether them.
+    /// </summary>
+    [PunRPC]
+    public void RPC_Tether(int targetId)
+    {
+
     }
 
     //UTILITY METHODS:
