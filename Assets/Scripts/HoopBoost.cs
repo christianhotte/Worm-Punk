@@ -27,9 +27,9 @@ public class HoopBoost : MonoBehaviour
         playerRB = PC.bodyRb;
 
         Vector3 entryVel = Vector3.Project(playerRB.velocity, hoopCenter.forward);
-        Vector3 exitVel = entryVel.normalized*boostAmount;
+        Vector3 exitVel = entryVel + (entryVel.normalized * boostAmount);
         playerRB = hitPlayer.GetComponent<Rigidbody>();
-        playerRB.velocity += entryVel;
+        playerRB.velocity = entryVel;
         yield return new WaitForSeconds(0.2f);
         launchin = false;
     }
