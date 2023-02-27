@@ -83,7 +83,7 @@ public class PhysicalButtonController : MonoBehaviour
             if (isInteractable)
             {
                 if (onPressedSoundEffect != null)
-                    GetComponent<AudioSource>().PlayOneShot(onPressedSoundEffect, PlayerPrefs.GetFloat("SFXVolume", 0.5f));
+                    GetComponent<AudioSource>().PlayOneShot(onPressedSoundEffect, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f));
 
                 onPressed.Invoke();
                 Debug.Log(gameObject.name + " Pressed.");
@@ -95,7 +95,7 @@ public class PhysicalButtonController : MonoBehaviour
             else
             {
                 if (onDisabledSoundEffect != null)
-                    GetComponent<AudioSource>().PlayOneShot(onDisabledSoundEffect, PlayerPrefs.GetFloat("SFXVolume", 0.5f));
+                    GetComponent<AudioSource>().PlayOneShot(onDisabledSoundEffect, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f));
             }
         }
     }
@@ -135,7 +135,7 @@ public class PhysicalButtonController : MonoBehaviour
         if (isInteractable && !GameManager.Instance.levelTransitionActive)
         {
             if (onReleasedSoundEffect != null)
-                GetComponent<AudioSource>().PlayOneShot(onReleasedSoundEffect, PlayerPrefs.GetFloat("SFXVolume", 0.5f));
+                GetComponent<AudioSource>().PlayOneShot(onReleasedSoundEffect, , PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f) * , PlayerPrefs.GetFloat("MasterVolume", 0.5f));
 
             onReleased.Invoke();
             //Debug.Log(gameObject.name + " Released.");
