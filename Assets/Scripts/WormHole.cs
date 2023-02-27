@@ -60,6 +60,7 @@ public class WormHole : MonoBehaviour
         //playerOBJ.transform.rotation = exitPos.rotation;
         playerOBJ.transform.rotation = Quaternion.Euler(playerOBJ.transform.eulerAngles.x, playerOBJ.transform.eulerAngles.y - diff, playerOBJ.transform.eulerAngles.z);
         playerOBJ.transform.position = exitPos.position;                            // BRing player back
+        foreach (NewGrapplerController hookController in PlayerController.instance.GetComponentsInChildren<NewGrapplerController>()) hookController.hook.Stow();
         playerRB.useGravity = true;                                                 //Bring back Gravity
         playerRB.isKinematic = false;
         playerRB.velocity = exitPos.forward * exitSpeed;                            //launch out of wormhole

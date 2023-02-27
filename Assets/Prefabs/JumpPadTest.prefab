@@ -93,8 +93,8 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8585161889170940068}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
+  m_IsTrigger: 1
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
@@ -111,8 +111,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerRb: {fileID: 0}
+  playerOBJ: {fileID: 0}
   jumpForce: 100
-  jumpPadRange: 12
   jumpDirection: {fileID: 8585161889459152013}
 --- !u!114 &181838491
 MonoBehaviour:

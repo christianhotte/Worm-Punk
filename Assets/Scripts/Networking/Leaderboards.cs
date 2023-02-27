@@ -23,6 +23,8 @@ public class Leaderboards : MonoBehaviourPunCallbacks
         GameManager gameManager = FindObjectOfType<GameManager>();
         string lastSceneName = gameManager.GetLastSceneName();
 
+        Debug.Log(lastSceneName);
+
         if (lastSceneName == arenaScene)
         {
             OpenLeaderboards();

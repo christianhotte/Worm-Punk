@@ -264,6 +264,8 @@ public class NetworkPlayer : MonoBehaviour
             PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
             SyncStats();
         }
+
+        PlayerController.instance.combatHUD.AddToDeathInfoBoard(PhotonNetwork.LocalPlayer.NickName, PhotonNetwork.GetPhotonView(enemyID).Owner.NickName);
     }
 
     /// <summary>
