@@ -98,7 +98,7 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
 
         if (playersInRoom < MINIMUM_PLAYERS_NEEDED && !GameSettings.debugMode)
         {
-            message += "\n<size=26>Not Enough Players To Start.</size>";
+            message += "\n<size=500>Not Enough Players To Start.</size>";
         }
 
         Debug.Log(message);

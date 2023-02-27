@@ -35,7 +35,9 @@ public class WormHole : MonoBehaviour
         PC = PlayerController.instance;
         playerRB = PC.bodyRb;
         
-        //playerCam = PC.cam.gameObject;
+        playerCam = PC.cam.gameObject;
+        Debug.Log(playerCam.transform.rotation.y);
+       
         ActiveWormholes.Add(this);
         wormZoneShifted = wormZone;
         wormZoneShifted.transform.position = new Vector3(wormZone.position.x + 100 * ActiveWormholes.Count,wormZone.position.y,wormZone.position.z);
@@ -50,7 +52,10 @@ public class WormHole : MonoBehaviour
         camDir = Vector3.ProjectOnPlane(camDir, Vector3.up);
         wormZoneInstance.transform.forward = camDir;
         yield return new WaitForSeconds(waitTime);
-        playerOBJ.transform.rotation = exitPos.rotation;
+        var diff = playerCam.transform.eulerAngles.y - exitPos.transform.eulerAngles.y;
+        Debug.Log(diff);
+        //playerOBJ.transform.rotation = exitPos.rotation;
+        playerOBJ.transform.rotation = Quaternion.Euler(playerOBJ.transform.eulerAngles.x, playerOBJ.transform.eulerAngles.y - diff, playerOBJ.transform.eulerAngles.z);
         playerOBJ.transform.position = exitPos.position;                            // BRing player back
         playerRB.useGravity = true;                                                 //Bring back Gravity
         playerRB.isKinematic = false;
