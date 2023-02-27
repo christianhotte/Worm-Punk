@@ -7687,7 +7687,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6500810002819420461, guid: 80b40ad3b752ff3418b274b0a83344bb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.1
       objectReference: {fileID: 0}
     - target: {fileID: 6500810002819420461, guid: 80b40ad3b752ff3418b274b0a83344bb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -8524,6 +8524,10 @@ PrefabInstance:
     - target: {fileID: 4530261824722215322, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
       propertyPath: m_Name
       value: CombatHUDCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7345800386474534686, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7568389364414321773, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
       propertyPath: m_AnchorMax.y

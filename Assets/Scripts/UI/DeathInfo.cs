@@ -7,16 +7,14 @@ using TMPro;
 
 public class DeathInfo : MonoBehaviour
 {
-    private TextMeshProUGUI killerName;
-    private Image icon;
-    private TextMeshProUGUI victimName;
+    [SerializeField] private TextMeshProUGUI killerName;
+    [SerializeField] private Image icon;
+    [SerializeField] private TextMeshProUGUI victimName;
 
     // Start is called before the first frame update
     void Start()
     {
-        killerName = transform.Find("KillerName").GetComponent<TextMeshProUGUI>();
-        icon = transform.Find("Icon").GetComponent<Image>();
-        victimName = transform.Find("VictimName").GetComponent<TextMeshProUGUI>();
+
     }
 
     /// <summary>
