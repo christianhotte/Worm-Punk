@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Controller component for player's left hand.")]              internal ActionBasedController leftHand;
     [Tooltip("Controller component for player's right hand.")]             internal ActionBasedController rightHand;
     [Tooltip("Equipment which is currently attached to the player")]       internal List<PlayerEquipment> attachedEquipment = new List<PlayerEquipment>();
+    [Tooltip("Combat HUD Canvas.")]                                        internal CombatHUDController combatHUD;    
 
     internal Camera cam;                       //Primary camera for VR rendering, located on player head
     internal PlayerInput input;                //Input manager component used by player to send messages to hands and such
@@ -80,6 +81,7 @@ public class PlayerController : MonoBehaviour
         bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>();                                                                                                          //Get renderer component for player's physical body
         camOffset = cam.transform.parent;                                                                                                                                      //Get camera offset object
         inputMap = GetComponent<PlayerInput>().actions.FindActionMap("XRI Generic Interaction");                                                                               //Get generic input map from PlayerInput component
+        combatHUD = GetComponentInChildren<CombatHUDController>();                                                                                                             //Get the combat HUD canvas
         screenShaker = cam.GetComponent<ScreenShakeVR>();                                                                                                                      //Get screenshaker script from camera object
 
         ActionBasedController[] hands = GetComponentsInChildren<ActionBasedController>();                                    //Get both hands in player object

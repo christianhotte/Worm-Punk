@@ -8222,6 +8222,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1952950442865560246}
     m_Modifications:
+    - target: {fileID: 3600267804620783397, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3600267804620783397, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3600267804620783397, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3600267804620783397, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3887413093800585517, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -8309,6 +8325,22 @@ PrefabInstance:
     - target: {fileID: 4530261824722215322, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
       propertyPath: m_Name
       value: CombatHUDCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7568389364414321773, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7568389364414321773, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7568389364414321773, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7568389364414321773, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d73f3010d975c434ab95c2b23e9e9d88, type: 3}
