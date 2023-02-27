@@ -220,6 +220,8 @@ public class NetworkPlayer : MonoBehaviour
             if (killedPlayer)
             {
                 networkPlayerStats.numOfDeaths++;                                                                      //Increment death counter
+                PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
+                SyncStats();
                 PhotonNetwork.GetPhotonView(enemyID).RPC("RPC_KilledEnemy", RpcTarget.AllBuffered, photonView.ViewID); //Indicate that this player has been killed by enemy
             }
         }
@@ -253,6 +255,8 @@ public class NetworkPlayer : MonoBehaviour
         {
             networkPlayerStats.numOfKills++;
             print(PhotonNetwork.LocalPlayer.NickName + " killed enemy with index " + enemyID);
+            PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
+            SyncStats();
         }
     }
 
