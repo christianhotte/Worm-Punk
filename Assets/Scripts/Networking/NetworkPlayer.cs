@@ -206,15 +206,25 @@ public class NetworkPlayer : MonoBehaviour
             trail.colorGradient.colorKeys[x].color = settings.testColor; //Apply color setting to trail key
         }
     }
+
     /// <summary>
     /// Indicates that this player has been hit by a networked projectile.
     /// </summary>
     /// <param name="damage">How much damage the projectile dealt.</param>
     [PunRPC]
-    public void RPC_Hit(int damage)
+    public void RPC_Hit(int damage, int enemyID)
     {
-        if (photonView.IsMine) PlayerController.instance.IsHit(damage); //Inflict damage upon local player
+        if (photonView.IsMine)
+        {
+            bool killedPlayer = PlayerController.instance.IsHit(damage); //Inflict damage upon local player
+            if (killedPlayer)
+            {
+                networkPlayerStats.numOfDeaths++;                                                                      //Increment death counter
+                PhotonNetwork.GetPhotonView(enemyID).RPC("RPC_KilledEnemy", RpcTarget.AllBuffered, photonView.ViewID); //Indicate that this player has been killed by enemy
+            }
+        }
     }
+
     /// <summary>
     /// Launches this player with given amount of force.
     /// </summary>
@@ -223,6 +233,7 @@ public class NetworkPlayer : MonoBehaviour
     {
         if (photonView.IsMine) PlayerController.instance.bodyRb.AddForce(force, ForceMode.VelocityChange); //Apply launch force to client rigidbody
     }
+
     /// <summary>
     /// Indicates that this player has successfully hit an enemy with a projecile.
     /// </summary>
@@ -231,6 +242,20 @@ public class NetworkPlayer : MonoBehaviour
     {
         if (photonView.IsMine) PlayerController.instance.HitEnemy(); //Indicate that local player has hit an enemy
     }
+
+    /// <summary>
+    /// Indicates that this player has successfully killed an enemy.
+    /// </summary>
+    /// <param name="enemyID"></param>
+    public void RPC_KilledEnemy(int enemyID)
+    {
+        if (photonView.IsMine)
+        {
+            networkPlayerStats.numOfKills++;
+            print(PhotonNetwork.LocalPlayer.NickName + " killed enemy with index " + enemyID);
+        }
+    }
+
     /// <summary>
     /// Moves client player to designated position.
     /// </summary>

@@ -239,7 +239,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// Method called when this player is hit by a projectile.
     /// </summary>
-    public void IsHit(int damage)
+    public bool IsHit(int damage)
     {
         //Hit effects:
         currentHealth -= Mathf.Max((float)damage, 0);                           //Deal projectile damage, floor at 0
@@ -249,11 +249,13 @@ public class PlayerController : MonoBehaviour
         if (currentHealth <= 0) //Player is being killed by this projectile hit
         {
             IsKilled(); //Indicate that player has been killed
+            return true;
         }
         else //Player is being hurt by this projectile hit
         {
             audioSource.PlayOneShot(healthSettings.hurtSound != null ? healthSettings.hurtSound : (AudioClip)Resources.Load("Sounds/Default_Hurt_Sound")); //Play hurt sound
             if (healthSettings.regenSpeed > 0) timeUntilRegen = healthSettings.regenPauseTime;                                                             //Optionally begin regeneration sequence
+            return false;
         }
     }
     /// <summary>
