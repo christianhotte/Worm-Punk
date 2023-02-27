@@ -249,6 +249,7 @@ public class NetworkPlayer : MonoBehaviour
     /// Indicates that this player has successfully killed an enemy.
     /// </summary>
     /// <param name="enemyID"></param>
+    [PunRPC]
     public void RPC_KilledEnemy(int enemyID)
     {
         if (photonView.IsMine)
