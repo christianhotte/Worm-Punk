@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class HoopBoost : MonoBehaviour
 {
-    public Transform hoopFront,hoopBack;
+    public Transform hoopCenter;
     private PlayerController PC;
     private Rigidbody playerRB;
-    public float boostAmount,hoopRange;
+    public float boostAmount;
     internal bool launchin = false;
     // Start is called before the first frame update
     void Start()
@@ -17,68 +17,21 @@ public class HoopBoost : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Collider[] frontHits = Physics.OverlapSphere(hoopFront.position, hoopRange, LayerMask.GetMask("Player"));
-        foreach (var hit in frontHits)
-        {
-            if (hit.name == "XR Origin") //Makes sure its not the hands
-            {
-                PC = hit.gameObject.GetComponentInParent<PlayerController>();
-                if (!PC.Launchin)
-                {
-                    StartCoroutine(HoopLaunchFront(hit));
-                    break;
-                }
-            }
-            else
-            {
-                break;
-            }
-        }
-        Collider[] backHits = Physics.OverlapSphere(hoopBack.position, hoopRange, LayerMask.GetMask("Player"));
-        foreach (var hit in backHits)
-        {
-            if (hit.name == "XR Origin") //Makes sure its not the hands
-            {
-                PC = hit.gameObject.GetComponentInParent<PlayerController>();
-                if (!PC.Launchin)
-                {
-                    StartCoroutine(HoopLaunchBack(hit));
-                    break;
-                }
-            }
-            else
-            {
-                break;
-            }
-        }
+          
     }
-    public IEnumerator HoopLaunchFront(Collider hitPlayer)
+    public IEnumerator HoopLaunch(Collider hitPlayer)
     {
-        Debug.Log("FrontLaunch");
-        PC = hitPlayer.gameObject.GetComponentInParent<PlayerController>();
-        PC.Launchin = true;
-        playerRB = hitPlayer.GetComponent<Rigidbody>();
-        playerRB.velocity += hoopFront.forward * -boostAmount;
-        yield return new WaitForSeconds(0.2f);
-        PC.Launchin = false;
+        Debug.Log("boostCalled");
+        launchin = true;
+        PC = PlayerController.instance;
+        playerRB = PC.bodyRb;
 
-    }
-    public IEnumerator HoopLaunchBack(Collider hitPlayer)
-    {
-        Debug.Log("BackLaunch");
-        PC = hitPlayer.gameObject.GetComponentInParent<PlayerController>();
-        PC.Launchin = true;
+        Vector3 entryVel = Vector3.Project(playerRB.velocity, hoopCenter.forward);
+        Vector3 exitVel = entryVel.normalized*boostAmount;
         playerRB = hitPlayer.GetComponent<Rigidbody>();
-        playerRB.velocity += hoopBack.forward * -boostAmount;
+        playerRB.velocity += entryVel;
         yield return new WaitForSeconds(0.2f);
-        PC.Launchin = false;
+        launchin = false;
+    }
 
-    }
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(hoopFront.position, hoopRange);
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(hoopBack.position, hoopRange);
-    }
 }
