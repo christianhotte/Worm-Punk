@@ -40,6 +40,8 @@ public class GameManager : MonoBehaviour
                 return true;
             case "NetworkLockerRoom":
                 return true;
+            case "JustinMenuScene":
+                return true;
             default:
                 return false;
         }

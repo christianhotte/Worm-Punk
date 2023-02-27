@@ -12,6 +12,7 @@ public class LevelTimer : MonoBehaviour
 
     private TextMeshProUGUI timerText;  //The timer text component
 
+    private bool timerActivated;  //If true, the timer has been activated. If false, the timer has not been activated
     private bool timerActive;   //If true, the timer is active. If false, the timer is not active
     private bool timerEnded;    //If true, the timer has ended. If false, the timer has not ended
 
@@ -20,16 +21,15 @@ public class LevelTimer : MonoBehaviour
     private void Start()
     {
         timerText = GetComponent<TextMeshProUGUI>();
+        timerActivated = false;
         timerActive = false;
 
-        ActivateTimer();
+        if(!GameManager.Instance.InMenu())
+            ActivateTimer();
     }
 
     private void OnEnable()
     {
-        if (!timerActive)
-            ActivateTimer();
-
         OnTimerEnd.AddListener(BackToLockerRoom);
     }
 
@@ -38,19 +38,22 @@ public class LevelTimer : MonoBehaviour
     /// </summary>
     private void ActivateTimer()
     {
-        if (PhotonNetwork.CurrentRoom != null)
+        if (PhotonNetwork.CurrentRoom != null && !timerActivated)
         {
             Debug.Log("Round Length: " + (int)PhotonNetwork.CurrentRoom.CustomProperties["RoundLength"]);
             if ((int)PhotonNetwork.CurrentRoom.CustomProperties["RoundLength"] < 0)
             {
                 timerActive = false;
                 timerText.color = new Color(0, 0, 0, 0);
+                timerActivated = true;
             }
             else
             {
+                Debug.Log("Timer Started!");
                 SetLevelTime((int)PhotonNetwork.CurrentRoom.CustomProperties["RoundLength"]);
                 currentTime = levelTime;
                 timerActive = true;
+                timerActivated = true;
             }
         }
     }
@@ -80,6 +83,7 @@ public class LevelTimer : MonoBehaviour
                 Debug.Log("Time Is Up!");
                 OnTimerEnd.Invoke();
                 timerEnded = true;
+                gameObject.SetActive(false);
             }
         }
     }
@@ -97,10 +101,7 @@ public class LevelTimer : MonoBehaviour
     /// </summary>
     public void BackToLockerRoom()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            PhotonNetwork.LoadLevel(NetworkManagerScript.instance.roomScene);
-        }
+        NetworkManagerScript.instance.LoadSceneWithFade(NetworkManagerScript.instance.roomScene);
     }
 
     public string GetMinutes() => Mathf.FloorToInt(currentTime / 60f).ToString();
