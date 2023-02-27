@@ -91,6 +91,10 @@ public class PlayerController : MonoBehaviour
         inputMap = GetComponent<PlayerInput>().actions.FindActionMap("XRI Generic Interaction");                                                                               //Get generic input map from PlayerInput component
         combatHUD = GetComponentInChildren<CombatHUDController>();                                                                                                             //Get the combat HUD canvas
         screenShaker = cam.GetComponent<ScreenShakeVR>();                                                                                                                      //Get screenshaker script from camera object
+        foreach (Volume volume in GetComponentsInChildren<Volume>()) //Iterate through Volume components in children
+        {
+            if (volume.name.Contains("Health")) healthVolume = volume; //Get health volume
+        }
 
         ActionBasedController[] hands = GetComponentsInChildren<ActionBasedController>();                                    //Get both hands in player object
         if (hands[0].name.Contains("Left") || hands[0].name.Contains("left")) { leftHand = hands[0]; rightHand = hands[1]; } //First found component is on left hand
