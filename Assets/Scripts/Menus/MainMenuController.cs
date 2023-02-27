@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 
 public class MainMenuController : MonoBehaviour
 {
-    public enum MenuArea { SETTINGS, FINAL }
+    public enum MenuArea { SETTINGS, FINAL, TUBE }
 
     private PlayerController playerObject;
     [SerializeField, Tooltip("The positions for where the player moves to in the menu areas.")] private Transform[] menuLocations;
 
-    private async void Start()
+    private void Start()
     {
-        /// Move the player forward on the coveyor once the game starts
+        /// Move the player forward on the conveyor once the game starts
         playerObject = FindObjectOfType<PlayerController>();
-        await Task.Delay(8000);
-        StartCoroutine(MovePlayerInMenu(MenuArea.SETTINGS, 10));
+        Invoke("TransportToSettings", 3);
     }
 
     public void GoToArena()
@@ -30,10 +29,9 @@ public class MainMenuController : MonoBehaviour
     /// <summary>
     /// Transports the player to the settings area.
     /// </summary>
-    /// <param name="speed">The number of seconds it takes to move from the main area to the settings area.</param>
-    public void TransportToSettings(float speed)
+    private void TransportToSettings()
     {
-        
+        StartCoroutine(MovePlayerInMenu(MenuArea.SETTINGS, 10));
     }
 
     /// <summary>
@@ -44,6 +42,15 @@ public class MainMenuController : MonoBehaviour
     {
         //NetworkManagerScript.instance.JoinLobby();
         StartCoroutine(MovePlayerInMenu(MenuArea.FINAL, speed));
+    }
+
+    /// <summary>
+    /// Transports the player to the tube.
+    /// </summary>
+    /// <param name="speed">The number of seconds it takes to move from the final area to the tube.</param>
+    public void TransportToTube(float speed)
+    {
+        StartCoroutine(MovePlayerInMenu(MenuArea.TUBE, speed));
     }
 
     /// <summary>

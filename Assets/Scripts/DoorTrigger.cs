@@ -4,23 +4,12 @@ using UnityEngine;
 
 public class DoorTrigger : MonoBehaviour
 {
+    [SerializeField, Tooltip("The animator for the door.")] private Animator DoorAnimator;
 
-    public Animator DoorAnimator;
-    // Start is called before the first frame update
-    void Start()
+    private void OnTriggerEnter(Collider other)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    private void OnTriggerEnter (Collider Other)
-    {
-        if (Other.CompareTag ("Player"))
+        //If the trigger collides with the player, raise the tube door
+        if (other.CompareTag("Player"))
         {
             DoorAnimator.Play("Tube_Door_Up");
         }
