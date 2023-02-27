@@ -629,6 +629,8 @@ MonoBehaviour:
   reciprocatingAssembly: {fileID: 7328409781723570937}
   leftEjectorAssembly: {fileID: 6200616886600996258}
   rightEjectorAssembly: {fileID: 4350240499129110074}
+  leftFiringPin: {fileID: 5061628011009645931}
+  rightFiringPin: {fileID: 7792546152881175622}
   debugFireLocal: 0
 --- !u!82 &1227148531296601667
 AudioSource:

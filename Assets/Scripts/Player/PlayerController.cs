@@ -9,6 +9,7 @@ using Photon.Realtime;
 using UnityEngine.SceneManagement;
 using RootMotion.FinalIK;
 using UnityEngine.Events;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// Manages overall player stats and abilities.
@@ -26,6 +27,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Controller component for player's left hand.")]              internal ActionBasedController leftHand;
     [Tooltip("Controller component for player's right hand.")]             internal ActionBasedController rightHand;
     [Tooltip("Equipment which is currently attached to the player")]       internal List<PlayerEquipment> attachedEquipment = new List<PlayerEquipment>();
+    [Tooltip("Combat HUD Canvas.")]                                        internal CombatHUDController combatHUD;    
 
     internal Camera cam;                       //Primary camera for VR rendering, located on player head
     internal PlayerInput input;                //Input manager component used by player to send messages to hands and such
@@ -34,6 +36,7 @@ public class PlayerController : MonoBehaviour
     private Transform camOffset;               //Object used to offset camera position in case of weirdness
     private InputActionMap inputMap;           //Input map which player uses
     private ScreenShakeVR screenShaker;        //Component used to safely shake player's screen without causing nausea
+    private Volume healthVolume;               //Post-processing volume used to visualize player health
 
     //Settings:
     [Header("Settings:")]
@@ -63,6 +66,12 @@ public class PlayerController : MonoBehaviour
     private GameObject[] weapons;   //A list of active weapons on the player NOTE: Can this be replaced by attachedEquipment?
     private GameObject[] tools;     //A list of active tools on the player NOTE: Can this be replaced by attachedEquipment?
 
+    //Utility Variables:
+    /// <summary>
+    /// What percentage of maximum player health they currently have.
+    /// </summary>
+    public float HealthPercent { get { return currentHealth / (float)healthSettings.defaultHealth; } }
+
     //RUNTIME METHODS:
     private void Awake()
     {
@@ -80,7 +89,12 @@ public class PlayerController : MonoBehaviour
         bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>();                                                                                                          //Get renderer component for player's physical body
         camOffset = cam.transform.parent;                                                                                                                                      //Get camera offset object
         inputMap = GetComponent<PlayerInput>().actions.FindActionMap("XRI Generic Interaction");                                                                               //Get generic input map from PlayerInput component
+        combatHUD = GetComponentInChildren<CombatHUDController>();                                                                                                             //Get the combat HUD canvas
         screenShaker = cam.GetComponent<ScreenShakeVR>();                                                                                                                      //Get screenshaker script from camera object
+        foreach (Volume volume in GetComponentsInChildren<Volume>()) //Iterate through Volume components in children
+        {
+            if (volume.name.Contains("Health")) healthVolume = volume; //Get health volume
+        }
 
         ActionBasedController[] hands = GetComponentsInChildren<ActionBasedController>();                                    //Get both hands in player object
         if (hands[0].name.Contains("Left") || hands[0].name.Contains("left")) { leftHand = hands[0]; rightHand = hands[1]; } //First found component is on left hand
@@ -169,6 +183,7 @@ public class PlayerController : MonoBehaviour
             else if (currentHealth < healthSettings.defaultHealth) //Regen wait time is zero and player has lost health
             {
                 currentHealth = Mathf.Min(currentHealth + (healthSettings.regenSpeed * Time.deltaTime), healthSettings.defaultHealth); //Regenerate until player is back to default health
+                healthVolume.weight = 1 - HealthPercent;                                                                               //Update health visualization
             }
         }
     }
@@ -243,6 +258,7 @@ public class PlayerController : MonoBehaviour
     {
         //Hit effects:
         currentHealth -= Mathf.Max((float)damage, 0);                           //Deal projectile damage, floor at 0
+        healthVolume.weight = 1 - HealthPercent;                                //Update health visualization
         print(damage + " damage dealt to player with ID " + photonView.ViewID); //Indicate that damage has been dealt
 
         //Death check:
@@ -285,6 +301,7 @@ public class PlayerController : MonoBehaviour
             xrOrigin.transform.position = spawnpoint.position;                 //Move spawned player to target position
         }
         currentHealth = healthSettings.defaultHealth; //Reset to max health
+        healthVolume.weight = 0;                      //Reset health volume weight
         print("Local player has been killed!");
     }
     /// <summary>

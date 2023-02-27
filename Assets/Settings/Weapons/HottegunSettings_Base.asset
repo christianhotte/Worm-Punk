@@ -203,7 +203,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  barrelReciprocationDistance: 1.1
+  barrelReciprocationDistance: 0.24
   barrelReciproCurve:
     serializedVersion: 2
     m_Curve:
@@ -272,6 +272,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  pinTraverseDistance: 0.05
   fireHaptics:
     amplitude: 1
     duration: 0.15
