@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 using Photon.Realtime;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -45,5 +46,25 @@ public class GameManager : MonoBehaviour
             default:
                 return false;
         }
+    }
+
+    // Gets the name of the last scene David Wu ;)
+    public string GetLastSceneName()
+    {
+        // Retreiving the total number of scenes in build settings
+        int sceneCount = SceneManager.sceneCountInBuildSettings;
+
+        // Retreuving root objects of the active scene.
+        GameObject[] rootObjects = SceneManager.GetActiveScene().GetRootGameObjects();
+
+        // Using Linq to sort scenes based on their build index and filters any scenes without any root game objects in the active scene
+        var sortedScenes = Enumerable.Range(0, sceneCount)
+            .Select(i => SceneUtility.GetScenePathByBuildIndex(i))
+            .Where(path => rootObjects.Any(o => o.scene.path == path))
+            .OrderBy(path => SceneManager.GetSceneByPath(path).buildIndex)
+            .ToList();      // Convert to list but we are just retreiving the last one.
+
+        // Gets the last scene name from the list.
+        return sortedScenes.LastOrDefault();
     }
 }
