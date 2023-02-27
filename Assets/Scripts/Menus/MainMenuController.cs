@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -10,12 +11,12 @@ public class MainMenuController : MonoBehaviour
     private PlayerController playerObject;
     [SerializeField, Tooltip("The positions for where the player moves to in the menu areas.")] private Transform[] menuLocations;
 
-    private void Start(float speed)
+    private async void Start()
     {
         /// Move the player forward on the coveyor once the game starts
         playerObject = FindObjectOfType<PlayerController>();
-        await Task.Delay(int 3000);
-        StartCoroutine(MovePlayerInMenu(MenuArea.SETTINGS, speed));
+        await Task.Delay(8000);
+        StartCoroutine(MovePlayerInMenu(MenuArea.SETTINGS, 10));
     }
 
     public void GoToArena()
