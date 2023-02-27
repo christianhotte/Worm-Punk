@@ -10,9 +10,12 @@ public class MainMenuController : MonoBehaviour
     private PlayerController playerObject;
     [SerializeField, Tooltip("The positions for where the player moves to in the menu areas.")] private Transform[] menuLocations;
 
-    private void Start()
+    private void Start(float speed)
     {
+        /// Move the player forward on the coveyor once the game starts
         playerObject = FindObjectOfType<PlayerController>();
+        await Task.Delay(int 3000);
+        StartCoroutine(MovePlayerInMenu(MenuArea.SETTINGS, speed));
     }
 
     public void GoToArena()
@@ -29,7 +32,7 @@ public class MainMenuController : MonoBehaviour
     /// <param name="speed">The number of seconds it takes to move from the main area to the settings area.</param>
     public void TransportToSettings(float speed)
     {
-        StartCoroutine(MovePlayerInMenu(MenuArea.SETTINGS, speed));
+        
     }
 
     /// <summary>
