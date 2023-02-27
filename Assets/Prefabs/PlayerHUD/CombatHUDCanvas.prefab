@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Kills: 000'
+  m_text: 'Kills: 0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9662503dff9ddbb4cbde104774fd96d7, type: 2}
   m_sharedMaterial: {fileID: -8786447031218050273, guid: 9662503dff9ddbb4cbde104774fd96d7, type: 2}
@@ -276,7 +276,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Deaths: 000'
+  m_text: 'Deaths: 0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9662503dff9ddbb4cbde104774fd96d7, type: 2}
   m_sharedMaterial: {fileID: -8786447031218050273, guid: 9662503dff9ddbb4cbde104774fd96d7, type: 2}
