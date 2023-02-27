@@ -11,9 +11,8 @@ using Photon.Pun;
 public class NewShotgunController : PlayerEquipment
 {
     //Objects & Components:
-    internal ConfigurableJoint breakJoint;         //Joint controlling weapon's break action
-    internal RemoteShotgunController networkedGun; //Remote weapon script used to fire guns on the network
-    internal NewShotgunController otherGun;        //Shotgun in the player's other hand
+    internal ConfigurableJoint breakJoint;  //Joint controlling weapon's break action
+    internal NewShotgunController otherGun; //Shotgun in the player's other hand
 
     private ParticleSystem shotParticles; //Particle system which activates each time weapon is fired
 
@@ -36,7 +35,8 @@ public class NewShotgunController : PlayerEquipment
     private bool triggerPulled = false; //Whether or not the trigger is currently pulled
     private float doubleFireWindow = 0; //Above zero means that weapon has just been fired and firing another weapon will cause a double fire
     internal bool locked = false;       //Lets the other equipment disable the guns
-    private bool reverseFiring = false; //True when player is holding down reverse fire button
+    private int reverseFireStage = 0;   //Used to twirl guns and fire them backwards. Progressed from 0 to 3 (in order to make sure guns always spin the correct way)
+    private float recoilRotOffset = 0;  //Current rotational offset along the X axis due to weapon recoil sequence
     private string projResourceName;    //Calculated at start, the name/directory of projectile this weapon uses in the Resources folder
 
     private Vector3 baseScale;       //Initial scale of weapon
@@ -53,7 +53,7 @@ public class NewShotgunController : PlayerEquipment
         //Initialize:
         SetWobble(gunSettings.triggerDamper / 2);                                     //Super lock down weapon swinginess
         Vector3 maxOffset = gunSettings.recoilDistance * Vector3.back;                //Get greatest offset value which weapon will reach during recoil phase
-        Quaternion maxRotation = Quaternion.Euler(-gunSettings.recoilRotation, 0, 0); //Get greatest rotation value which weapon will reaach during recoil phase
+        //Quaternion maxRotation = Quaternion.Euler(-gunSettings.recoilRotation, 0, 0); //Get greatest rotation value which weapon will reaach during recoil phase
         Vector3 maxScale = gunSettings.recoilScale * baseScale;                       //Get greatest scale value which weapon will reach during recoil phase
 
         Vector3 barrelTargetPos = (gunSettings.barrelReciprocationDistance * Vector3.back) + baseReciproPos; //Get target position barrels reciprocate to
@@ -67,7 +67,8 @@ public class NewShotgunController : PlayerEquipment
             //Main recoil animations:
             SetWobble(Mathf.Lerp(gunSettings.triggerDamper / 2, jointSettings.angularDriveDamper, timeValue * 2));                                             //Slowly release weapon tightness so that recoil wobble may begin
             currentAddOffset = Vector3.LerpUnclamped(Vector3.zero, maxOffset, gunSettings.recoilCurve.Evaluate(timeValue));                                    //Modify follower offset so that weapon is moved backwards/forwards
-            currentAddRotOffset = Quaternion.LerpUnclamped(Quaternion.identity, maxRotation, gunSettings.recoilRotationCurve.Evaluate(timeValue)).eulerAngles; //Modify follower rotation so that weapon is rotated upwards
+            recoilRotOffset = Mathf.LerpUnclamped(0, -gunSettings.recoilRotation, gunSettings.recoilRotationCurve.Evaluate(timeValue));                        //Modify follower rotation so that weapon is rotated upwards
+            //currentAddRotOffset = Quaternion.LerpUnclamped(Quaternion.identity, maxRotation, gunSettings.recoilRotationCurve.Evaluate(timeValue)).eulerAngles; //Modify follower rotation so that weapon is rotated upwards
             transform.localScale = Vector3.LerpUnclamped(baseScale, maxScale, gunSettings.recoilScaleCurve.Evaluate(timeValue));                               //Adjust scale based on settings and curve
 
             //Secondary animations:
@@ -81,6 +82,7 @@ public class NewShotgunController : PlayerEquipment
         SetWobble(jointSettings.angularDriveDamper);          //Return wobble to its base amount
         reciprocatingAssembly.localPosition = baseReciproPos; //Return reciprocating barrels to base position
         currentAddOffset = Vector3.zero;                      //Return system to base position
+        recoilRotOffset = 0;                                  //Return system to base rotation
         transform.localScale = baseScale;                     //Reset weapon to base scale
     }
     /// <summary>
@@ -177,6 +179,24 @@ public class NewShotgunController : PlayerEquipment
             }
         }
     }
+    private protected override void FixedUpdate()
+    {
+        base.FixedUpdate(); //Call base fixed update stuff
+
+        //Update rotation offset:
+        if (currentAddRotOffset != Vector3.zero || recoilRotOffset != 0 || reverseFireStage > 0) //Rotation offset needs to be modified this update
+        {
+            //Set new rotational offset:
+            Vector3 newRotOffset = Vector3.zero;     //Initialize value to store new rotational offset eulers in
+            newRotOffset.x += recoilRotOffset;       //Apply current recoil rotation to offset
+            newRotOffset.x -= 90 * reverseFireStage; //Use reverse firing stages to twirl gun around in consistent direction
+            currentAddRotOffset = newRotOffset;      //Set new rotational offset
+
+            //Progress reverse firing state:
+            if (reverseFireStage == 1) reverseFireStage = 2;      //Progress state to stable active position
+            else if (reverseFireStage == 3) reverseFireStage = 0; //Progress state to stable inactive position
+        }
+    }
 
     //INPUT METHODS:
     private protected override void InputActionTriggered(InputAction.CallbackContext context)
@@ -219,8 +239,16 @@ public class NewShotgunController : PlayerEquipment
                 }
                 break;
             case "AButton":
-                if (context.started) reverseFiring = true;        //Begin reverse fire mode
-                else if (context.canceled) reverseFiring = false; //End reverse fire mode
+                if (context.started) //Reverse fire button has just been pressed
+                {
+                    if (reverseFireStage == 0 || reverseFireStage == 3) reverseFireStage = 1; //Progress reverse fire staging system into starting state
+                    if (breachOpen) Close();                                                  //Close breach on button press if possible
+                }
+                else if (context.canceled) //Reverse fire button has just been released
+                {
+                    if (reverseFireStage == 2 || reverseFireStage == 1) reverseFireStage = 3; //Progress reverse fire staging system into finishing state
+                    if (breachOpen) Close();                                                  //Close breach on button release if possible
+                }
                 break;
             default: break; //Ignore unrecognized actions
         }
@@ -237,30 +265,25 @@ public class NewShotgunController : PlayerEquipment
         if (breachOpen) { DryFire(); return projectile; }                         //Dry-fire if weapon breach is open
         if (locked) return projectile;                                            //Return if locked by another weapon
         Transform currentBarrel = barrels[currentBarrelIndex];                    //Get reference to active barrel
-        Vector3 fireDirection = currentBarrel.forward * (reverseFiring ? -1 : 1); //Get direction weapon is firing in (reverse if indicated
 
-        //Instantiate projectile(s):
-        if (!reverseFiring) //Player is firing forwards (normally)
+        //Fire projectile:
+        if (debugFireLocal) //Weapon is in local fire mode
         {
-            //Fire projectile:
-            if (networkedGun == null || debugFireLocal) //Weapon is in local fire mode
-            {
-                projectile = ((GameObject)Instantiate(Resources.Load(projResourceName))).GetComponent<Projectile>(); //Instantiate projectile
-                projectile.FireDumb(currentBarrel);                                                                  //Initialize projectile
-            }
-            else //Weapon is firing on the network
-            {
-                projectile = PhotonNetwork.Instantiate(projResourceName, currentBarrel.position, currentBarrel.rotation).GetComponent<Projectile>();      //Instantiate projectile on network
-                projectile.photonView.RPC("RPC_Fire", RpcTarget.All, currentBarrel.position, currentBarrel.rotation, PlayerController.photonView.ViewID); //Initialize all projectiles simultaneously
-            }
+            projectile = ((GameObject)Instantiate(Resources.Load(projResourceName))).GetComponent<Projectile>(); //Instantiate projectile
+            projectile.FireDumb(currentBarrel);                                                                  //Initialize projectile
+        }
+        else //Weapon is firing on the network
+        {
+            projectile = PhotonNetwork.Instantiate(projResourceName, currentBarrel.position, currentBarrel.rotation).GetComponent<Projectile>();      //Instantiate projectile on network
+            projectile.photonView.RPC("RPC_Fire", RpcTarget.All, currentBarrel.position, currentBarrel.rotation, PlayerController.photonView.ViewID); //Initialize all projectiles simultaneously
+        }
 
-            //Fire particle effect:
-            if (shotParticles != null) //Player has shot particle system (particles need to be shot before recoil scaling occurs)
-            {
-                //NOTE: Re-tool this system to spawn a prefab effect which lingers in the air
-                shotParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); //Reset particle system
-                shotParticles.Play();                                                      //Play particle effect
-            }
+        //Fire particle effect:
+        if (shotParticles != null) //Player has shot particle system (particles need to be shot before recoil scaling occurs)
+        {
+            //NOTE: Re-tool this system to spawn a prefab effect which lingers in the air
+            shotParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); //Reset particle system
+            shotParticles.Play();                                                      //Play particle effect
         }
 
         //Effects:
@@ -274,11 +297,20 @@ public class NewShotgunController : PlayerEquipment
             SendHapticImpulse(gunSettings.fireHaptics);      //Play haptic impulse
             player.ShakeScreen(gunSettings.fireScreenShake); //Shake screen (gently)
 
-            //Player launching:
-            float effectiveFireVel = gunSettings.fireVelocity;                                                      //Store fire velocity so it can be optionally modified
-            if (otherGun != null && otherGun.doubleFireWindow > 0) effectiveFireVel *= gunSettings.doubleFireBoost; //Apply boost if player is firing both weapons simultaneously
-            Vector3 newVelocity = -fireDirection * effectiveFireVel;                                                //Store new velocity for player (always directly away from barrel that fired latest shot, unless reverse firing)
-            float velocityAngleDelta = Vector3.Angle(newVelocity, player.bodyRb.velocity);                          //Get angle between current velocity and new velocity
+            //Exit velocity modifiers:
+            float effectiveFireVel = gunSettings.fireVelocity;                                                  //Store fire velocity so it can be optionally modified
+            if (otherGun != null && otherGun.doubleFireWindow > 0 &&                                            //Player is firing both weapons simultaneously...
+                otherGun.reverseFireStage == reverseFireStage) effectiveFireVel *= gunSettings.doubleFireBoost; //And both weapons are in the same firing mode, apply double-fire boost
+            if (reverseFireStage == 2) effectiveFireVel *= gunSettings.reverseFireBoost;                        //Add reverse firing boost
+            if (Physics.Raycast(currentBarrel.position, currentBarrel.forward, out RaycastHit hit, gunSettings.maxWallBoostDist, gunSettings.wallBoostLayers)) //Weapon is firing at a nearby wall
+            {
+                float distInterpolant =  1 - (hit.distance / gunSettings.maxWallBoostDist); //Get interpolant value representing how close weapon barrel is to a wall (the closer the higher)
+                effectiveFireVel *= gunSettings.maxWallBoost * distInterpolant;             //Apply multiplier to shot power based on how close player is to the wall
+            }
+
+            //Apply velocity to player
+            Vector3 newVelocity = -currentBarrel.forward * effectiveFireVel;                                    //Store new velocity for player (always directly away from barrel that fired latest shot, unless reverse firing)
+            float velocityAngleDelta = Vector3.Angle(newVelocity, player.bodyRb.velocity);                      //Get angle between current velocity and new velocity
             if (velocityAngleDelta <= gunSettings.additiveVelocityMaxAngle) //Player is firing to push themself in the direction they are generally already going
             {
                 float velAngleInterpolant = 1 - (velocityAngleDelta / gunSettings.additiveVelocityMaxAngle); //Get interpolant value for closeness of velocity angles
