@@ -54,7 +54,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         Hashtable customRoomSettings = new Hashtable();
 
-        customRoomSettings.Add("RoundLength", 300);
+        customRoomSettings.Add("RoundLength", 30);
 
         roomOptions.IsVisible = true; // The player is able to see the room
         roomOptions.IsOpen = true; // The room is open.
@@ -133,8 +133,8 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     }
 
     //List of random adjectives and nouns to name random players
-    private string[] wormAdjectives = { "Unfortunate", "Sad", "Despairing", "Grotesque", "Despicable", "Abhorrent", "Regrettable", "Platonic", "Hideous", "Guzzling", "Fleshy", "Glum", "Erect", "Sopping", "Throbbing", "Undulating", "Treacherous", "Hostile", "Slimy", "Squirming", "Blubbering", "Twisted", "Manic", "Slippery", "Wet", "Moist", "Lugubrious", "Tubular", "Flaccid", "Little", "Erratic", "Pathetic" };
-    private string[] wormNouns = { "Invertebrate", "Creature", "Critter", "Specimen", "Homonculus", "Grubling", "Wormling", "Nightcrawler", "Stinker", "Guzzler", "Rapscallion", "Scalliwag", "Beastling", "Crawler", "Larva", "Freak", "Blighter", "Cretin", "Unit", "Denizen", "Wiggler", "Maggot", "Creepy-Crawlie", "Parasite", "Organism" };
+    private string[] wormAdjectives = { "Unfortunate", "Sad", "Despairing", "Grotesque", "Despicable", "Abhorrent", "Regrettable", "Incorrigible", "Platonic", "Hideous", "Guzzling", "Fleshy", "Glum", "Sopping", "Throbbing", "Malignant", "Undulating", "Treacherous", "Hostile", "Slimy", "Squirming", "Blubbering", "Twisted", "Manic", "Slippery", "Wet", "Moist", "Lugubrious", "Tubular", "Flaccid", "Little", "Erratic", "Pathetic" };
+    private string[] wormNouns = { "Invertebrate", "Creature", "Critter", "Specimen", "Homonculus", "Grubling", "Wormling", "Nightcrawler", "Stinker", "Guzzler", "Rapscallion", "Scalliwag", "Beastling", "Crawler", "Larva", "Dingus", "Freak", "Blighter", "Cretin", "Unit", "Denizen", "Creepy-Crawlie", "Parasite", "Organism" };
 
     /// <summary>
     /// Generates a random nickname for the player.
