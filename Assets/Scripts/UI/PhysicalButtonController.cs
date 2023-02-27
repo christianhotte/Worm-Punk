@@ -135,7 +135,7 @@ public class PhysicalButtonController : MonoBehaviour
         if (isInteractable && !GameManager.Instance.levelTransitionActive)
         {
             if (onReleasedSoundEffect != null)
-                GetComponent<AudioSource>().PlayOneShot(onReleasedSoundEffect, , PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f) * , PlayerPrefs.GetFloat("MasterVolume", 0.5f));
+                GetComponent<AudioSource>().PlayOneShot(onReleasedSoundEffect, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f));
 
             onReleased.Invoke();
             //Debug.Log(gameObject.name + " Released.");
