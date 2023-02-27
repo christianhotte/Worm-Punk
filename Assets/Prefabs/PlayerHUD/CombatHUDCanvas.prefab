@@ -478,6 +478,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerStatsContainer: {fileID: 4003002181762588263}
+  deathInfoContainer: {fileID: 3854022152191891910}
+  deathInfoPrefab: {fileID: 2780169293417573499, guid: aefd2156ae091d44eb75f298da019a4e, type: 3}
 --- !u!1 &5914177660324273292
 GameObject:
   m_ObjectHideFlags: 0
