@@ -387,4 +387,8 @@ public class PlayerEquipment : MonoBehaviour
         if (properties.behaviorCurve.keys.Length <= 1) SendHapticImpulse(properties.amplitude, properties.duration); //Use simpler impulse method if no curve is given
         else StartCoroutine(HapticEvent(properties.behaviorCurve, properties.amplitude, properties.duration));       //Use coroutine to deploy more complex haptic impulses
     }
+    /// <summary>
+    /// Plays one-shot of given sound, taking into account current volume settings (specific to SFX) (also checks if sound is null so you don't have to).
+    /// </summary>
+    public void PlaySFX(AudioClip sound) { if (sound != null) audioSource.PlayOneShot(sound, PlayerPrefs.GetFloat("MasterVolume") * PlayerPrefs.GetFloat("SFXVolume")); }
 }
