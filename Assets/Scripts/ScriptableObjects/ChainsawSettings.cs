@@ -24,7 +24,9 @@ public class ChainsawSettings : ScriptableObject
     [Min(0), Tooltip("How quickly wrist lerps to match player hand rotation while chainsaw is deployed.")]        public float wristLerpRate;
     [Min(0), Tooltip("Speed (in degrees per second) at which wrist returns to base rotation during retraction.")] public float wristRotReturnRate;
     [Space()]
-    [Range(0, 180), Tooltip("Angle blade turns to when set to reverse mode.")] public float reverseModeAngle;
+    [Range(0, 180), Tooltip("Angle blade turns to when set to reverse mode.")]                          public float reverseGripAngle;
+    [Min(0), Tooltip("How rapidly blade moves to and from reverse grip position.")]                     public float reverseGripLerpRate;
+    [Min(0), Tooltip("How rapidly blade returns from reverse grip position when blade is retracting.")] public float reverseGripReturnRate;
     [Header("Feel & Input:")]
     [Range(0, 1), Tooltip("How much player needs to squeeze the trigger in order to activate the blade.")]           public float triggerThreshold = 1;
     [Range(0, 1), Tooltip("How much player needs to release the trigger in order to sheath the blade.")]             public float releaseThreshold = 0.5f;

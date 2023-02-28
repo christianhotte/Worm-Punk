@@ -60,10 +60,14 @@ public class PlayerEquipment : MonoBehaviour
     /// Equipment in stasis will do nothing and check nothing until it is re-equipped to a player.
     /// </summary>
     internal bool inStasis = false;
+    /// <summary>
+    /// Indicates that this weapon is currently stowed on the player's body and is not in use.
+    /// </summary>
+    internal bool holstered = false;
 
     private InputDeviceRole deviceRole = InputDeviceRole.Generic; //This equipment's equivalent device role (used to determine haptic feedback targets)
     private List<Vector3> relPosMem = new List<Vector3>();        //List of remembered relative positions (taken at FixedUpdate) used to calculate current relative velocity (newest entries are first)
-    
+    private Transform preferredHolster;                           //Holster which this equipment will go to when holstered
 
     //Utility Variables:
     /// <summary>
@@ -120,6 +124,41 @@ public class PlayerEquipment : MonoBehaviour
             foreach (var device in devices) device.SendHapticImpulse(0, currentAmplitude, Time.fixedDeltaTime); //Send a brief haptic pulse at current amplitude (duration is only until next update)
             yield return new WaitForFixedUpdate();                                                              //Wait for next fixed update
         }
+    }
+    /// <summary>
+    /// Moves preferred holster transform to position of actual holster or back to hand, then updates holster status if moving back to hand.
+    /// </summary>
+    /// <param name="holster">Pass true if holstering weapon, false if returning it to hand.</param>
+    /// <returns></returns>
+    private IEnumerator MoveHolster(bool holster = true)
+    {
+        //Initialize:
+        Transform localSpaceParent = player.cam.transform.parent;                                               //Use camera offset as local space because hands are childed to it
+        preferredHolster.parent = localSpaceParent;                                                             //Child holster to local space so we can use those local transforms
+        Transform actualHolster = handedness == Handedness.Left ? player.leftHolster : player.rightHolster;     //Get acutal holster based on equipment handedness
+        Vector3 relativeHolsterPos = localSpaceParent.InverseTransformPoint(actualHolster.position);            //Get position of holster relative to player body
+        Quaternion relativeHolsterRot = Quaternion.Inverse(localSpaceParent.rotation) * actualHolster.rotation; //Get rotation of holster relative to player body
+        Vector3 initialOriginPos = holster ? targetTransform.localPosition : relativeHolsterPos;                //Get initial position to lerp from (which will stay the same throughout process)
+        Quaternion initialOriginRot = holster ? targetTransform.localRotation : relativeHolsterRot;             //Get initial rotation to lerp from (which will stay the same throughout process)
+
+        //Move holster:
+        for (float timePassed = 0; timePassed < jointSettings.holsterSpeed; timePassed += Time.fixedDeltaTime) //Iterate on update until holster time has passed
+        {
+            float timeInterpolant = timePassed / jointSettings.holsterSpeed;                                                                                                                                       //Get interpolant representing progression through holstering animation
+            timeInterpolant = jointSettings.holsterCurve.Evaluate(timeInterpolant);                                                                                                                                //Evaluate time over curve to get a more complex animation
+            preferredHolster.localPosition = Vector3.Lerp(initialOriginPos, holster ? localSpaceParent.InverseTransformPoint(actualHolster.position) : targetTransform.localPosition, timeInterpolant);            //Move weapon toward holster (or toward hand)
+            preferredHolster.localRotation = Quaternion.Lerp(initialOriginRot, holster ? Quaternion.Inverse(localSpaceParent.rotation) * actualHolster.rotation : targetTransform.localRotation, timeInterpolant); //Rotate weapon toward holster (or toward hand)
+            yield return new WaitForFixedUpdate(); //Wait for next fixed update step
+        }
+
+        //Cleanup:
+        if (holster) //Equipment has just finished being holstered
+        {
+            preferredHolster.parent = actualHolster;              //Child transform to actual holster (so it doesn't move around)
+            preferredHolster.localPosition = Vector3.zero;        //Clear any remaining movement holster has
+            preferredHolster.localRotation = Quaternion.identity; //Clear any remaining rotation holster has
+        }
+        holstered = holster; //Update holstered status to false once done, so weapon can resume normal followbody control
     }
 
     //RUNTIME METHODS:
@@ -233,6 +272,12 @@ public class PlayerEquipment : MonoBehaviour
             }
         }
     }
+    private protected virtual void Start()
+    {
+        //Set up holster:
+        preferredHolster = new GameObject(name + "_HolsterMover").transform; //Instantiate an empty transform to serve as preferred holster
+        preferredHolster.parent = playerBody.transform;                      //Child holster to player body
+    }
     private protected virtual void Update()
     {
         if (debugUpdateSettings && Application.isEditor) ConfigureJoint(); //Reconfigure joint every update if debug setting is selected (only necessary in Unity Editor)
@@ -255,7 +300,14 @@ public class PlayerEquipment : MonoBehaviour
         //Unsubscribe from events:
         if (inputMap != null) inputMap.actionTriggered -= TryGiveInput; //Unsubscribe from input event
     }
-    private void TryGiveInput(InputAction.CallbackContext context) { if (player.InCombat()) InputActionTriggered(context); }
+    private void TryGiveInput(InputAction.CallbackContext context)
+    {
+        //Input exception states:
+        if (!player.InCombat()) return; //Ignore equipment input while not in combat
+        if (holstered) return;          //Ignore input while equipment is holstered
+
+        InputActionTriggered(context); //Pass along input
+    }
     private protected virtual void InputActionTriggered(InputAction.CallbackContext context) { }
 
     //FUNCTIONALITY METHODS:
@@ -275,6 +327,15 @@ public class PlayerEquipment : MonoBehaviour
         //Cleanup:
         if (player != null) player.attachedEquipment.Remove(this); //Remove this item from player's running list of attached equipment
         inStasis = true;                                           //Indicate that equipment is now safely in stasis and will not messily try to update itself
+    }
+    /// <summary>
+    /// Holsters or un-holsters weapon. Disables inputs to this piece of equipment, and stows it in appropriate transform on player.
+    /// </summary>
+    /// <param name="holster">Pass true to hoster this equipment, false to un-holster it.</param>
+    public void Holster(bool holster = true)
+    {
+        if (holster) holstered = true;        //Immediately indicate holster status if holstering weapon
+        StartCoroutine(MoveHolster(holster)); //Move holster to designated position over time
     }
 
     //UTILITY METHODS:
@@ -339,13 +400,13 @@ public class PlayerEquipment : MonoBehaviour
     private void PerformFollowerUpdate()
     {
         //Calculate follower position:
-        Vector3 targetPos = targetTransform.position; //Get base target position for rigidbody follower
+        Vector3 targetPos = holstered ? preferredHolster.position : targetTransform.position;                                                     //Get base target position for rigidbody follower (either hand or holster)
         if (jointSettings.velocityCompensation > 0 && playerBody != null) targetPos += playerBody.velocity * jointSettings.velocityCompensation; //Apply target velocity compensation to account for rigidbody lag
         if (jointSettings.offset != Vector3.zero) targetPos += transform.rotation * jointSettings.offset;                                        //Apply constant offset to keep equipment in desired position relative to player
         if (currentAddOffset != Vector3.zero) targetPos += transform.rotation * currentAddOffset;                                                //Apply secondary offset to target position, used by some equipment animations such as shotgun recoil
 
         //Calculate follower rotation:
-        Quaternion targetRot = targetTransform.rotation; //Get base target rotation for rigidbody follower
+        Quaternion targetRot = holstered ? preferredHolster.rotation : targetTransform.rotation; //Get base target rotation for rigidbody follower
         if (currentAddRotOffset != Vector3.zero) //Weapon rotation is currently being affected by an offset
         {
             targetRot *= Quaternion.AngleAxis(currentAddRotOffset.x, Vector3.right);

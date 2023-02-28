@@ -145,8 +145,10 @@ public class NewShotgunController : PlayerEquipment
         baseEjectorRPos = rightEjectorAssembly.localPosition; //Get base local position of right ejector assembly
         basePinPos = leftFiringPin.localPosition;             //Get base local position of both firing pins
     }
-    private void Start()
+    private protected override void Start()
     {
+        base.Start(); //Call base start stuff
+
         //Late component get:
         if (player != null) //Only try this if weapon is attached to a player
         {

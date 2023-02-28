@@ -116,6 +116,9 @@ MonoBehaviour:
   maxWristAngle: 80
   wristLerpRate: 7.7
   wristRotReturnRate: 400
+  reverseGripAngle: 105
+  reverseGripLerpRate: 7
+  reverseGripReturnRate: 500
   triggerThreshold: 0.9
   releaseThreshold: 0.5
   swingSpeedRange: {x: 0.5, y: 2}

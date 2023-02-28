@@ -23,8 +23,10 @@ public class NewChainsawController : PlayerEquipment
     [SerializeField, Tooltip("Joins blade to wrist sheath, seamlessly scalable on the Z axis (Z scale is proportional to blade tip distance).")] private Transform bladeExtender;
     [SerializeField, Tooltip("Secondary blade extension for the backend of the weapon, can be whatever length (Z scale).")]                      private Transform bladeExtenderBack;
     [SerializeField, Tooltip("Jointed component on front of system which moves forward and rotates during blade activation.")]                   private Transform wrist;
+    [SerializeField, Tooltip("Rotating assembly which allows the wrist to be turned downward for reverse grip mode.")]                           private Transform wristPivot;
 
-    private Transform hand; //Real position of player hand used by this equipment
+    private Transform hand;             //Real position of player hand used by this equipment
+    private PlayerEquipment handWeapon; //Player weapon held in the same hand as this chainsaw
 
     //Settings:
     [Header("Settings:")]
@@ -38,12 +40,11 @@ public class NewChainsawController : PlayerEquipment
     private float timeInMode;     //How long weapon has been in current mode for
     private float timeUntilPulse; //Time until next haptic pulse should be triggered (used for repeated pulses while saw is active)
     private float gripValue;      //Latest value from grip input
+    private bool reverseGrip;     //Indicates that player is pressing the input for reverse grip mode (only valid while chainsaw is active)
 
     private Vector3 bladeOriginPos;    //Initial local (sheathed) position of blade
     private Vector3 wristOriginPos;    //Initial local (sheathed) position of wrist assembly
     private float bladeBackOriginSize; //Initial length of rear blade extender
-
-    //EVENTS & COROUTINES:
 
     //RUNTIME METHODS:
     private protected override void Awake()
@@ -59,10 +60,16 @@ public class NewChainsawController : PlayerEquipment
         wristOriginPos = wrist.localPosition;                 //Get starting local position of wrist assembly
         bladeBackOriginSize = bladeExtenderBack.localScale.z; //Get starting local Z scale of rear blade extender
     }
-    private void Start()
+    private protected override void Start()
     {
+        base.Start(); //Call base start stuff
+
         //Late object & component get:
         hand = (handedness == 0 ? player.leftHand : player.rightHand).transform; //Get a reference to the relevant player hand
+        foreach (PlayerEquipment equipment in player.attachedEquipment) //Iterate through all equipment attached to player
+        {
+            if (equipment != this && equipment.handedness == handedness) { handWeapon = equipment; break; } //Try to get weapon used by same hand
+        }
     }
     private protected override void Update()
     {
@@ -86,6 +93,7 @@ public class NewChainsawController : PlayerEquipment
         if (mode == BladeMode.Sheathed && gripValue >= settings.triggerThreshold) //Grip has been squeezed enough to activate the chainsaw
         {
             //Switch modes:
+            if (handWeapon != null) handWeapon.Holster();     //Holster weapon held in hand if possible
             PlaySFX(settings.extendSound);                    //Play extend sound
             SendHapticImpulse(settings.extendHaptics);        //Play extend haptics
             mode = BladeMode.Extending;                       //Indicate that blade is now extending
@@ -95,10 +103,11 @@ public class NewChainsawController : PlayerEquipment
         else if (mode == BladeMode.Extended && gripValue < settings.releaseThreshold) //Grip has been released enough to re-sheath the chainsaw (always check in case of early release)
         {
             //Switch mode:
-            PlaySFX(settings.sheathSound);              //Play retraction sound
-            SendHapticImpulse(settings.retractHaptics); //Play haptic impulse
-            mode = BladeMode.Retracting;                //Indicate that blade is now retracting
-            timeInMode = 0;                             //Reset mode time tracker
+            if (handWeapon != null) handWeapon.Holster(false); //Un-holster weapon held in hand if possible
+            PlaySFX(settings.sheathSound);                     //Play retraction sound
+            SendHapticImpulse(settings.retractHaptics);        //Play haptic impulse
+            mode = BladeMode.Retracting;                       //Indicate that blade is now retracting
+            timeInMode = 0;                                    //Reset mode time tracker
         }
         if (mode == BladeMode.Extending || mode == BladeMode.Retracting) //Blade is moving between primary modes
         {
@@ -129,7 +138,11 @@ public class NewChainsawController : PlayerEquipment
             {
                 bladeTip.localPosition = (mode == BladeMode.Extending ? bladeExtendPos : bladeRetractPos); //Move blade to target position
                 wrist.localPosition = (mode == BladeMode.Extending ? wristExtendPos : wristOriginPos);     //Move wrist to target position
-                if (mode == BladeMode.Retracting) wrist.localRotation = Quaternion.identity;               //Return wrist to base rotation if retraction has finished
+                if (mode == BladeMode.Retracting) //Weapon has just finished retracting
+                {
+                    wrist.localRotation = Quaternion.identity;      //Return wrist to base rotation
+                    wristPivot.localRotation = Quaternion.identity; //Return wrist pivot to base rotation
+                }
                 mode = (mode == BladeMode.Extending ? BladeMode.Extended : BladeMode.Sheathed);            //Progress mode to stable state
                 timeInMode = 0;                                                                            //Reset mode timer
             }
@@ -143,16 +156,28 @@ public class NewChainsawController : PlayerEquipment
             bladeExtenderBack.localScale = newExtenderScale;                                                                               //Apply new scale to back extender
         }
 
-        //Rotate wrist:
+        //Blade rotations:
         if (mode == BladeMode.Extended || mode == BladeMode.Extending) //Blade is currently deployed or is being deployed
         {
+            //Update wrist rotation:
             Quaternion targetWristRot = Quaternion.LookRotation(hand.forward, -hand.right);                            //Get target wrist rotation from rotation of hand (in order to make weapon more controllable)
             targetWristRot = Quaternion.RotateTowards(wrist.parent.rotation, targetWristRot, settings.maxWristAngle);  //Clamp rotation to set angular limit
             wrist.rotation = Quaternion.Lerp(wrist.rotation, targetWristRot, settings.wristLerpRate * Time.deltaTime); //Lerp wrist toward target rotation
+
+            //Reverse grip:
+            float targetPivotRot = reverseGrip ? -settings.reverseGripAngle : 0; //Get target Y rotation for wrist pivot
+            if (wristPivot.localEulerAngles.y != targetPivotRot)
+            {
+                Vector3 newPivotRot = wristPivot.localEulerAngles;                                                             //Get current eulers from pivot
+                newPivotRot.y = Mathf.LerpAngle(newPivotRot.y, targetPivotRot, settings.reverseGripLerpRate * Time.deltaTime); //Get new lerped y rotation value for pivot
+                wristPivot.localEulerAngles = newPivotRot;                                                                     //Apply new eulers to pivot
+            }
         }
         else if (mode == BladeMode.Retracting) //Blade is currently retracting
         {
-            wrist.localRotation = Quaternion.RotateTowards(wrist.localRotation, Quaternion.identity, settings.wristRotReturnRate * Time.deltaTime); //Have wrist return to base rotation
+            //Return to base rotation:
+            wrist.localRotation = Quaternion.RotateTowards(wrist.localRotation, Quaternion.identity, settings.wristRotReturnRate * Time.deltaTime);              //Have wrist return to base rotation
+            wristPivot.localRotation = Quaternion.RotateTowards(wristPivot.localRotation, Quaternion.identity, settings.reverseGripReturnRate * Time.deltaTime); //Have wrist pivot return to base rotation
         }
     }
     private protected override void FixedUpdate()
@@ -173,7 +198,8 @@ public class NewChainsawController : PlayerEquipment
                 }
                 break;
             case "AButton":
-
+                if (context.started) reverseGrip = true;   //Indicate that player is pressing reverse grip button
+                if (context.canceled) reverseGrip = false; //Indicate that player has released the reverse grip button
                 break;
             default: break; //Ignore unrecognized actions
         }
