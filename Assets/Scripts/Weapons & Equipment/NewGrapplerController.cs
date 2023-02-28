@@ -50,8 +50,10 @@ public class NewGrapplerController : PlayerEquipment
         //Set up projectile:
         StartCoroutine(TryToInitialize()); //Begin trying to spawn hook (NOTE: will break if player leaves a room)
     }
-    private void Start()
+    private protected override void Start()
     {
+        base.Start(); //Call base start stuff
+
         //Late object & component get:
         hand = (handedness == 0 ? player.leftHand : player.rightHand).transform; //Get a reference to the relevant player hand
     }

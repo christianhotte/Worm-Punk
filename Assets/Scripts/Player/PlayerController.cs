@@ -39,6 +39,9 @@ public class PlayerController : MonoBehaviour
     private Volume healthVolume;               //Post-processing volume used to visualize player health
 
     //Settings:
+    [Header("Components:")]
+    [Tooltip("Transform which left-handed primary weapon snaps to when holstered.")]  public Transform leftHolster;
+    [Tooltip("Transform which right-handed primary weapon snaps to when holstered.")] public Transform rightHolster;
     [Header("Settings:")]
     [SerializeField, Tooltip("Settings determining player health properties.")] private HealthSettings healthSettings;
     [Space()]
@@ -76,8 +79,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         //Check validity / get objects & components:
-        //if (instance == null) { instance = this; } else { Debug.LogError("Tried to spawn a second instance of PlayerController in scene."); Destroy(gameObject); }           //Singleton-ize player object
-        if (instance != null) { print("Replacing player " + instance.gameObject.name + " with player " + gameObject.name + " from previous scene"); } instance = this;         //Use newest instance of PlayerController script as authoritative version, and indicate when an old playerController script is being replaced
+        if (instance != null) { print("Replacing player " + instance.gameObject.name + " with player " + gameObject.name + " from previous scene"); } instance = this; //Use newest instance of PlayerController script as authoritative version, and indicate when an old playerController script is being replaced
 
         if (!TryGetComponent(out input)) { Debug.LogError("PlayerController could not find PlayerInput component!"); Destroy(gameObject); }                                    //Make sure player input component is present on same object
         xrOrigin = GetComponentInChildren<XROrigin>(); if (xrOrigin == null) { Debug.LogError("PlayerController could not find XROrigin in children."); Destroy(gameObject); } //Make sure XROrigin is present inside player
@@ -96,9 +98,12 @@ public class PlayerController : MonoBehaviour
             if (volume.name.Contains("Health")) healthVolume = volume; //Get health volume
         }
 
+        //Get hands:
         ActionBasedController[] hands = GetComponentsInChildren<ActionBasedController>();                                    //Get both hands in player object
         if (hands[0].name.Contains("Left") || hands[0].name.Contains("left")) { leftHand = hands[0]; rightHand = hands[1]; } //First found component is on left hand
         else { rightHand = hands[0]; leftHand = hands[1]; }                                                                  //Second found component is on right hand
+        if (leftHolster == null) leftHolster = leftHand.transform;                                                           //Use hand as holster if none is provided
+        if (rightHolster == null) rightHolster = rightHand.transform;                                                        //Use hand as holster if none is provided
 
         //Check settings:
         if (healthSettings == null) //No health settings were provided
