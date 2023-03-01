@@ -59,7 +59,7 @@ public class WormHole : MonoBehaviour
         wormZoneInstance =Instantiate(wormZoneParticles);
         wormZoneInstance.transform.position = new Vector3(PC.cam.transform.position.x , PC.cam.transform.position.y, PC.cam.transform.position.z);
         wormZoneInstance.transform.eulerAngles = new Vector3(0, startRot, 0);
-        wormZoneSpeed = 60;
+        wormZoneSpeed = 120;
         playerRB.velocity = wormZoneInstance.transform.forward * wormZoneSpeed;
         yield return new WaitForSeconds(waitTime);
         float diff = playerCam.transform.eulerAngles.y - exitPos.transform.eulerAngles.y;
