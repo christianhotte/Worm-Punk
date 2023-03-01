@@ -4,18 +4,16 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 using TMPro;
-using System.Linq;
 
 public class Leaderboards : MonoBehaviourPunCallbacks
 {
     [SerializeField] TMP_Text leaderboardText;
-    private string playerScores;
     private string arenaScene;
 
     // Start is called before the first frame update
     void Start()
     {
-        playerScores = "";
+        leaderboardText.text = "";
         arenaScene = "DM_0.12_Arena";
 
         Debug.Log("Last Scene Name: " + GameManager.Instance.prevSceneName);
@@ -30,8 +28,10 @@ public class Leaderboards : MonoBehaviourPunCallbacks
         else
         {
             gameObject.SetActive(false);
-            Debug.Log("God fucking dammit");
         }
+
+        //Destroy other leaderboards:
+        if (PhotonNetwork.LocalPlayer.ActorNumber != GetComponentInParent<LockerTubeController>().tubeNumber) gameObject.SetActive(false);
     }
 
     // Displays the leaderboards of the last game to the player in the locker rooms.
@@ -54,8 +54,7 @@ public class Leaderboards : MonoBehaviourPunCallbacks
         foreach (NetworkPlayer player in NetworkPlayer.instances)
         {
             // Just adds to the strings
-            playerScores += player.GetName() + " Kills: " + player.networkPlayerStats.numOfKills.ToString() + " | Deaths: " + player.networkPlayerStats.numOfDeaths.ToString() + "\n";
-            leaderboardText.text = playerScores;
+            leaderboardText.text += player.GetName() + " Kills: " + player.networkPlayerStats.numOfKills.ToString() + " | Deaths: " + player.networkPlayerStats.numOfDeaths.ToString() + "\n";
         }
     }
 }
