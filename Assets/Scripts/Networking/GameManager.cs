@@ -51,10 +51,10 @@ public class GameManager : MonoBehaviour
     // Gets the name of the last scene David Wu ;)
     public string GetLastSceneName()
     {
-        // Retreiving the total number of scenes in build settings
+        // Retrieving the total number of scenes in build settings
         int sceneCount = SceneManager.sceneCountInBuildSettings;
 
-        // Retreuving root objects of the active scene.
+        // Retrieving root objects of the active scene.
         GameObject[] rootObjects = SceneManager.GetActiveScene().GetRootGameObjects();
 
         // Using Linq to sort scenes based on their build index and filters any scenes without any root game objects in the active scene
