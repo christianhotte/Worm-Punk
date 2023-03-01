@@ -24,6 +24,7 @@ public class NewChainsawController : PlayerEquipment
     [SerializeField, Tooltip("Secondary blade extension for the backend of the weapon, can be whatever length (Z scale).")]                      private Transform bladeExtenderBack;
     [SerializeField, Tooltip("Jointed component on front of system which moves forward and rotates during blade activation.")]                   private Transform wrist;
     [SerializeField, Tooltip("Rotating assembly which allows the wrist to be turned downward for reverse grip mode.")]                           private Transform wristPivot;
+    [SerializeField, Tooltip("Invisible transform which indicates the extent to which blade tracks for grinding and hitting players.")]          private Transform bladeEnd;
 
     private Transform hand;             //Real position of player hand used by this equipment
     private PlayerEquipment handWeapon; //Player weapon held in the same hand as this chainsaw
@@ -172,6 +173,9 @@ public class NewChainsawController : PlayerEquipment
                 newPivotRot.y = Mathf.LerpAngle(newPivotRot.y, targetPivotRot, settings.reverseGripLerpRate * Time.deltaTime); //Get new lerped y rotation value for pivot
                 wristPivot.localEulerAngles = newPivotRot;                                                                     //Apply new eulers to pivot
             }
+
+            //Wall grinding:
+            //if (Physics.Raycast())
         }
         else if (mode == BladeMode.Retracting) //Blade is currently retracting
         {

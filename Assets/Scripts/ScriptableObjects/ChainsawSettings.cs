@@ -8,6 +8,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/ChainsawSettings", order = 1)]
 public class ChainsawSettings : ScriptableObject
 {
+    [Header("Mechanical Settings:")]
+    [Min(0), Tooltip("Base speed at which chainsaw can grind along walls and floors.")]                    public float grindSpeed;
+    [Tooltip("Layers which player can grind on.")]                                                         public LayerMask grindLayers;
+    [Tooltip("Modifier applied to grind speed when player is squeezing the trigger (can be up or down).")] public float triggerGrindModifier;
     [Header("Animation:")]
     [Min(0), Tooltip("Amount by which blade is pulled back as player squeezes the trigger.")]      public float bladePreRetractDistance;
     [Tooltip("Curve describing motion of pre-retraction, evaluated based on trigger pull value.")] public AnimationCurve bladePreRetractCurve;
