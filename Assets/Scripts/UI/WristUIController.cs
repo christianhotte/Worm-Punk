@@ -10,7 +10,7 @@ public class WristUIController : MonoBehaviour
     [SerializeField, Tooltip("The player controller.")] private PlayerController playerController;
     [SerializeField, Tooltip("The player input actions asset.")] private InputActionAsset inputActions;
     [SerializeField, Tooltip("The menu ray interactors.")] private GameObject[] rayInteractors;
-    [SerializeField, Tooltip("The gameobject that shows the player HUD.")] private GameObject playerHUD;
+    [SerializeField, Tooltip("The mesh renderer that shows the player HUD.")] private MeshRenderer playerHUD;
     [SerializeField, Tooltip("The interactable HUD menu.")] private PlayerHUDController playerHUDController;
 
     [SerializeField, Tooltip("The button that allows the player to leave their room.")] private GameObject leaveRoomButton;
@@ -53,8 +53,8 @@ public class WristUIController : MonoBehaviour
     public void ShowMenu(bool showMenu)
     {
         wristCanvas.enabled = showMenu;
-        playerHUD.SetActive(showMenu);
-        playerHUDController.gameObject.SetActive(showMenu);
+        playerHUD.enabled = showMenu;
+        playerHUDController.GetComponent<Canvas>().enabled = showMenu;
         playerController.SetCombat(!showMenu);
         foreach (var interactor in rayInteractors)
             interactor.SetActive(showMenu);
