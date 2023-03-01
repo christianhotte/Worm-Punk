@@ -21,29 +21,15 @@ public class JumpPad : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        // print("Wormhole hit " + other.name);
-        NetworkPlayer player = other.GetComponentInParent<NetworkPlayer>();
-        if (player == null) player = other.GetComponent<NetworkPlayer>();
-        if (player != null && player.photonView.IsMine)
+        PlayerController playerC = other.GetComponentInParent<PlayerController>();
+        if (playerC == null) playerC = other.GetComponent<PlayerController>();
+        if (playerC != null)
         {
             playerRb = PlayerController.instance.bodyRb;
             playerOBJ = PlayerController.instance.bodyRb.gameObject;
             playerOBJ.transform.position = jumpDirection.position;
             playerRb.velocity = jumpDirection.up * jumpForce;
             return;
-        }
-        else
-        {
-            PlayerController playerC = other.GetComponentInParent<PlayerController>();
-            if (playerC == null) playerC = other.GetComponent<PlayerController>();
-            if (playerC != null)
-            {
-                playerRb = PlayerController.instance.bodyRb;
-                playerOBJ = PlayerController.instance.bodyRb.gameObject;
-                playerOBJ.transform.position = jumpDirection.position;
-                playerRb.velocity = jumpDirection.up * jumpForce;
-                return;
-            }
         }
     }
 }
