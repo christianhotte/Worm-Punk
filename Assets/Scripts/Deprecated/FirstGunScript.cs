@@ -26,8 +26,9 @@ public class FirstGunScript : PlayerEquipment
     }
 
     // Start is called before the first frame update
-    void Start()
+    private protected override void Start()
     {
+        base.Start();
         //StartCoroutine(WaitandClose());
         SoftJointLimit angleCap = new SoftJointLimit();
         angleCap = breakJoint.highAngularXLimit;

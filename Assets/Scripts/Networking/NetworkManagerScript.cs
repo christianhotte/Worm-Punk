@@ -54,7 +54,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         Hashtable customRoomSettings = new Hashtable();
 
-        customRoomSettings.Add("RoundLength", 30);
+        customRoomSettings.Add("RoundLength", 120);
 
         roomOptions.IsVisible = true; // The player is able to see the room
         roomOptions.IsOpen = true; // The room is open.

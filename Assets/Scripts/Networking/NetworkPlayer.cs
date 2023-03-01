@@ -134,7 +134,8 @@ public class NetworkPlayer : MonoBehaviour
         }
         else
         {
-            trail.enabled = !GameManager.Instance.InMenu(); //Disable trail while in menus
+            trail.enabled = !GameManager.Instance.InMenu();               //Disable trail while in menus
+            if (scene.name == "NetworkLockerRoom") trail.enabled = false; //Super disable trail if in the locker room
         }
 
         //Generic scene load checks:
