@@ -36,10 +36,10 @@ public class HookshotSettings : ScriptableObject
     [Range(0, 1), Tooltip("How much the player must squeeze the grip in order to launch the grappling hook.")] public float deployThreshold = 1;
     [Range(0, 1), Tooltip("How much the player must release the grip for the grappling hook to reel back.")]   public float releaseThreshold = 0.5f;
     [Header("Extras:")]
-    [Min(0), Tooltip("How much velocity player must punch with to trigger Insta-Hook system.")]        public float punchWhipSpeed;
-    [Min(0), Tooltip("Minimum distance at which full punch whip can be triggered on an object.")]      public float minPunchWhipDist;
-    [Min(1), Tooltip("Multiplier for reel-in speed after a punch-whip.")]                              public float punchWhipBoost;
-    [Min(0), Tooltip("Amount of time grappler needs to cool down for after completing a punch-whip.")] public float punchWhipCooldown;
+    [Min(0), Tooltip("How much velocity player must punch with to trigger Insta-Hook system.")]                                              public float punchWhipSpeed;
+    [Min(0), Tooltip("Minimum distance at which full punch whip can be triggered on an object (also distance at which hook will release).")] public float minPunchWhipDist;
+    [Min(1), Tooltip("Multiplier for reel-in speed after a punch-whip.")]                                                                    public float punchWhipBoost;
+    [Min(0), Tooltip("Amount of time grappler needs to cool down for after completing a punch-whip.")]                                       public float punchWhipCooldown;
     [Header("Haptics:")]
     [Tooltip("Haptic vibration made when player launches the hook.")]          public PlayerEquipment.HapticData launchHaptics;
     [Tooltip("Haptic vibration made when hook is traveling through the air.")] public PlayerEquipment.HapticData reelHaptics;

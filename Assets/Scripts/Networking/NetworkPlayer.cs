@@ -134,7 +134,8 @@ public class NetworkPlayer : MonoBehaviour
         }
         else
         {
-            trail.enabled = !GameManager.Instance.InMenu(); //Disable trail while in menus
+            trail.enabled = !GameManager.Instance.InMenu();               //Disable trail while in menus
+            if (scene.name == "NetworkLockerRoom") trail.enabled = false; //Super disable trail if in the locker room
         }
 
         //Generic scene load checks:
@@ -263,9 +264,8 @@ public class NetworkPlayer : MonoBehaviour
             print(PhotonNetwork.LocalPlayer.NickName + " killed enemy with index " + enemyID);
             PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
             SyncStats();
+            PlayerController.instance.combatHUD.AddToDeathInfoBoard(PhotonNetwork.LocalPlayer.NickName, PhotonNetwork.GetPhotonView(enemyID).Owner.NickName);
         }
-
-        PlayerController.instance.combatHUD.AddToDeathInfoBoard(PhotonNetwork.LocalPlayer.NickName, PhotonNetwork.GetPhotonView(enemyID).Owner.NickName);
     }
 
     /// <summary>
@@ -319,5 +319,5 @@ public class NetworkPlayer : MonoBehaviour
     }
 
     public PlayerStats GetNetworkPlayerStats() => networkPlayerStats;
-    public string GetName() => PhotonNetwork.LocalPlayer.NickName;
+    public string GetName() => photonView.Owner.NickName;
 }

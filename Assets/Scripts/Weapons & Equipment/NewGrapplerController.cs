@@ -11,10 +11,11 @@ using CustomEnums;
 public class NewGrapplerController : PlayerEquipment
 {
     //Objects & Components:
-    internal HookProjectile hook; //The projectile this weapon fires and recalls to perform its actions (never destroyed)
-    internal Transform stowPoint; //Point on launcher at which hook projectile is invisibly stowed
-    private Transform hand;       //Real position of player hand used by this equipment
-    internal Transform barrel;    //Position hook is launched from, and point where the line begins
+    internal HookProjectile hook;        //The projectile this weapon fires and recalls to perform its actions (never destroyed)
+    internal Transform stowPoint;        //Point on launcher at which hook projectile is invisibly stowed
+    private Transform hand;              //Real position of player hand used by this equipment
+    internal Transform barrel;           //Position hook is launched from, and point where the line begins
+    internal PlayerEquipment handWeapon; //Player weapon held in the same hand as this chainsaw
 
     //Settings:
     [Tooltip("Mechanical properties describing hookshot functionality and effects.")] public HookshotSettings settings;
@@ -50,10 +51,16 @@ public class NewGrapplerController : PlayerEquipment
         //Set up projectile:
         StartCoroutine(TryToInitialize()); //Begin trying to spawn hook (NOTE: will break if player leaves a room)
     }
-    private void Start()
+    private protected override void Start()
     {
+        base.Start(); //Call base start stuff
+
         //Late object & component get:
         hand = (handedness == 0 ? player.leftHand : player.rightHand).transform; //Get a reference to the relevant player hand
+        foreach (PlayerEquipment equipment in player.attachedEquipment) //Iterate through all equipment attached to player
+        {
+            if (equipment != this && equipment.handedness == handedness) { handWeapon = equipment; break; } //Try to get weapon used by same hand
+        }
     }
     private protected override void Update()
     {
@@ -95,7 +102,7 @@ public class NewGrapplerController : PlayerEquipment
         hookedHandPos = RelativePosition; //Get position of hand at moment of contact
 
         //Effects:
-        if (settings.hitSound != null) audioSource.PlayOneShot(settings.hitSound); //Play sound effect
+        if (settings.hitSound != null) audioSource.PlayOneShot(settings.hitSound, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f)); //Play sound effect
         SendHapticImpulse(settings.hitHaptics);                                    //Play haptic impulse
     }
     /// <summary>
@@ -105,7 +112,7 @@ public class NewGrapplerController : PlayerEquipment
     {
         hookedHandPos = RelativePosition; //Get position of hand at moment of contact
 
-        if (settings.playerHitSound != null) audioSource.PlayOneShot(settings.playerHitSound); //Play sound effect
+        if (settings.playerHitSound != null) audioSource.PlayOneShot(settings.playerHitSound, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f)); //Play sound effect
         SendHapticImpulse(settings.hitHaptics);                                                //Play haptic impulse
     }
     /// <summary>
@@ -113,7 +120,7 @@ public class NewGrapplerController : PlayerEquipment
     /// </summary>
     public void ForceReleased()
     {
-        if (settings.releaseSound != null) audioSource.PlayOneShot(settings.releaseSound); //Play sound effect
+        if (settings.releaseSound != null) audioSource.PlayOneShot(settings.releaseSound, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f)); //Play sound effect
         SendHapticImpulse(settings.releaseHaptics);                                        //Play haptic impulse
     }
     /// <summary>
@@ -121,7 +128,7 @@ public class NewGrapplerController : PlayerEquipment
     /// </summary>
     public void Bounced()
     {
-        if (settings.bounceSound != null) audioSource.PlayOneShot(settings.bounceSound); //Play sound effect
+        if (settings.bounceSound != null) audioSource.PlayOneShot(settings.bounceSound, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f)); //Play sound effect
         SendHapticImpulse(settings.releaseHaptics);                                      //Play haptic impulse
     }
 
@@ -161,12 +168,13 @@ public class NewGrapplerController : PlayerEquipment
             }
 
             hook.punchWhipped = true;                                                    //Indicate to hook that it has been punch=whipped
-            if (settings.whipSound != null) audioSource.PlayOneShot(settings.whipSound); //Play sound effect
+            if (settings.whipSound != null) audioSource.PlayOneShot(settings.whipSound, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f)); //Play sound effect
         }
         else //Normal launch effects
         {
-            if (settings.launchSound != null) audioSource.PlayOneShot(settings.launchSound); //Play sound effect
+            if (settings.launchSound != null) audioSource.PlayOneShot(settings.launchSound, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f)); //Play sound effect
         }
+        handWeapon.Holster();                      //Holster gun while grappling
         SendHapticImpulse(settings.launchHaptics); //Play haptic impulse
     }
     /// <summary>
