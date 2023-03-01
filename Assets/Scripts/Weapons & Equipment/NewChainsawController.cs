@@ -175,7 +175,13 @@ public class NewChainsawController : PlayerEquipment
             }
 
             //Wall grinding:
-            //if (Physics.Raycast())
+            Vector3 bladeOffset = wristPivot.right * settings.bladeWidth; //Get distance of offset for secondary blade cast
+            /*if (Physics.Linecast(wristPivot.position, bladeEnd.position, out RaycastHit hitInfo, settings.grindLayers) ||                //Check for obstacles intersecting back of the blade
+                Physics.Linecast(wristPivot.position + bladeOffset, bladeEnd.position + bladeOffset, out hitInfo, settings.grindLayers)) //Check for obstacles intersecting front of the blade
+            {
+                foreach (Renderer r in wrist.GetComponentsInChildren<Renderer>()) r.material.color = Color.green;
+            }
+            else foreach (Renderer r in wrist.GetComponentsInChildren<Renderer>()) r.material.color = Color.red;*/
         }
         else if (mode == BladeMode.Retracting) //Blade is currently retracting
         {

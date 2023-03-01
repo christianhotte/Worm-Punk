@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Photon.Pun;
 using TMPro;
 using System.Linq;
@@ -15,19 +16,23 @@ public class Leaderboards : MonoBehaviourPunCallbacks
     void Start()
     {
         playerScores = "";
-        arenaScene = "DM_0.12_Arena";
-
-        gameObject.SetActive(false);
+        arenaScene = "Assets/Scenes/DMars_Scenes/DM_0.12_Arena.unity";
 
         // Gets the name of the last scene we were on (returning from the arena to the network locker room).
-        GameManager gameManager = FindObjectOfType<GameManager>();
+        GameManager gameManager = GameManager.Instance;
         string lastSceneName = gameManager.GetLastSceneName();
 
-        Debug.Log(lastSceneName);
+        Debug.Log("Last Scene Name: " + lastSceneName);
 
         if (lastSceneName == arenaScene)
         {
             OpenLeaderboards();
+        }
+
+        else
+        {
+            gameObject.SetActive(false);
+            Debug.Log("God fucking dammit");
         }
     }
 
