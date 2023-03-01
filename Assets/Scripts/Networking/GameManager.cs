@@ -11,10 +11,16 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     internal bool levelTransitionActive = false;
+    internal string prevSceneName;
 
     private void Awake()
     {
         Instance = this;
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
+    }
+    private void OnDestroy()
+    {
+        SceneManager.sceneUnloaded -= OnSceneUnloaded;
     }
 
     /// <summary>
@@ -27,6 +33,11 @@ public class GameManager : MonoBehaviour
         //SceneManager.LoadScene((int)sceneIndex);
         PhotonNetwork.LoadLevel((int)sceneIndex);
         levelTransitionActive = false;
+    }
+
+    public void OnSceneUnloaded(Scene scene)
+    {
+        prevSceneName = scene.name;
     }
 
     /// <summary>

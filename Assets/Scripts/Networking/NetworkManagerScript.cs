@@ -54,7 +54,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         Hashtable customRoomSettings = new Hashtable();
 
-        customRoomSettings.Add("RoundLength", 120);
+        customRoomSettings.Add("RoundLength", 60);
 
         roomOptions.IsVisible = true; // The player is able to see the room
         roomOptions.IsOpen = true; // The room is open.
@@ -289,8 +289,14 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(playerScreenFader.GetFadeDuration());
         yield return null;
 
-        if(PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            //Unready all players
+            foreach (var player in NetworkPlayer.instances)
+                player.networkPlayerStats.isReady = false;
+
             PhotonNetwork.LoadLevel(sceneName);
+        }
     }
 
     public Room GetMostRecentRoom() => mostRecentRoom;
