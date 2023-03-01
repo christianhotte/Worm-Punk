@@ -9,7 +9,6 @@ using System.Linq;
 public class Leaderboards : MonoBehaviourPunCallbacks
 {
     [SerializeField] TMP_Text leaderboardText;
-    private string playerScores;
     private string arenaScene;
 
     // Start is called before the first frame update
