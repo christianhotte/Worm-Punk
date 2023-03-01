@@ -206,6 +206,7 @@ MonoBehaviour:
   playerCam: {fileID: 0}
   waitTime: 2
   exitSpeed: 30
+  wormZoneSpeed: 5
   PC: {fileID: 0}
   playerOrigin: {fileID: 0}
 --- !u!1 &1620262601096244178
@@ -614,6 +615,10 @@ PrefabInstance:
     - target: {fileID: 3440838446094268845, guid: 221ed25ed7a544f4a8ee208a433484cc, type: 3}
       propertyPath: m_Name
       value: WormHoleVoidPart
+      objectReference: {fileID: 0}
+    - target: {fileID: 3440838446094268845, guid: 221ed25ed7a544f4a8ee208a433484cc, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 221ed25ed7a544f4a8ee208a433484cc, type: 3}

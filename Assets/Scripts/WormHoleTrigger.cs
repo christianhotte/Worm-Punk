@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.XR.CoreUtils;
 
 public class WormHoleTrigger : MonoBehaviour
 {
@@ -25,14 +26,13 @@ public class WormHoleTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerController playerC = other.GetComponentInParent<PlayerController>();
-        if (playerC == null) playerC = other.GetComponent<PlayerController>();
-        if (playerC != null&&!WHS.locked)
+     
+        if (other.TryGetComponent(out XROrigin playerOrigin) && !WHS.locked)
         {
-                    GameObject playerRb = PlayerController.instance.bodyRb.gameObject;
+            GameObject playerRb = PlayerController.instance.bodyRb.gameObject;
             StartCoroutine(WHS.StartWormhole(this.gameObject, playerRb));
             return;
-        }      
+        }
     }
 
     public IEnumerator FlashLight()
