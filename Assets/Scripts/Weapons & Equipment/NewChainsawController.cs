@@ -190,18 +190,23 @@ public class NewChainsawController : PlayerEquipment
 
                 //Cleanup:
                 Debug.DrawRay(hand.position, grindDirection, Color.cyan);
-                foreach (Renderer r in wrist.GetComponentsInChildren<Renderer>()) r.material.color = Color.green;
                 grinding = true;
             }
             else //Blade is not touching a wall
             {
                 //Cleanup:
                 grinding = false;
-                foreach (Renderer r in wrist.GetComponentsInChildren<Renderer>()) r.material.color = Color.red;
             }
 
             //Player killing:
-            
+            if (Physics.Linecast(wristPivot.position, bladeEnd.position, out hitInfo, LayerMask.GetMask("Player")))
+            {
+                NetworkPlayer hitPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>(); //Try to get networkplayer from hit
+                if (hitPlayer != null && !hitPlayer.photonView.IsMine) //Player (other than self) has been hit by blade
+                {
+                    hitPlayer.photonView.RPC("RPC_Hit", Photon.Pun.RpcTarget.AllBuffered, 3, PlayerController.photonView.ViewID); //Hit target
+                }
+            }
         }
         else if (mode == BladeMode.Retracting) //Blade is currently retracting
         {
