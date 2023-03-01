@@ -17,7 +17,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 257
   triggerGrindModifier: -25
-  bladePreRetractDistance: 0.8
+  bladeWidth: 0.17
+  bladePreRetractDistance: 0.08
   bladePreRetractCurve:
     serializedVersion: 2
     m_Curve:
