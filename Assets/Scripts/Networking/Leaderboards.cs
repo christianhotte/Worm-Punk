@@ -16,15 +16,11 @@ public class Leaderboards : MonoBehaviourPunCallbacks
     void Start()
     {
         playerScores = "";
-        arenaScene = "Assets/Scenes/DMars_Scenes/DM_0.12_Arena.unity";
+        arenaScene = "DM_0.12_Arena";
 
-        // Gets the name of the last scene we were on (returning from the arena to the network locker room).
-        GameManager gameManager = GameManager.Instance;
-        string lastSceneName = gameManager.GetLastSceneName();
+        Debug.Log("Last Scene Name: " + GameManager.Instance.prevSceneName);
 
-        Debug.Log("Last Scene Name: " + lastSceneName);
-
-        if (lastSceneName == arenaScene)
+        if (GameManager.Instance.prevSceneName == arenaScene)
         {
             OpenLeaderboards();
         }
