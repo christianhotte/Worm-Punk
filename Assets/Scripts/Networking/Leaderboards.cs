@@ -9,6 +9,7 @@ using System.Linq;
 public class Leaderboards : MonoBehaviourPunCallbacks
 {
     [SerializeField] TMP_Text leaderboardText;
+    private string playerScores;
     private string arenaScene;
 
     // Start is called before the first frame update
@@ -53,7 +54,8 @@ public class Leaderboards : MonoBehaviourPunCallbacks
         foreach (NetworkPlayer player in NetworkPlayer.instances)
         {
             // Just adds to the strings
-            leaderboardText.text += player.GetName() + " Kills: " + player.networkPlayerStats.numOfKills.ToString() + " | Deaths: " + player.networkPlayerStats.numOfDeaths.ToString() + "\n";
+            playerScores += player.GetName() + " Kills: " + player.networkPlayerStats.numOfKills.ToString() + " | Deaths: " + player.networkPlayerStats.numOfDeaths.ToString() + "\n";
+            leaderboardText.text = playerScores;
         }
     }
 }
