@@ -190,14 +190,12 @@ public class NewChainsawController : PlayerEquipment
 
                 //Cleanup:
                 Debug.DrawRay(hand.position, grindDirection, Color.cyan);
-                foreach (Renderer r in wrist.GetComponentsInChildren<Renderer>()) r.material.color = Color.green;
                 grinding = true;
             }
             else //Blade is not touching a wall
             {
                 //Cleanup:
                 grinding = false;
-                foreach (Renderer r in wrist.GetComponentsInChildren<Renderer>()) r.material.color = Color.red;
             }
 
             //Player killing:
