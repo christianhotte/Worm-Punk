@@ -57,9 +57,9 @@ public class WormHole : MonoBehaviour
         playerOBJ.transform.rotation = Quaternion.Euler(playerOBJ.transform.eulerAngles.x, playerOBJ.transform.eulerAngles.y - entryDiff, playerOBJ.transform.eulerAngles.z);
         float startRot = playerCam.transform.eulerAngles.y;
         wormZoneInstance =Instantiate(wormZoneParticles);
-        wormZoneInstance.transform.position = new Vector3(playerOBJ.transform.position.x , playerOBJ.transform.position.y, playerOBJ.transform.position.z);
+        wormZoneInstance.transform.position = new Vector3(PC.cam.transform.position.x , PC.cam.transform.position.y, PC.cam.transform.position.z);
         wormZoneInstance.transform.eulerAngles = new Vector3(0, startRot, 0);
-        wormZoneSpeed = 40;
+        wormZoneSpeed = 60;
         playerRB.velocity = wormZoneInstance.transform.forward * wormZoneSpeed;
         yield return new WaitForSeconds(waitTime);
         float diff = playerCam.transform.eulerAngles.y - exitPos.transform.eulerAngles.y;
