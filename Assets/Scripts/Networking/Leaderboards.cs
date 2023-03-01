@@ -4,36 +4,34 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 using TMPro;
-using System.Linq;
 
 public class Leaderboards : MonoBehaviourPunCallbacks
 {
     [SerializeField] TMP_Text leaderboardText;
-    private string playerScores;
     private string arenaScene;
 
     // Start is called before the first frame update
     void Start()
     {
-        playerScores = "";
-        arenaScene = "Assets/Scenes/DMars_Scenes/DM_0.12_Arena.unity";
+        leaderboardText.text = "";
+        arenaScene = "DM_0.12_Arena";
 
-        // Gets the name of the last scene we were on (returning from the arena to the network locker room).
-        GameManager gameManager = GameManager.Instance;
-        string lastSceneName = gameManager.GetLastSceneName();
+        Debug.Log("Last Scene Name: " + GameManager.Instance.prevSceneName);
 
-        Debug.Log("Last Scene Name: " + lastSceneName);
-
-        if (lastSceneName == arenaScene)
+        // If the player has just returned from the a game after returning from the arena, open up the game leaderboards
+        if (GameManager.Instance.prevSceneName == arenaScene)
         {
             OpenLeaderboards();
         }
 
+        // If the player did not come back from a game, we don't want to show the leaderboards.
         else
         {
             gameObject.SetActive(false);
-            Debug.Log("God fucking dammit");
         }
+
+        //Destroy other leaderboards:
+        if (PhotonNetwork.LocalPlayer.ActorNumber != GetComponentInParent<LockerTubeController>().tubeNumber) gameObject.SetActive(false);
     }
 
     // Displays the leaderboards of the last game to the player in the locker rooms.
@@ -56,7 +54,7 @@ public class Leaderboards : MonoBehaviourPunCallbacks
         foreach (NetworkPlayer player in NetworkPlayer.instances)
         {
             // Just adds to the strings
-            playerScores += player.GetName() + " Kills: " + player.networkPlayerStats.numOfKills.ToString() + player.GetName() + " Deaths: " + player.networkPlayerStats.numOfDeaths.ToString() + "\n";
+            leaderboardText.text += player.GetName() + " Kills: " + player.networkPlayerStats.numOfKills.ToString() + " | Deaths: " + player.networkPlayerStats.numOfDeaths.ToString() + "\n";
         }
     }
 }

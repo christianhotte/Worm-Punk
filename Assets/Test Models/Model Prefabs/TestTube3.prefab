@@ -504,7 +504,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3844669399972101801, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
       propertyPath: m_text
-      value: 
+      value: 'Treacherous Invertebrate Kills: 420 | Deaths: 699'
+      objectReference: {fileID: 0}
+    - target: {fileID: 3844669399972101801, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
+      propertyPath: m_fontSize
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3844669399972101801, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
       propertyPath: m_fontColor.b
@@ -517,6 +521,14 @@ PrefabInstance:
     - target: {fileID: 3844669399972101801, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
       propertyPath: m_fontColor.r
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3844669399972101801, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3844669399972101801, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190080
       objectReference: {fileID: 0}
     - target: {fileID: 3844669401891502263, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
       propertyPath: m_Name

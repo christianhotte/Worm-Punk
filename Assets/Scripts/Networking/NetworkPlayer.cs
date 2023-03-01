@@ -319,5 +319,5 @@ public class NetworkPlayer : MonoBehaviour
     }
 
     public PlayerStats GetNetworkPlayerStats() => networkPlayerStats;
-    public string GetName() => PhotonNetwork.LocalPlayer.NickName;
+    public string GetName() => photonView.Owner.NickName;
 }
