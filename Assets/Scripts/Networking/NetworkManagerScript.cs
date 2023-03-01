@@ -302,10 +302,6 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
-            //Unready all players
-            foreach (var player in NetworkPlayer.instances)
-                player.networkPlayerStats.isReady = false;
-
             PhotonNetwork.LoadLevel(sceneName);
         }
     }
