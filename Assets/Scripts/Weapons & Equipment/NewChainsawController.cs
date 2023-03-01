@@ -38,10 +38,12 @@ public class NewChainsawController : PlayerEquipment
     /// Blade's current behavior state.
     /// </summary>
     internal BladeMode mode = BladeMode.Sheathed;
+    internal bool grinding;       //Whether or not player is currently grinding on a surface
     private float timeInMode;     //How long weapon has been in current mode for
     private float timeUntilPulse; //Time until next haptic pulse should be triggered (used for repeated pulses while saw is active)
-    private float gripValue;      //Latest value from grip input
     private bool reverseGrip;     //Indicates that player is pressing the input for reverse grip mode (only valid while chainsaw is active)
+    private float gripValue;      //Latest value from grip input
+    private float triggerValue;   //Latest value from trigger input
 
     private Vector3 bladeOriginPos;    //Initial local (sheathed) position of blade
     private Vector3 wristOriginPos;    //Initial local (sheathed) position of wrist assembly
@@ -109,6 +111,7 @@ public class NewChainsawController : PlayerEquipment
             SendHapticImpulse(settings.retractHaptics);        //Play haptic impulse
             mode = BladeMode.Retracting;                       //Indicate that blade is now retracting
             timeInMode = 0;                                    //Reset mode time tracker
+            grinding = false;                                  //Indicate player can no longer be grinding on a surface
         }
         if (mode == BladeMode.Extending || mode == BladeMode.Retracting) //Blade is moving between primary modes
         {
@@ -175,7 +178,35 @@ public class NewChainsawController : PlayerEquipment
             }
 
             //Wall grinding:
-            //if (Physics.Raycast())
+            Vector3 bladeOffset = wristPivot.right * settings.bladeWidth; //Get distance of offset for secondary blade cast
+            if (Physics.Linecast(wristPivot.position, bladeEnd.position, out RaycastHit hitInfo, settings.grindLayers) ||                //Check for obstacles intersecting back of the blade
+                Physics.Linecast(wristPivot.position + bladeOffset, bladeEnd.position + bladeOffset, out hitInfo, settings.grindLayers)) //Check for obstacles intersecting front of the blade
+            {
+                //Adjust player velocity:
+                Vector3 grindDirection = Vector3.Cross(hitInfo.normal, wrist.up).normalized; //Get target direction of grind
+                float grindSpeed = settings.grindSpeed;                                      //Get base speed for grinding
+                grindSpeed *= Mathf.Lerp(1, settings.triggerGrindMultiplier, triggerValue);  //Modify grind speed by multiplier depending on how much player is squeezing the trigger
+                playerBody.velocity = grindDirection * grindSpeed;                           //Modify player velocity based on grind values
+
+                //Cleanup:
+                Debug.DrawRay(hand.position, grindDirection, Color.cyan);
+                grinding = true;
+            }
+            else //Blade is not touching a wall
+            {
+                //Cleanup:
+                grinding = false;
+            }
+
+            //Player killing:
+            if (Physics.Linecast(wristPivot.position, bladeEnd.position, out hitInfo, LayerMask.GetMask("Player")))
+            {
+                NetworkPlayer hitPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>(); //Try to get networkplayer from hit
+                if (hitPlayer != null && !hitPlayer.photonView.IsMine) //Player (other than self) has been hit by blade
+                {
+                    hitPlayer.photonView.RPC("RPC_Hit", Photon.Pun.RpcTarget.AllBuffered, 3, PlayerController.photonView.ViewID); //Hit target
+                }
+            }
         }
         else if (mode == BladeMode.Retracting) //Blade is currently retracting
         {
@@ -200,6 +231,9 @@ public class NewChainsawController : PlayerEquipment
                     float gripInterpolant = settings.bladePreRetractCurve.Evaluate(gripValue / settings.triggerThreshold);         //Get multiplier to apply to retraction distance in order to pull blade back slightly
                     bladeTip.localPosition = bladeOriginPos + (gripInterpolant * settings.bladePreRetractDistance * Vector3.back); //Set blade tip position based on how much player is squeezing the grip
                 }
+                break;
+            case "Trigger":
+                triggerValue = context.ReadValue<float>(); //Get current amount by which player is squeezing the trigger
                 break;
             case "AButton":
                 if (context.started) reverseGrip = true;   //Indicate that player is pressing reverse grip button

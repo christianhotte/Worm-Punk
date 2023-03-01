@@ -107,14 +107,20 @@ public class HookProjectile : Projectile
                 //Move player:
                 if (photonView.IsMine) //Only master version needs to be able to pull the player
                 {
-                    float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1);                 //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
-                    Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                                //Get base speed at which grappling hook pulls you toward target
-                    Vector3 handDiff = controller.RelativePosition - controller.hookedHandPos;                                                              //Get difference between current position of hand and position when it initially hooked something
-                    if (Vector3.Angle(handDiff, hitDirection) > 90) newVelocity -= Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Apply additional velocity to player based on how much they are pulling their arm back
+                    float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1); //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
+                    Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                //Get base speed at which grappling hook pulls you toward target
+                    Quaternion playerRotation = controller.player.bodyRb.rotation;                                                          //Get current rotation of player body
+                    Vector3 handDiff = (playerRotation * controller.RelativePosition) - (playerRotation * controller.hookedHandPos);        //Get difference between current position of hand and position when it initially hooked something
+                    if (Vector3.Angle(handDiff, hitDirection) > 90) //Player is yanking
+                    {
+                        Vector3 addVel = Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Get additional velocity to player based on how much they are pulling their arm back
+                        newVelocity -= addVel;                                                                    //Apply additional velocity (rotated based on player orientation)
+                    }
                     if (!punchWhipped) //Player is not in punch-whip mode
                     {
-                        float maneuverMultiplier = controller.settings.lateralManeuverForce;                //Initialize value for lateral maneuver force multiplier
-                        newVelocity -= Vector3.ProjectOnPlane(handDiff, hitDirection) * maneuverMultiplier; //Apply additional velocity to player based on how much they are pulling their arm to the side
+                        float maneuverMultiplier = controller.settings.lateralManeuverForce;                  //Initialize value for lateral maneuver force multiplier
+                        Vector3 addVel = Vector3.ProjectOnPlane(handDiff, hitDirection) * maneuverMultiplier; //Get additional velocity to player based on how much they are pulling their arm to the side
+                        newVelocity -= addVel;                                                                //Apply additional velocity (rotated based on player orientation)
                     }
                     controller.player.bodyRb.velocity = newVelocity; //Apply new velocity
                 }
@@ -198,21 +204,21 @@ public class HookProjectile : Projectile
             {
                 hitPlayer = null; //Indicate that hook is no longer tethered to a player
             }
-            transform.parent = controller.stowPoint;              //Child hook to stow point
-            photonView.RPC("RPC_Stow", RpcTarget.OthersBuffered); //Stow remote hooks
+            transform.parent = controller.stowPoint;                                    //Child hook to stow point
+            photonView.RPC("RPC_Stow", RpcTarget.OthersBuffered);                       //Stow remote hooks
+            if (!controller.handWeapon.holstered) controller.handWeapon.Holster(false); //Unholster gun after grappling (if it hasn't been already)
         }
         else transform.parent = originPlayerBody; //Child remote hooks to networkplayer's center mass
         transform.localPosition = Vector3.zero;    //Zero out position relative to stow point
         transform.localEulerAngles = Vector3.zero; //Zero out rotation relative to stow point
 
         //Cleanup:
-        if (!controller.handWeapon.holstered) controller.handWeapon.Holster(false); //Unholster gun after grappling (if it hasn't been already)
-        if (trail != null) trail.enabled = false;                                   //Hide trail
-        tether.enabled = false;                                                     //Hide tether
-        ChangeVisibility(false);                                                    //Immediately make projectile invisible
-        state = HookState.Stowed;                                                   //Indicate that projectile is stowed
-        timeInState = 0;                                                            //Reset state timer
-        retractSpeed = 0;                                                           //Reset retraction speed
+        if (trail != null) trail.enabled = false; //Hide trail
+        tether.enabled = false;                   //Hide tether
+        ChangeVisibility(false);                  //Immediately make projectile invisible
+        state = HookState.Stowed;                 //Indicate that projectile is stowed
+        timeInState = 0;                          //Reset state timer
+        retractSpeed = 0;                         //Reset retraction speed
     }
     /// <summary>
     /// Version of stow method meant to be the first thing called on new hook projectile by its controller. Passes along the reference so everything runs smoothly.

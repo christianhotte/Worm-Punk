@@ -68,6 +68,7 @@ public class PlayerEquipment : MonoBehaviour
     private InputDeviceRole deviceRole = InputDeviceRole.Generic; //This equipment's equivalent device role (used to determine haptic feedback targets)
     private List<Vector3> relPosMem = new List<Vector3>();        //List of remembered relative positions (taken at FixedUpdate) used to calculate current relative velocity (newest entries are first)
     private Transform preferredHolster;                           //Holster which this equipment will go to when holstered
+    //private bool holsterTransitioning = fal
 
     //Utility Variables:
     /// <summary>

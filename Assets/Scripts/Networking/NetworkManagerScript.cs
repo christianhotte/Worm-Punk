@@ -18,10 +18,11 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     public static NetworkPlayer localNetworkPlayer; //Instance of local client's network player in scene
 
     //Settings:
-    [Tooltip("Turn this on to force player to join room as soon as game is loaded.")] public bool joinRoomOnLoad = false;
-    [Tooltip("Name of primary menu scene.")]                                          public string mainMenuScene;
-    [Tooltip("Name of primary multiplayer room scene.")]                              public string roomScene;
-    [SerializeField, Tooltip("Name of network player prefab in Resources folder.")]   private string networkPlayerName;
+    [Tooltip("Turn this on to force player to join room as soon as game is loaded.")]   public bool joinRoomOnLoad = false;
+    [Tooltip("Name of primary menu scene.")]                                            public string mainMenuScene;
+    [Tooltip("Name of primary multiplayer room scene.")]                                public string roomScene;
+    [SerializeField, Tooltip("Name of network player prefab in Resources folder.")]     private string networkPlayerName;
+    [SerializeField, Tooltip("Allow use of some of the worse words in our vocabulary")] private bool useFunnyWords;
 
     private Room mostRecentRoom;
 
@@ -54,7 +55,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         Hashtable customRoomSettings = new Hashtable();
 
-        customRoomSettings.Add("RoundLength", 120);
+        customRoomSettings.Add("RoundLength", 60);
 
         roomOptions.IsVisible = true; // The player is able to see the room
         roomOptions.IsOpen = true; // The room is open.
@@ -133,8 +134,10 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     }
 
     //List of random adjectives and nouns to name random players
-    private string[] wormAdjectives = { "Unfortunate", "Sad", "Despairing", "Grotesque", "Despicable", "Abhorrent", "Regrettable", "Incorrigible", "Platonic", "Hideous", "Guzzling", "Fleshy", "Glum", "Sopping", "Throbbing", "Malignant", "Undulating", "Treacherous", "Hostile", "Slimy", "Squirming", "Blubbering", "Twisted", "Manic", "Slippery", "Wet", "Moist", "Lugubrious", "Tubular", "Flaccid", "Little", "Erratic", "Pathetic" };
-    private string[] wormNouns = { "Invertebrate", "Creature", "Critter", "Specimen", "Homonculus", "Grubling", "Wormling", "Nightcrawler", "Stinker", "Guzzler", "Rapscallion", "Scalliwag", "Beastling", "Crawler", "Larva", "Dingus", "Freak", "Blighter", "Cretin", "Unit", "Denizen", "Creepy-Crawlie", "Parasite", "Organism" };
+    private readonly string[] wormAdjectives = { "Unfortunate", "Sad", "Despairing", "Grotesque", "Despicable", "Abhorrent", "Regrettable", "Incorrigible", "Platonic", "Sinister", "Hideous", "Glum", "Blasphemous", "Malignant", "Undulating", "Treacherous", "Hostile", "Slimy", "Squirming", "Blubbering", "Twisted", "Manic", "Slippery", "Wet", "Moist", "Lugubrious", "Tubular", "Little", "Erratic", "Pathetic" };
+    private readonly string[] wormNouns = { "Invertebrate", "Creature", "Critter", "Fool", "Goon", "Specimen", "Homonculus", "Grubling", "Wormling", "Nightcrawler", "Stinker", "Rapscallion", "Scalliwag", "Beastling", "Crawler", "Larva", "Dingus", "Freak", "Blighter", "Cretin", "Unit", "Denizen", "Creepy-Crawlie", "Parasite", "Organism" };
+    private readonly string[] wormAdjectivesBad = { "Guzzling", "Fleshy", "Sopping", "Throbbing", "Promiscuous", "Flaccid", "Erect" };
+    private readonly string[] wormNounsBad = { "Guzzler", "Pervert", "Fucko" };
 
     /// <summary>
     /// Generates a random nickname for the player.
@@ -142,7 +145,15 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     private void GenerateRandomNickname()
     {
         Random.InitState(System.DateTime.Now.Millisecond);  //Seeds the randomizer
-        string currentWormName = wormAdjectives[Random.Range(0, wormAdjectives.Length)] + " " + wormNouns[Random.Range(0, wormNouns.Length)];
+        List<string> realWormAdjectives = new List<string>(wormAdjectives);
+        List<string> realWormNouns = new List<string>(wormNouns);
+        if (useFunnyWords)
+        {
+            realWormAdjectives.AddRange(wormAdjectivesBad);
+            realWormNouns.AddRange(wormNounsBad);
+        }
+
+        string currentWormName = realWormAdjectives[Random.Range(0, realWormAdjectives.Count)] + " " + realWormNouns[Random.Range(0, realWormNouns.Count)];
         SetPlayerNickname(currentWormName + " #" + Random.Range(0, 1000).ToString("0000"));
     }
 
@@ -289,8 +300,14 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(playerScreenFader.GetFadeDuration());
         yield return null;
 
-        if(PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            //Unready all players
+            foreach (var player in NetworkPlayer.instances)
+                player.networkPlayerStats.isReady = false;
+
             PhotonNetwork.LoadLevel(sceneName);
+        }
     }
 
     public Room GetMostRecentRoom() => mostRecentRoom;

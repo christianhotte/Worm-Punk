@@ -9,9 +9,11 @@ using UnityEngine;
 public class ChainsawSettings : ScriptableObject
 {
     [Header("Mechanical Settings:")]
-    [Min(0), Tooltip("Base speed at which chainsaw can grind along walls and floors.")]                    public float grindSpeed;
-    [Tooltip("Layers which player can grind on.")]                                                         public LayerMask grindLayers;
-    [Tooltip("Modifier applied to grind speed when player is squeezing the trigger (can be up or down).")] public float triggerGrindModifier;
+    [Min(0), Tooltip("Base speed at which chainsaw can grind along walls and floors.")]                                      public float grindSpeed;
+    [Tooltip("Layers which player can grind on.")]                                                                           public LayerMask grindLayers;
+    [Min(0), Tooltip("Maximum multiplier applied to grind speed when player is squeezing the trigger (can be up or down).")] public float triggerGrindMultiplier;
+    [MinMaxSlider(0, 1), Tooltip("Range of positions along the blade which player will magnetize to while wallgrinding.")]   public Vector2 grindSweetSpot;
+    [Tooltip("Effective width of blade hitbox (should be more or less the actual size of the real blade.")]                  public float bladeWidth;
     [Header("Animation:")]
     [Min(0), Tooltip("Amount by which blade is pulled back as player squeezes the trigger.")]      public float bladePreRetractDistance;
     [Tooltip("Curve describing motion of pre-retraction, evaluated based on trigger pull value.")] public AnimationCurve bladePreRetractCurve;

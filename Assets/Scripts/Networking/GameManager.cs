@@ -11,10 +11,16 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     internal bool levelTransitionActive = false;
+    internal string prevSceneName;
 
     private void Awake()
     {
         Instance = this;
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
+    }
+    private void OnDestroy()
+    {
+        SceneManager.sceneUnloaded -= OnSceneUnloaded;
     }
 
     /// <summary>
@@ -27,6 +33,11 @@ public class GameManager : MonoBehaviour
         //SceneManager.LoadScene((int)sceneIndex);
         PhotonNetwork.LoadLevel((int)sceneIndex);
         levelTransitionActive = false;
+    }
+
+    public void OnSceneUnloaded(Scene scene)
+    {
+        prevSceneName = scene.name;
     }
 
     /// <summary>
@@ -51,10 +62,10 @@ public class GameManager : MonoBehaviour
     // Gets the name of the last scene David Wu ;)
     public string GetLastSceneName()
     {
-        // Retreiving the total number of scenes in build settings
+        // Retrieving the total number of scenes in build settings
         int sceneCount = SceneManager.sceneCountInBuildSettings;
 
-        // Retreuving root objects of the active scene.
+        // Retrieving root objects of the active scene.
         GameObject[] rootObjects = SceneManager.GetActiveScene().GetRootGameObjects();
 
         // Using Linq to sort scenes based on their build index and filters any scenes without any root game objects in the active scene
