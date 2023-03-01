@@ -110,7 +110,10 @@ public class HookProjectile : Projectile
                     float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1);                 //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
                     Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                                //Get base speed at which grappling hook pulls you toward target
                     Vector3 handDiff = controller.RelativePosition - controller.hookedHandPos;                                                              //Get difference between current position of hand and position when it initially hooked something
-                    if (Vector3.Angle(handDiff, hitDirection) > 90) newVelocity -= Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Apply additional velocity to player based on how much they are pulling their arm back
+                    if (Vector3.Angle(handDiff, hitDirection) > 90) //Player is yanking
+                    {
+                        newVelocity -= Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Apply additional velocity to player based on how much they are pulling their arm back
+                    }
                     if (!punchWhipped) //Player is not in punch-whip mode
                     {
                         float maneuverMultiplier = controller.settings.lateralManeuverForce;                //Initialize value for lateral maneuver force multiplier
