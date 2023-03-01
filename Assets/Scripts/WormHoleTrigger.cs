@@ -5,6 +5,8 @@ using UnityEngine;
 public class WormHoleTrigger : MonoBehaviour
 {
     private WormHole WHS;
+    internal bool exiting = false,flashin=false;
+    public GameObject light;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,7 +16,10 @@ public class WormHoleTrigger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
+       if(exiting && !flashin)
+        {
+            StartCoroutine(FlashLight());
+        }
     }
 
 
@@ -28,5 +33,14 @@ public class WormHoleTrigger : MonoBehaviour
             StartCoroutine(WHS.StartWormhole(this.gameObject, playerRb));
             return;
         }      
+    }
+
+    public IEnumerator FlashLight()
+    {
+        flashin = true;
+        light.SetActive(true);
+        yield return new WaitForSeconds(0.2f);
+        light.SetActive(false);
+        flashin = false;
     }
 }
