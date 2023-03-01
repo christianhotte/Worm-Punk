@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Controller component for player's right hand.")]             internal ActionBasedController rightHand;
     [Tooltip("Equipment which is currently attached to the player")]       internal List<PlayerEquipment> attachedEquipment = new List<PlayerEquipment>();
     [Tooltip("Combat HUD Canvas.")]                                        internal CombatHUDController combatHUD;    
+    [SerializeField, Tooltip("Combat Screen GameObject.")]                 internal GameObject combatHUDScreen;
 
     internal Camera cam;                       //Primary camera for VR rendering, located on player head
     internal PlayerInput input;                //Input manager component used by player to send messages to hands and such
@@ -233,12 +234,15 @@ public class PlayerController : MonoBehaviour
     private void UpdateWeaponry()
     {
         if (inMenu)
+        {
             inCombat = false;
+        }
 
-        foreach (var weapon in weapons)
-            weapon.gameObject.SetActive(inCombat);
-        foreach (var tool in tools)
-            tool.gameObject.SetActive(inCombat);
+        foreach (var weapon in attachedEquipment)
+            foreach (var renderer in weapon.GetComponentsInChildren<Renderer>())
+                renderer.enabled = inCombat;
+
+        combatHUDScreen.GetComponent<MeshRenderer>().enabled = inCombat;
     }
 
     //INPUT METHODS:

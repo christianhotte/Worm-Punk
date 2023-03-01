@@ -52,6 +52,17 @@ public class WormHole : MonoBehaviour
       
         playerRB.useGravity = false;                                                //Turn off Gravity
        // playerRB.isKinematic = true;
+
+        foreach (PlayerEquipment equipment in PlayerController.instance.attachedEquipment)
+        {
+            NewGrapplerController grapple = equipment.GetComponent<NewGrapplerController>();
+            if (grapple == null) continue;
+            if (grapple.hook.state != HookProjectile.HookState.Stowed)
+            {
+                grapple.hook.Release();
+                grapple.hook.Stow();
+            }
+        }
         playerOBJ.transform.position = wormZoneShifted.position;
         float entryDiff = playerCam.transform.eulerAngles.y - wormZoneShifted.eulerAngles.y; //difference for player to face down wormhole
         playerOBJ.transform.rotation = Quaternion.Euler(playerOBJ.transform.eulerAngles.x, playerOBJ.transform.eulerAngles.y - entryDiff, playerOBJ.transform.eulerAngles.z);
@@ -61,6 +72,9 @@ public class WormHole : MonoBehaviour
         wormZoneInstance.transform.eulerAngles = new Vector3(0, startRot, 0);
         wormZoneSpeed = 120;
         playerRB.velocity = wormZoneInstance.transform.forward * wormZoneSpeed;
+
+
+
         yield return new WaitForSeconds(waitTime);
         float diff = playerCam.transform.eulerAngles.y - exitPos.transform.eulerAngles.y;
         float exitDiff = playerCam.transform.eulerAngles.y - startRot;
