@@ -617,63 +617,63 @@ MonoBehaviour:
       TexGenIndex: 9
     TexGens:
     - Translation: {x: 0, y: 0}
-      Scale: {x: 0.1, y: 0.1}
+      Scale: {x: 1, y: 1}
       RotationAngle: 0
-      RenderMaterial: {fileID: 2100000, guid: a9faa3fed0191264ba14c78da24560b5, type: 2}
+      RenderMaterial: {fileID: 2100000, guid: e3a00eeee0366a94bbfe2b2c2a401e7a, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
     - Translation: {x: 0, y: 0}
-      Scale: {x: 0.1, y: 0.1}
+      Scale: {x: 1, y: 1}
       RotationAngle: 0
-      RenderMaterial: {fileID: 2100000, guid: a9faa3fed0191264ba14c78da24560b5, type: 2}
+      RenderMaterial: {fileID: 2100000, guid: e3a00eeee0366a94bbfe2b2c2a401e7a, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
     - Translation: {x: 0, y: 0}
-      Scale: {x: 0.1, y: 0.1}
+      Scale: {x: 1, y: 1}
       RotationAngle: 0
-      RenderMaterial: {fileID: 2100000, guid: a9faa3fed0191264ba14c78da24560b5, type: 2}
+      RenderMaterial: {fileID: 2100000, guid: e3a00eeee0366a94bbfe2b2c2a401e7a, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
     - Translation: {x: 0, y: 0}
-      Scale: {x: 0.1, y: 0.1}
+      Scale: {x: 1, y: 1}
       RotationAngle: 0
-      RenderMaterial: {fileID: 2100000, guid: a9faa3fed0191264ba14c78da24560b5, type: 2}
+      RenderMaterial: {fileID: 2100000, guid: e3a00eeee0366a94bbfe2b2c2a401e7a, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
     - Translation: {x: 0, y: 0}
-      Scale: {x: 0.1, y: 0.1}
+      Scale: {x: 1, y: 1}
       RotationAngle: 0
-      RenderMaterial: {fileID: 2100000, guid: a9faa3fed0191264ba14c78da24560b5, type: 2}
+      RenderMaterial: {fileID: 2100000, guid: e3a00eeee0366a94bbfe2b2c2a401e7a, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
     - Translation: {x: 0, y: 0}
-      Scale: {x: 0.1, y: 0.1}
+      Scale: {x: 1, y: 1}
       RotationAngle: 0
-      RenderMaterial: {fileID: 2100000, guid: a9faa3fed0191264ba14c78da24560b5, type: 2}
+      RenderMaterial: {fileID: 2100000, guid: e3a00eeee0366a94bbfe2b2c2a401e7a, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
     - Translation: {x: 0, y: 0}
-      Scale: {x: 0.1, y: 0.1}
+      Scale: {x: 1, y: 1}
       RotationAngle: 0
-      RenderMaterial: {fileID: 2100000, guid: a9faa3fed0191264ba14c78da24560b5, type: 2}
+      RenderMaterial: {fileID: 2100000, guid: e3a00eeee0366a94bbfe2b2c2a401e7a, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
     - Translation: {x: 0, y: 0}
-      Scale: {x: 0.1, y: 0.1}
+      Scale: {x: 1, y: 1}
       RotationAngle: 0
-      RenderMaterial: {fileID: 2100000, guid: a9faa3fed0191264ba14c78da24560b5, type: 2}
+      RenderMaterial: {fileID: 2100000, guid: e3a00eeee0366a94bbfe2b2c2a401e7a, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
     - Translation: {x: 0, y: 0}
-      Scale: {x: 0.1, y: 0.1}
+      Scale: {x: 1, y: 1}
       RotationAngle: 0
-      RenderMaterial: {fileID: 2100000, guid: a9faa3fed0191264ba14c78da24560b5, type: 2}
+      RenderMaterial: {fileID: 2100000, guid: e3a00eeee0366a94bbfe2b2c2a401e7a, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
     - Translation: {x: 0, y: 0}
-      Scale: {x: 0.1, y: 0.1}
+      Scale: {x: 1, y: 1}
       RotationAngle: 0
-      RenderMaterial: {fileID: 2100000, guid: a9faa3fed0191264ba14c78da24560b5, type: 2}
+      RenderMaterial: {fileID: 2100000, guid: e3a00eeee0366a94bbfe2b2c2a401e7a, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
     TexGenFlags: 01000000010000000100000001000000010000000100000001000000010000000100000001000000
