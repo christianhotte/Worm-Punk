@@ -21,6 +21,7 @@ public class JumpPad : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.name);
         PlayerController playerC = other.GetComponentInParent<PlayerController>();
         if (playerC == null) playerC = other.GetComponent<PlayerController>();
         if (playerC != null)

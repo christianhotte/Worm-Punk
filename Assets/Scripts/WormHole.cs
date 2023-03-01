@@ -35,14 +35,16 @@ public class WormHole : MonoBehaviour
         ActiveWormholes.Add(this);
         wormZoneShifted = wormZone;
         wormZoneShifted.transform.position = new Vector3(wormZone.position.x + 100 * ActiveWormholes.Count,wormZone.position.y,wormZone.position.z);
-        float entryDiff = playerCam.transform.eulerAngles.y - wormZoneShifted.eulerAngles.y; //difference for player to face down wormhole
-        playerOBJ.transform.rotation = Quaternion.Euler(playerOBJ.transform.eulerAngles.x, playerOBJ.transform.eulerAngles.y - entryDiff, playerOBJ.transform.eulerAngles.z);
+      
         playerRB.useGravity = false;                                                //Turn off Gravity
         playerRB.isKinematic = true;
         playerOBJ.transform.position = wormZoneShifted.position;
+        float entryDiff = playerCam.transform.eulerAngles.y - wormZoneShifted.eulerAngles.y; //difference for player to face down wormhole
+        playerOBJ.transform.rotation = Quaternion.Euler(playerOBJ.transform.eulerAngles.x, playerOBJ.transform.eulerAngles.y - entryDiff, playerOBJ.transform.eulerAngles.z);
         float startRot = playerCam.transform.eulerAngles.y;
         wormZoneInstance =Instantiate(wormZoneParticles);
         wormZoneInstance.transform.position = new Vector3(playerOBJ.transform.position.x , playerOBJ.transform.position.y, playerOBJ.transform.position.z);
+        wormZoneInstance.transform.eulerAngles = new Vector3(0, startRot, 0);
         yield return new WaitForSeconds(waitTime);
         float diff = playerCam.transform.eulerAngles.y - exitPos.transform.eulerAngles.y;
         float exitDiff = playerCam.transform.eulerAngles.y - startRot;
