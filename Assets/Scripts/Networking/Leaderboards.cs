@@ -17,8 +17,6 @@ public class Leaderboards : MonoBehaviourPunCallbacks
         playerScores = "";
         arenaScene = "DM_0.12_Arena";
 
-        gameObject.SetActive(false);
-
         // Gets the name of the last scene we were on (returning from the arena to the network locker room).
         GameManager gameManager = FindObjectOfType<GameManager>();
         string lastSceneName = gameManager.GetLastSceneName();
@@ -28,6 +26,11 @@ public class Leaderboards : MonoBehaviourPunCallbacks
         if (lastSceneName == arenaScene)
         {
             OpenLeaderboards();
+        }
+
+        else
+        {
+            gameObject.SetActive(false);
         }
     }
 
