@@ -6,8 +6,8 @@ public class WormHole : MonoBehaviour
 {
     public Transform holePos1, holePos2,wormZone,playerHead,wormZoneShifted;
     public GameObject wormZoneParticles,wormZoneInstance,playerCam;
-    public float waitTime,exitSpeed=30;
-    internal bool locked = false;
+    public float waitTime,exitSpeed=30,wormZoneSpeed=5;
+    internal bool locked = false,inZone=false;
     private NewShotgunController NSC;
     public PlayerController PC;
     public GameObject playerOrigin;
@@ -21,7 +21,10 @@ public class WormHole : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (inZone)
+        {
+            
+        }
     }
     public IEnumerator StartWormhole(GameObject startHole,GameObject playerOBJ)
     {
@@ -48,7 +51,7 @@ public class WormHole : MonoBehaviour
         wormZoneShifted.transform.position = new Vector3(wormZone.position.x + 100 * ActiveWormholes.Count,wormZone.position.y,wormZone.position.z);
       
         playerRB.useGravity = false;                                                //Turn off Gravity
-        playerRB.isKinematic = true;
+       // playerRB.isKinematic = true;
         playerOBJ.transform.position = wormZoneShifted.position;
         float entryDiff = playerCam.transform.eulerAngles.y - wormZoneShifted.eulerAngles.y; //difference for player to face down wormhole
         playerOBJ.transform.rotation = Quaternion.Euler(playerOBJ.transform.eulerAngles.x, playerOBJ.transform.eulerAngles.y - entryDiff, playerOBJ.transform.eulerAngles.z);
@@ -56,6 +59,8 @@ public class WormHole : MonoBehaviour
         wormZoneInstance =Instantiate(wormZoneParticles);
         wormZoneInstance.transform.position = new Vector3(playerOBJ.transform.position.x , playerOBJ.transform.position.y, playerOBJ.transform.position.z);
         wormZoneInstance.transform.eulerAngles = new Vector3(0, startRot, 0);
+        wormZoneSpeed = 40;
+        playerRB.velocity = wormZoneInstance.transform.forward * wormZoneSpeed;
         yield return new WaitForSeconds(waitTime);
         float diff = playerCam.transform.eulerAngles.y - exitPos.transform.eulerAngles.y;
         float exitDiff = playerCam.transform.eulerAngles.y - startRot;
@@ -64,9 +69,10 @@ public class WormHole : MonoBehaviour
         playerOBJ.transform.position = exitPos.position;                          
         foreach (NewGrapplerController hookController in PlayerController.instance.GetComponentsInChildren<NewGrapplerController>()) hookController.hook.Stow();
         playerRB.useGravity = true;                                                 //Bring back Gravity
-        playerRB.isKinematic = false;
+       // playerRB.isKinematic = false;
         playerRB.velocity = exitPos.forward * exitSpeed;                            //launch out of wormhole
-        triggerScript.exiting = false;                                                                 
+        triggerScript.exiting = false;
+        inZone = false;
         yield return new WaitForSeconds(0.2f);                                      //Wait for the player to get clear of the wormhole
         ActiveWormholes.Remove(this);
         Destroy(wormZoneInstance);
