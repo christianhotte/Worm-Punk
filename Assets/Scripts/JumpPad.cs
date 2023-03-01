@@ -22,6 +22,16 @@ public class JumpPad : MonoBehaviour
     {
         if (other.TryGetComponent(out XROrigin playerOrigin))
         {
+            foreach (PlayerEquipment equipment in PlayerController.instance.attachedEquipment)
+            {
+                NewGrapplerController grapple = equipment.GetComponent<NewGrapplerController>();
+                if (grapple == null) continue;
+                if (grapple.hook.state != HookProjectile.HookState.Stowed)
+                {
+                    grapple.hook.Release();
+                    grapple.hook.Stow();
+                }
+            }
             print("Jump pad used by " + other.name);
             Rigidbody playerRb = playerOrigin.GetComponent<Rigidbody>();
             playerRb.transform.position = this.transform.position;
