@@ -54,7 +54,7 @@ public class Leaderboards : MonoBehaviourPunCallbacks
         foreach (NetworkPlayer player in NetworkPlayer.instances)
         {
             // Just adds to the strings
-            leaderboardText.text += player.GetName() + " Kills: " + player.networkPlayerStats.numOfKills.ToString() + player.GetName() + " Deaths: " + player.networkPlayerStats.numOfDeaths.ToString() + "\n";
+            leaderboardText.text += player.GetName() + " Kills: " + player.networkPlayerStats.numOfKills.ToString() + " | Deaths: " + player.networkPlayerStats.numOfDeaths.ToString() + "\n";
         }
     }
 }
