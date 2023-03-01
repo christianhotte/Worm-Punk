@@ -22,10 +22,10 @@ public class NetworkPlayer : MonoBehaviour
     /// </summary>
     public static List<NetworkPlayer> instances = new List<NetworkPlayer>();
 
-    internal PhotonView photonView;                             //PhotonView network component used by this NetworkPlayer to synchronize movement
-    private SkinnedMeshRenderer bodyRenderer;                   //Renderer component for main player body/skin
-    private TrailRenderer trail;                                //Renderer for trail that makes players more visible to each other
-    private PlayerStats networkPlayerStats = new PlayerStats(); //The stats for the network player
+    internal PhotonView photonView;                              //PhotonView network component used by this NetworkPlayer to synchronize movement
+    private SkinnedMeshRenderer bodyRenderer;                    //Renderer component for main player body/skin
+    private TrailRenderer trail;                                 //Renderer for trail that makes players more visible to each other
+    internal PlayerStats networkPlayerStats = new PlayerStats(); //The stats for the network player
 
     private Transform headTarget;      //True local position of player head
     private Transform leftHandTarget;  //True local position of player left hand
@@ -264,6 +264,8 @@ public class NetworkPlayer : MonoBehaviour
             PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
             SyncStats();
         }
+
+        PlayerController.instance.combatHUD.AddToDeathInfoBoard(PhotonNetwork.LocalPlayer.NickName, PhotonNetwork.GetPhotonView(enemyID).Owner.NickName);
     }
 
     /// <summary>
@@ -317,4 +319,5 @@ public class NetworkPlayer : MonoBehaviour
     }
 
     public PlayerStats GetNetworkPlayerStats() => networkPlayerStats;
+    public string GetName() => PhotonNetwork.LocalPlayer.NickName;
 }

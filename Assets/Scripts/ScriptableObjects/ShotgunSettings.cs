@@ -43,6 +43,7 @@ public class ShotgunSettings : ScriptableObject
     [Min(0), Tooltip("Max distance ejector nubbins can move along their rails.")]             public float ejectorTraverseDistance;
     [Min(0), Tooltip("Amount of time ejectors take to travel to their target positions.")]    public float ejectorTraverseTime;
     [Tooltip("Describes motion of ejector during traversal.")]                                public AnimationCurve ejectorTraverseCurve;
+    [Min(0), Tooltip("Amount forward firing pins move when weapon is fired.")]                public float pinTraverseDistance;
     [Header("Effects:")]
     [Tooltip("Settings for configuring the vibration player feels when firing.")]             public PlayerEquipment.HapticData fireHaptics;
     [Tooltip("Settings for configuring the vibration player feels when ejecting shells.")]    public PlayerEquipment.HapticData ejectHaptics;
