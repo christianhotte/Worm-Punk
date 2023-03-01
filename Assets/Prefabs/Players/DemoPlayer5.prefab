@@ -1363,7 +1363,7 @@ GameObject:
   - component: {fileID: 1952950443738959618}
   - component: {fileID: 9078473296043918556}
   - component: {fileID: 3393663548391145761}
-  m_Layer: 3
+  m_Layer: 13
   m_Name: RightHand Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1677,7 +1677,7 @@ GameObject:
   - component: {fileID: 1952950444182658443}
   - component: {fileID: 256317196258964034}
   - component: {fileID: 644622730519625304}
-  m_Layer: 3
+  m_Layer: 13
   m_Name: LeftHand Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
