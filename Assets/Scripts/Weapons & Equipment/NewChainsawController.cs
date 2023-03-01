@@ -179,6 +179,9 @@ public class NewChainsawController : PlayerEquipment
             wrist.localRotation = Quaternion.RotateTowards(wrist.localRotation, Quaternion.identity, settings.wristRotReturnRate * Time.deltaTime);              //Have wrist return to base rotation
             wristPivot.localRotation = Quaternion.RotateTowards(wristPivot.localRotation, Quaternion.identity, settings.reverseGripReturnRate * Time.deltaTime); //Have wrist pivot return to base rotation
         }
+
+        //Grind along wall:
+
     }
     private protected override void FixedUpdate()
     {

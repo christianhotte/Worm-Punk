@@ -206,12 +206,13 @@ public class HookProjectile : Projectile
         transform.localEulerAngles = Vector3.zero; //Zero out rotation relative to stow point
 
         //Cleanup:
-        if (trail != null) trail.enabled = false; //Hide trail
-        tether.enabled = false;                   //Hide tether
-        ChangeVisibility(false);                  //Immediately make projectile invisible
-        state = HookState.Stowed;                 //Indicate that projectile is stowed
-        timeInState = 0;                          //Reset state timer
-        retractSpeed = 0;                         //Reset retraction speed
+        if (!controller.handWeapon.holstered) controller.handWeapon.Holster(false); //Unholster gun after grappling (if it hasn't been already)
+        if (trail != null) trail.enabled = false;                                   //Hide trail
+        tether.enabled = false;                                                     //Hide tether
+        ChangeVisibility(false);                                                    //Immediately make projectile invisible
+        state = HookState.Stowed;                                                   //Indicate that projectile is stowed
+        timeInState = 0;                                                            //Reset state timer
+        retractSpeed = 0;                                                           //Reset retraction speed
     }
     /// <summary>
     /// Version of stow method meant to be the first thing called on new hook projectile by its controller. Passes along the reference so everything runs smoothly.
@@ -240,14 +241,15 @@ public class HookProjectile : Projectile
             photonView.RPC("RPC_Release", RpcTarget.OthersBuffered, retractSpeed); //Tell remote hooks to release and feed them the calculated release speed
 
             //Effects:
-            if (bounce) controller.Bounced(); //Indicate to controller that hook has bounced off of something
-            else controller.ForceReleased();  //Indicate to controller that hook has been released
+            if (bounce) controller.Bounced();     //Indicate to controller that hook has bounced off of something
+            else controller.ForceReleased();      //Indicate to controller that hook has been released
+            controller.handWeapon.Holster(false); //Unholster gun after grappling
         }
 
-        //Cleanup:
-        transform.localScale = Vector3.one;       //Make sure projectile is at its base scale
-        state = HookState.Retracting;             //Indicate that hook is now returning to its owner
-        timeInState = 0;                          //Reset state timer
+        //Cleanup:-
+        transform.localScale = Vector3.one; //Make sure projectile is at its base scale
+        state = HookState.Retracting;       //Indicate that hook is now returning to its owner
+        timeInState = 0;                    //Reset state timer
     }
     /// <summary>
     /// Hook has hit something.

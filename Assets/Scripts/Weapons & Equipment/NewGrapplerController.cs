@@ -11,10 +11,11 @@ using CustomEnums;
 public class NewGrapplerController : PlayerEquipment
 {
     //Objects & Components:
-    internal HookProjectile hook; //The projectile this weapon fires and recalls to perform its actions (never destroyed)
-    internal Transform stowPoint; //Point on launcher at which hook projectile is invisibly stowed
-    private Transform hand;       //Real position of player hand used by this equipment
-    internal Transform barrel;    //Position hook is launched from, and point where the line begins
+    internal HookProjectile hook;        //The projectile this weapon fires and recalls to perform its actions (never destroyed)
+    internal Transform stowPoint;        //Point on launcher at which hook projectile is invisibly stowed
+    private Transform hand;              //Real position of player hand used by this equipment
+    internal Transform barrel;           //Position hook is launched from, and point where the line begins
+    internal PlayerEquipment handWeapon; //Player weapon held in the same hand as this chainsaw
 
     //Settings:
     [Tooltip("Mechanical properties describing hookshot functionality and effects.")] public HookshotSettings settings;
@@ -56,6 +57,10 @@ public class NewGrapplerController : PlayerEquipment
 
         //Late object & component get:
         hand = (handedness == 0 ? player.leftHand : player.rightHand).transform; //Get a reference to the relevant player hand
+        foreach (PlayerEquipment equipment in player.attachedEquipment) //Iterate through all equipment attached to player
+        {
+            if (equipment != this && equipment.handedness == handedness) { handWeapon = equipment; break; } //Try to get weapon used by same hand
+        }
     }
     private protected override void Update()
     {
@@ -169,6 +174,7 @@ public class NewGrapplerController : PlayerEquipment
         {
             if (settings.launchSound != null) audioSource.PlayOneShot(settings.launchSound); //Play sound effect
         }
+        handWeapon.Holster();                      //Holster gun while grappling
         SendHapticImpulse(settings.launchHaptics); //Play haptic impulse
     }
     /// <summary>
