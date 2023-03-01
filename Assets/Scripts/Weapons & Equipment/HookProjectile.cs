@@ -107,17 +107,20 @@ public class HookProjectile : Projectile
                 //Move player:
                 if (photonView.IsMine) //Only master version needs to be able to pull the player
                 {
-                    float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1);                 //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
-                    Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                                //Get base speed at which grappling hook pulls you toward target
-                    Vector3 handDiff = controller.RelativePosition - controller.hookedHandPos;                                                              //Get difference between current position of hand and position when it initially hooked something
+                    float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1); //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
+                    Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                //Get base speed at which grappling hook pulls you toward target
+                    Quaternion playerRotation = controller.player.bodyRb.rotation;                                                          //Get current rotation of player body
+                    Vector3 handDiff = (playerRotation * controller.RelativePosition) - (playerRotation * controller.hookedHandPos);        //Get difference between current position of hand and position when it initially hooked something
                     if (Vector3.Angle(handDiff, hitDirection) > 90) //Player is yanking
                     {
-                        newVelocity -= Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Apply additional velocity to player based on how much they are pulling their arm back
+                        Vector3 addVel = Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Get additional velocity to player based on how much they are pulling their arm back
+                        newVelocity -= addVel;                                                                    //Apply additional velocity (rotated based on player orientation)
                     }
                     if (!punchWhipped) //Player is not in punch-whip mode
                     {
-                        float maneuverMultiplier = controller.settings.lateralManeuverForce;                //Initialize value for lateral maneuver force multiplier
-                        newVelocity -= Vector3.ProjectOnPlane(handDiff, hitDirection) * maneuverMultiplier; //Apply additional velocity to player based on how much they are pulling their arm to the side
+                        float maneuverMultiplier = controller.settings.lateralManeuverForce;                  //Initialize value for lateral maneuver force multiplier
+                        Vector3 addVel = Vector3.ProjectOnPlane(handDiff, hitDirection) * maneuverMultiplier; //Get additional velocity to player based on how much they are pulling their arm to the side
+                        newVelocity -= addVel;                                                                //Apply additional velocity (rotated based on player orientation)
                     }
                     controller.player.bodyRb.velocity = newVelocity; //Apply new velocity
                 }
