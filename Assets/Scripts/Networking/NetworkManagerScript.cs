@@ -289,8 +289,14 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(playerScreenFader.GetFadeDuration());
         yield return null;
 
-        if(PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            //Unready all players
+            foreach (var player in NetworkPlayer.instances)
+                player.networkPlayerStats.isReady = false;
+
             PhotonNetwork.LoadLevel(sceneName);
+        }
     }
 
     public Room GetMostRecentRoom() => mostRecentRoom;

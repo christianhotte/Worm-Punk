@@ -198,21 +198,21 @@ public class HookProjectile : Projectile
             {
                 hitPlayer = null; //Indicate that hook is no longer tethered to a player
             }
-            transform.parent = controller.stowPoint;              //Child hook to stow point
-            photonView.RPC("RPC_Stow", RpcTarget.OthersBuffered); //Stow remote hooks
+            transform.parent = controller.stowPoint;                                    //Child hook to stow point
+            photonView.RPC("RPC_Stow", RpcTarget.OthersBuffered);                       //Stow remote hooks
+            if (!controller.handWeapon.holstered) controller.handWeapon.Holster(false); //Unholster gun after grappling (if it hasn't been already)
         }
         else transform.parent = originPlayerBody; //Child remote hooks to networkplayer's center mass
         transform.localPosition = Vector3.zero;    //Zero out position relative to stow point
         transform.localEulerAngles = Vector3.zero; //Zero out rotation relative to stow point
 
         //Cleanup:
-        if (!controller.handWeapon.holstered) controller.handWeapon.Holster(false); //Unholster gun after grappling (if it hasn't been already)
-        if (trail != null) trail.enabled = false;                                   //Hide trail
-        tether.enabled = false;                                                     //Hide tether
-        ChangeVisibility(false);                                                    //Immediately make projectile invisible
-        state = HookState.Stowed;                                                   //Indicate that projectile is stowed
-        timeInState = 0;                                                            //Reset state timer
-        retractSpeed = 0;                                                           //Reset retraction speed
+        if (trail != null) trail.enabled = false; //Hide trail
+        tether.enabled = false;                   //Hide tether
+        ChangeVisibility(false);                  //Immediately make projectile invisible
+        state = HookState.Stowed;                 //Indicate that projectile is stowed
+        timeInState = 0;                          //Reset state timer
+        retractSpeed = 0;                         //Reset retraction speed
     }
     /// <summary>
     /// Version of stow method meant to be the first thing called on new hook projectile by its controller. Passes along the reference so everything runs smoothly.
