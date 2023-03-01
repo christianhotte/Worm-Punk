@@ -20,11 +20,13 @@ public class Leaderboards : MonoBehaviourPunCallbacks
 
         Debug.Log("Last Scene Name: " + GameManager.Instance.prevSceneName);
 
+        // If the player has just returned from the a game after returning from the arena, open up the game leaderboards
         if (GameManager.Instance.prevSceneName == arenaScene)
         {
             OpenLeaderboards();
         }
 
+        // If the player did not come back from a game, we don't want to show the leaderboards.
         else
         {
             gameObject.SetActive(false);
@@ -52,7 +54,7 @@ public class Leaderboards : MonoBehaviourPunCallbacks
         foreach (NetworkPlayer player in NetworkPlayer.instances)
         {
             // Just adds to the strings
-            playerScores += player.GetName() + " Kills: " + player.networkPlayerStats.numOfKills.ToString() + player.GetName() + " Deaths: " + player.networkPlayerStats.numOfDeaths.ToString() + "\n";
+            leaderboardText.text += player.GetName() + " Kills: " + player.networkPlayerStats.numOfKills.ToString() + player.GetName() + " Deaths: " + player.networkPlayerStats.numOfDeaths.ToString() + "\n";
         }
     }
 }
