@@ -11,6 +11,9 @@ public class MainMenuController : MonoBehaviour
     private PlayerController playerObject;
     [SerializeField, Tooltip("The positions for where the player moves to in the menu areas.")] private Transform[] menuLocations;
     [SerializeField, Tooltip("The location of the lobby.")] private Transform lobbyLocation;
+    [SerializeField, Tooltip("The animator for 1st Panel.")] private Animator Panel1Animator;
+    [SerializeField, Tooltip("The animator for 1st Panel.")] private Animator Panel2Animator;
+    [SerializeField, Tooltip("The animator for 1st Panel.")] private Animator Panel3Animator;
 
     private void Start()
     {
@@ -43,6 +46,9 @@ public class MainMenuController : MonoBehaviour
     {
         //NetworkManagerScript.instance.JoinLobby();
         StartCoroutine(MovePlayerInMenu(MenuArea.FINAL, speed));
+        Panel1Animator.Play("Panel_1_Rev");
+        Panel2Animator.Play("Panel_2_Rev");
+        Panel3Animator.Play("Panel_3_Rev");
     }
 
     /// <summary>
