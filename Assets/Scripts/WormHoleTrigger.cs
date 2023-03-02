@@ -17,7 +17,7 @@ public class WormHoleTrigger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       if(exiting && !flashin)
+       if(exiting && !flashin)  //If someones coming out of this hole and the light isnt on
         {
             StartCoroutine(FlashLight());
         }
@@ -27,10 +27,10 @@ public class WormHoleTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
      
-        if (other.TryGetComponent(out XROrigin playerOrigin) && !WHS.locked)
+        if (other.TryGetComponent(out XROrigin playerOrigin) && !WHS.locked) // make sure it hit the player, and the wormhole isnt locked
         {
-            GameObject playerRb = PlayerController.instance.bodyRb.gameObject;
-            StartCoroutine(WHS.StartWormhole(this.gameObject, playerRb));
+            GameObject playerRb = PlayerController.instance.bodyRb.gameObject;//gets player reference to send to the wormhole script
+            StartCoroutine(WHS.StartWormhole(this.gameObject, playerRb)); //Tells the wormhole to start the loop 
             return;
         }
     }
@@ -38,9 +38,9 @@ public class WormHoleTrigger : MonoBehaviour
     public IEnumerator FlashLight()
     {
         flashin = true;
-        light.SetActive(true);
+        light.SetActive(true);//turns light off
         yield return new WaitForSeconds(0.2f);
-        light.SetActive(false);
+        light.SetActive(false);//turns light back on
         flashin = false;
     }
 }
