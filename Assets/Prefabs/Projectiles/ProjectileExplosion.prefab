@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   duration: 0.2
-  maxScale: 13
+  maxScale: 15
   transparencyCurve:
     serializedVersion: 2
     m_Curve:
@@ -107,7 +107,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   maxLaunchForce: 40
   damage: 1
-  damageRadius: 6
+  damageRadius: 13
 --- !u!33 &850727393920491880
 MeshFilter:
   m_ObjectHideFlags: 0
