@@ -99,10 +99,11 @@ public class Leaderboards : MonoBehaviourPunCallbacks
                 newDeaths.color = playerColor;                                                              //Set text color to given player color
 
                 //Place K/D:
-                TMP_Text newKD = Instantiate(ratios, ratios.transform.parent).GetComponent<TMP_Text>();         //Instantiate new text object
-                newKD.rectTransform.localPosition -= Vector3.down * yHeight;                                    //Move text to target position
-                newKD.text = (stats.numOfKills / stats.numOfDeaths > 0 ? stats.numOfDeaths : 1).ToString("F2"); //Display KD ratio (rounded to hundredths)
-                newKD.color = playerColor;                                                                      //Set text color to given player color
+                TMP_Text newKD = Instantiate(ratios, ratios.transform.parent).GetComponent<TMP_Text>();                 //Instantiate new text object
+                newKD.rectTransform.localPosition -= Vector3.down * yHeight;                                            //Move text to target position
+                float KD = Mathf.Round((stats.numOfKills / stats.numOfDeaths > 0 ? stats.numOfDeaths : 1) * 100) / 100; //Round to hundredths
+                newKD.text = KD.ToString();                                                                             //Display KD ratio
+                newKD.color = playerColor;                                                                              //Set text color to given player color
             }
 
             //Clear list references:
