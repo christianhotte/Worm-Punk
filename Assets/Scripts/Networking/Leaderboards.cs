@@ -110,6 +110,7 @@ public class Leaderboards : MonoBehaviourPunCallbacks
             names.enabled = false;  //Hide original name display
             kills.enabled = false;  //Hide original kill display
             deaths.enabled = false; //Hide original death display
+            ratios.enabled = false; //Hide original ratio display
         }
         else gameObject.SetActive(false); // If the player did not come back from a game, we don't want to show the leaderboards.
     }

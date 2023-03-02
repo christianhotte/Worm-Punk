@@ -1086,7 +1086,7 @@ MonoBehaviour:
   names: {fileID: 3844669399972101801}
   kills: {fileID: 3193629621439203698}
   deaths: {fileID: 8999403091593699245}
-  ratios: {fileID: 0}
+  ratios: {fileID: 4402314384389707226}
   lineSeparation: 12
   playerColorGamma: 0.25
   clearStats: 1

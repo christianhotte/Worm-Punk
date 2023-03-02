@@ -211,9 +211,11 @@ public class NetworkPlayer : MonoBehaviour
         foreach (Material mat in bodyRenderer.materials) mat.color = currentColor; //Apply color to entire player body
         for (int x = 0; x < trail.colorGradient.colorKeys.Length; x++) //Iterate through color keys in trail gradient
         {
-            trail.colorGradient.colorKeys[x].color = currentColor; //Apply color setting to trail key
+            if (currentColor == Color.black) trail.colorGradient.colorKeys[x].color = Color.white;
+            else trail.colorGradient.colorKeys[x].color = currentColor; //Apply color setting to trail key
         }
-        trail.startColor = currentColor; trail.endColor = currentColor; //Set actual trail colors (just in case)
+        if (currentColor == Color.black) { trail.startColor = Color.white; trail.endColor = Color.white; }
+        else { trail.startColor = currentColor; trail.endColor = currentColor; } //Set actual trail colors (just in case)
     }
 
     /// <summary>
