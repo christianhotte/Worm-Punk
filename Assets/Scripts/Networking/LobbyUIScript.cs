@@ -41,44 +41,12 @@ public class LobbyUIScript : MonoBehaviour
             {
                 // Then we can open the menu
                 OpenMenu(menus[i]);
-
-                if (menuName == "title")
-                {
-                    tutorialMenu.SetActive(true);
-                }
-
-                else if (menuName == "tutorials")
-                {
-                    OpenMenu("title");
-                    tutorialMenu.SetActive(true);
-                }
-
-                else
-                {
-                    // Do nothing
-                }
             }
 
             // If it's not the menu we're trying to open, then we want to close it.
             else if (menus[i].open)
             {
                 CloseMenu(menus[i]);
-
-                if (menuName == "title")
-                {
-                    tutorialMenu.SetActive(true);
-                }
-
-                else if (menuName == "tutorials")
-                {
-                    OpenMenu("title");
-                    tutorialMenu.SetActive(true);
-                }
-
-                else
-                {
-                    // Do nothing
-                }
             }
         }
     }
@@ -125,22 +93,6 @@ public class LobbyUIScript : MonoBehaviour
 
         // Opens the menu.
         menu.Open();
-
-        if (menu.name == "title")
-        {
-            tutorialMenu.SetActive(true);
-        }
-
-        else if (menu.name == "tutorials")
-        {
-            OpenMenu("title");
-            tutorialMenu.SetActive(true);
-        }
-
-        else
-        {
-            // Do nothing
-        }
     }
 
     // Closes the menu (easier through hierarchy).
