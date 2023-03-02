@@ -498,7 +498,7 @@ MonoBehaviour:
   deadzone: 0.025
   lockOnPress: 0
   isInteractable: 1
-  onPressedSoundEffect: {fileID: 8300000, guid: 48a6f6750eaec90428eba8780916ab50, type: 3}
+  onPressedSoundEffect: {fileID: 8300000, guid: 912239047f3caab4d8a591b09ae97c75, type: 3}
   onReleasedSoundEffect: {fileID: 0}
   onDisabledSoundEffect: {fileID: 0}
   onPressed:

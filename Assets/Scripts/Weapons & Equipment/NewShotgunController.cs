@@ -345,6 +345,7 @@ public class NewShotgunController : PlayerEquipment
             if (currentBarrelIndex >= barrels.Length) currentBarrelIndex = 0; //Overflow barrel index if relevant
         }
         loadedShots = Mathf.Max(loadedShots - 1, 0); //Spend one shot (floor at zero)
+        if (loadedShots == 0) Eject();
         return projectile; //Return reference to the master script of the projectile that was fired
     }
     /// <summary>

@@ -12,7 +12,7 @@ public class WormHole : MonoBehaviour
     public PlayerController PC;
     public GameObject playerOrigin;
     public static List<WormHole> ActiveWormholes = new List<WormHole>();
-    private WormHoleTrigger triggerScript;
+    private WormHoleTrigger triggerScript,EntryTrigger;
     void Start()
     {
     }
@@ -28,11 +28,13 @@ public class WormHole : MonoBehaviour
         {
             exitPos = holePos2.transform; //Set the exit point
             triggerScript = holePos2.gameObject.GetComponent<WormHoleTrigger>();
+            EntryTrigger = holePos1.gameObject.GetComponent<WormHoleTrigger>();
         }
         else
         {
             exitPos = holePos1.transform;//Set the exit point
             triggerScript = holePos1.gameObject.GetComponent<WormHoleTrigger>();
+            EntryTrigger = holePos2.gameObject.GetComponent<WormHoleTrigger>();
         }
         triggerScript.exiting = true;//Tells the trigger script it will be the exit
         PC = PlayerController.instance;
@@ -71,6 +73,8 @@ public class WormHole : MonoBehaviour
         playerRB.useGravity = true; //Bring back Gravity
         playerRB.velocity = exitPos.forward * exitSpeed;    //launch out of wormhole
         triggerScript.exiting = false;
+        triggerScript.reset = true;
+        EntryTrigger.reset = true;
         yield return new WaitForSeconds(0.2f);  //Wait for the player to get clear of the wormhole
         ActiveWormholes.Remove(this);
         Destroy(wormZoneInstance);
