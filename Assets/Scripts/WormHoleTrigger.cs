@@ -24,13 +24,13 @@ public class WormHoleTrigger : MonoBehaviour
         {
             StartCoroutine(FlashLight());
         }
-        if (exiting)
+        if (exiting) //set by the parent when designated as the exit and player is in wormhole
         {
-            holeAnim.SetBool("Locked",true);
+            holeAnim.SetBool("Locked",true);//Tells the wormhole to close
         }
-        if (reset)
+        if (reset)//Set by the parent script when player exits the wormholes
         {
-            holeAnim.SetBool("Locked", false);
+            holeAnim.SetBool("Locked", false);//Tells the wormhole to open
             reset = false;
         }
     }

@@ -27,21 +27,21 @@ public class WormHole : MonoBehaviour
         if (holePos1.transform == startHole.transform)//Determine which wormhole is going to be the exit
         {
             exitPos = holePos2.transform; //Set the exit point
-            triggerScript = holePos2.gameObject.GetComponent<WormHoleTrigger>();
-            EntryTrigger = holePos1.gameObject.GetComponent<WormHoleTrigger>();
+            triggerScript = holePos2.gameObject.GetComponent<WormHoleTrigger>();//Gets the script of the exit
+            EntryTrigger = holePos1.gameObject.GetComponent<WormHoleTrigger>();//Gets the script on the entrance
         }
         else
         {
             exitPos = holePos1.transform;//Set the exit point
-            triggerScript = holePos1.gameObject.GetComponent<WormHoleTrigger>();
-            EntryTrigger = holePos2.gameObject.GetComponent<WormHoleTrigger>();
+            triggerScript = holePos1.gameObject.GetComponent<WormHoleTrigger>();//Gets the script of the exit
+            EntryTrigger = holePos2.gameObject.GetComponent<WormHoleTrigger>();//Gets the script on the entrance
         }
         triggerScript.exiting = true;//Tells the trigger script it will be the exit
-        PC = PlayerController.instance;
-        playerRB = PC.bodyRb;      
-        playerCam = PC.cam.gameObject;      
+        PC = PlayerController.instance; // Gets the controller of the player instance
+        playerRB = PC.bodyRb;      //sets rigidbody reference
+        playerCam = PC.cam.gameObject;      //sets camera reference
         ActiveWormholes.Add(this);//Adds this to the static wormhole list
-        wormZoneShifted = wormZone;
+        wormZoneShifted = wormZone; //gives the shifted zone its starting point
         wormZoneShifted.transform.position = new Vector3(wormZone.position.x + 100 * ActiveWormholes.Count,wormZone.position.y,wormZone.position.z);//moves the wormhole instance so each player has their own
       
         playerRB.useGravity = false;  //Turn off Gravity
@@ -73,8 +73,8 @@ public class WormHole : MonoBehaviour
         playerRB.useGravity = true; //Bring back Gravity
         playerRB.velocity = exitPos.forward * exitSpeed;    //launch out of wormhole
         triggerScript.exiting = false;
-        triggerScript.reset = true;
-        EntryTrigger.reset = true;
+        triggerScript.reset = true; //tells the exit to open back up
+        EntryTrigger.reset = true;//tells the entrance to open back up
         yield return new WaitForSeconds(0.2f);  //Wait for the player to get clear of the wormhole
         ActiveWormholes.Remove(this);
         Destroy(wormZoneInstance);
