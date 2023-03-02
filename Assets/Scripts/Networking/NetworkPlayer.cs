@@ -38,6 +38,7 @@ public class NetworkPlayer : MonoBehaviour
 
     //Runtime Variables:
     private bool visible = true; //Whether or not this network player is currently visible
+    internal Color currentColor; //Current player color this networkPlayer instance is set to
 
     //RUNTIME METHODS:
     private void Awake()
@@ -134,7 +135,8 @@ public class NetworkPlayer : MonoBehaviour
         }
         else
         {
-            trail.enabled = !GameManager.Instance.InMenu(); //Disable trail while in menus
+            trail.enabled = !GameManager.Instance.InMenu();               //Disable trail while in menus
+            if (scene.name == "NetworkLockerRoom") trail.enabled = false; //Super disable trail if in the locker room
         }
 
         //Generic scene load checks:
@@ -203,13 +205,15 @@ public class NetworkPlayer : MonoBehaviour
         //Initialization:
         Debug.Log("Applying Synced Settings...");                           //Indicate that message has been received
         CharacterData settings = JsonUtility.FromJson<CharacterData>(data); //Decode settings into CharacterData object
+        currentColor = settings.testColor;                                  //Store color currently being used for player
 
         //Apply settings:
-        foreach (Material mat in bodyRenderer.materials) mat.color = settings.testColor; //Apply color to entire player body
+        foreach (Material mat in bodyRenderer.materials) mat.color = currentColor; //Apply color to entire player body
         for (int x = 0; x < trail.colorGradient.colorKeys.Length; x++) //Iterate through color keys in trail gradient
         {
-            trail.colorGradient.colorKeys[x].color = settings.testColor; //Apply color setting to trail key
+            trail.colorGradient.colorKeys[x].color = currentColor; //Apply color setting to trail key
         }
+        trail.startColor = currentColor; trail.endColor = currentColor; //Set actual trail colors (just in case)
     }
 
     /// <summary>
@@ -263,9 +267,8 @@ public class NetworkPlayer : MonoBehaviour
             print(PhotonNetwork.LocalPlayer.NickName + " killed enemy with index " + enemyID);
             PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
             SyncStats();
+            PlayerController.instance.combatHUD.AddToDeathInfoBoard(PhotonNetwork.LocalPlayer.NickName, PhotonNetwork.GetPhotonView(enemyID).Owner.NickName);
         }
-
-        PlayerController.instance.combatHUD.AddToDeathInfoBoard(PhotonNetwork.LocalPlayer.NickName, PhotonNetwork.GetPhotonView(enemyID).Owner.NickName);
     }
 
     /// <summary>
@@ -319,5 +322,5 @@ public class NetworkPlayer : MonoBehaviour
     }
 
     public PlayerStats GetNetworkPlayerStats() => networkPlayerStats;
-    public string GetName() => PhotonNetwork.LocalPlayer.NickName;
+    public string GetName() => photonView.Owner.NickName;
 }

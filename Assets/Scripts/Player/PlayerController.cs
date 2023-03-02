@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Controller component for player's right hand.")]             internal ActionBasedController rightHand;
     [Tooltip("Equipment which is currently attached to the player")]       internal List<PlayerEquipment> attachedEquipment = new List<PlayerEquipment>();
     [Tooltip("Combat HUD Canvas.")]                                        internal CombatHUDController combatHUD;    
+    [SerializeField, Tooltip("Combat Screen GameObject.")]                 internal GameObject combatHUDScreen;
 
     internal Camera cam;                       //Primary camera for VR rendering, located on player head
     internal PlayerInput input;                //Input manager component used by player to send messages to hands and such
@@ -39,6 +40,9 @@ public class PlayerController : MonoBehaviour
     private Volume healthVolume;               //Post-processing volume used to visualize player health
 
     //Settings:
+    [Header("Components:")]
+    [Tooltip("Transform which left-handed primary weapon snaps to when holstered.")]  public Transform leftHolster;
+    [Tooltip("Transform which right-handed primary weapon snaps to when holstered.")] public Transform rightHolster;
     [Header("Settings:")]
     [SerializeField, Tooltip("Settings determining player health properties.")] private HealthSettings healthSettings;
     [Space()]
@@ -76,8 +80,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         //Check validity / get objects & components:
-        //if (instance == null) { instance = this; } else { Debug.LogError("Tried to spawn a second instance of PlayerController in scene."); Destroy(gameObject); }           //Singleton-ize player object
-        if (instance != null) { print("Replacing player " + instance.gameObject.name + " with player " + gameObject.name + " from previous scene"); } instance = this;         //Use newest instance of PlayerController script as authoritative version, and indicate when an old playerController script is being replaced
+        if (instance != null) { print("Replacing player " + instance.gameObject.name + " with player " + gameObject.name + " from previous scene"); } instance = this; //Use newest instance of PlayerController script as authoritative version, and indicate when an old playerController script is being replaced
 
         if (!TryGetComponent(out input)) { Debug.LogError("PlayerController could not find PlayerInput component!"); Destroy(gameObject); }                                    //Make sure player input component is present on same object
         xrOrigin = GetComponentInChildren<XROrigin>(); if (xrOrigin == null) { Debug.LogError("PlayerController could not find XROrigin in children."); Destroy(gameObject); } //Make sure XROrigin is present inside player
@@ -96,9 +99,12 @@ public class PlayerController : MonoBehaviour
             if (volume.name.Contains("Health")) healthVolume = volume; //Get health volume
         }
 
+        //Get hands:
         ActionBasedController[] hands = GetComponentsInChildren<ActionBasedController>();                                    //Get both hands in player object
         if (hands[0].name.Contains("Left") || hands[0].name.Contains("left")) { leftHand = hands[0]; rightHand = hands[1]; } //First found component is on left hand
         else { rightHand = hands[0]; leftHand = hands[1]; }                                                                  //Second found component is on right hand
+        if (leftHolster == null) leftHolster = leftHand.transform;                                                           //Use hand as holster if none is provided
+        if (rightHolster == null) rightHolster = rightHand.transform;                                                        //Use hand as holster if none is provided
 
         //Check settings:
         if (healthSettings == null) //No health settings were provided
@@ -228,12 +234,15 @@ public class PlayerController : MonoBehaviour
     private void UpdateWeaponry()
     {
         if (inMenu)
+        {
             inCombat = false;
+        }
 
-        foreach (var weapon in weapons)
-            weapon.gameObject.SetActive(inCombat);
-        foreach (var tool in tools)
-            tool.gameObject.SetActive(inCombat);
+        foreach (var weapon in attachedEquipment)
+            foreach (var renderer in weapon.GetComponentsInChildren<Renderer>())
+                renderer.enabled = inCombat;
+
+        combatHUDScreen.GetComponent<MeshRenderer>().enabled = inCombat;
     }
 
     //INPUT METHODS:
@@ -249,7 +258,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void HitEnemy()
     {
-        if (targetHitSound != null) audioSource.PlayOneShot(targetHitSound); //Play hit sound when player shoots (or damages) a target
+        if (targetHitSound != null) audioSource.PlayOneShot(targetHitSound, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f)); //Play hit sound when player shoots (or damages) a target
     }
     /// <summary>
     /// Method called when this player is hit by a projectile.
@@ -269,7 +278,7 @@ public class PlayerController : MonoBehaviour
         }
         else //Player is being hurt by this projectile hit
         {
-            audioSource.PlayOneShot(healthSettings.hurtSound != null ? healthSettings.hurtSound : (AudioClip)Resources.Load("Sounds/Default_Hurt_Sound")); //Play hurt sound
+            audioSource.PlayOneShot(healthSettings.hurtSound != null ? healthSettings.hurtSound : (AudioClip)Resources.Load("Sounds/Default_Hurt_Sound"), PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f)); //Play hurt sound
             if (healthSettings.regenSpeed > 0) timeUntilRegen = healthSettings.regenPauseTime;                                                             //Optionally begin regeneration sequence
             return false;
         }
@@ -280,7 +289,7 @@ public class PlayerController : MonoBehaviour
     public void IsKilled()
     {
         //Effects:
-        audioSource.PlayOneShot(healthSettings.deathSound != null ? healthSettings.deathSound : (AudioClip)Resources.Load("Sounds/Temp_Death_Sound")); //Play death sound
+        audioSource.PlayOneShot(healthSettings.deathSound != null ? healthSettings.deathSound : (AudioClip)Resources.Load("Sounds/Temp_Death_Sound"), PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f)); //Play death sound
         
         //Weapon cleanup:
         foreach (NewGrapplerController hookShot in GetComponentsInChildren<NewGrapplerController>()) //Iterate through any hookshots player may have equipped

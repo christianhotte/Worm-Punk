@@ -42,9 +42,16 @@ public class HookProjectile : Projectile
     private Vector3 hitPosition;       //Position this hook is currently locked into (usually irrelevant)
     private Vector3 hitDirection;      //Direction to player when hook is initially locked in
     
-    internal float timeInState; //Indicates how long it has been since hook state has last changed (always counting up)
-    private float retractSpeed; //Current speed (in meters per second) at which hook is being retracted
-    internal bool punchWhipped; //True when projectile has been launched using punch-whip technique
+    internal float timeInState;   //Indicates how long it has been since hook state has last changed (always counting up)
+    private float retractSpeed;   //Current speed (in meters per second) at which hook is being retracted
+    internal bool punchWhipped;   //True when projectile has been launched using punch-whip technique
+    private float tetherDistance; //Distance between hook and player when hook last locked onto something
+
+    //Utility Variables:
+    /// <summary>
+    /// Value between 0 and 1 representing player's current progression through grapple.
+    /// </summary>
+    public float ReelPercent { get { return 1 - Mathf.Clamp01(Vector3.SqrMagnitude(transform.position - controller.barrel.position) / Mathf.Pow(tetherDistance, 2)); } }
 
     //RUNTIME METHODS:
     private protected override void Awake()
@@ -100,12 +107,22 @@ public class HookProjectile : Projectile
                 //Move player:
                 if (photonView.IsMine) //Only master version needs to be able to pull the player
                 {
-                    float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1);                 //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
-                    Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                                //Get base speed at which grappling hook pulls you toward target
-                    Vector3 handDiff = controller.RelativePosition - controller.hookedHandPos;                                                              //Get difference between current position of hand and position when it initially hooked something
-                    if (Vector3.Angle(handDiff, hitDirection) > 90) newVelocity -= Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Apply additional velocity to player based on how much they are pulling their arm back
-                    if (!punchWhipped) newVelocity -= Vector3.ProjectOnPlane(handDiff, hitDirection) * controller.settings.lateralManeuverForce;            //Apply additional velocity to player based on how much they are pulling their arm to the side
-                    controller.player.bodyRb.velocity = newVelocity;                                                                                        //Apply new velocity
+                    float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1); //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
+                    Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                //Get base speed at which grappling hook pulls you toward target
+                    Quaternion playerRotation = controller.player.bodyRb.rotation;                                                          //Get current rotation of player body
+                    Vector3 handDiff = (playerRotation * controller.RelativePosition) - (playerRotation * controller.hookedHandPos);        //Get difference between current position of hand and position when it initially hooked something
+                    if (Vector3.Angle(handDiff, hitDirection) > 90) //Player is yanking
+                    {
+                        Vector3 addVel = Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Get additional velocity to player based on how much they are pulling their arm back
+                        newVelocity -= addVel;                                                                    //Apply additional velocity (rotated based on player orientation)
+                    }
+                    if (!punchWhipped) //Player is not in punch-whip mode
+                    {
+                        float maneuverMultiplier = controller.settings.lateralManeuverForce;                  //Initialize value for lateral maneuver force multiplier
+                        Vector3 addVel = Vector3.ProjectOnPlane(handDiff, hitDirection) * maneuverMultiplier; //Get additional velocity to player based on how much they are pulling their arm to the side
+                        newVelocity -= addVel;                                                                //Apply additional velocity (rotated based on player orientation)
+                    }
+                    controller.player.bodyRb.velocity = newVelocity; //Apply new velocity
                 }
                 break;
             case HookState.PlayerTethered: //Grappling hook is attached to an enemy player
@@ -187,8 +204,9 @@ public class HookProjectile : Projectile
             {
                 hitPlayer = null; //Indicate that hook is no longer tethered to a player
             }
-            transform.parent = controller.stowPoint;              //Child hook to stow point
-            photonView.RPC("RPC_Stow", RpcTarget.OthersBuffered); //Stow remote hooks
+            transform.parent = controller.stowPoint;                                    //Child hook to stow point
+            photonView.RPC("RPC_Stow", RpcTarget.OthersBuffered);                       //Stow remote hooks
+            if (!controller.handWeapon.holstered) controller.handWeapon.Holster(false); //Unholster gun after grappling (if it hasn't been already)
         }
         else transform.parent = originPlayerBody; //Child remote hooks to networkplayer's center mass
         transform.localPosition = Vector3.zero;    //Zero out position relative to stow point
@@ -229,14 +247,15 @@ public class HookProjectile : Projectile
             photonView.RPC("RPC_Release", RpcTarget.OthersBuffered, retractSpeed); //Tell remote hooks to release and feed them the calculated release speed
 
             //Effects:
-            if (bounce) controller.Bounced(); //Indicate to controller that hook has bounced off of something
-            else controller.ForceReleased();  //Indicate to controller that hook has been released
+            if (bounce) controller.Bounced();     //Indicate to controller that hook has bounced off of something
+            else controller.ForceReleased();      //Indicate to controller that hook has been released
+            controller.handWeapon.Holster(false); //Unholster gun after grappling
         }
 
-        //Cleanup:
-        transform.localScale = Vector3.one;       //Make sure projectile is at its base scale
-        state = HookState.Retracting;             //Indicate that hook is now returning to its owner
-        timeInState = 0;                          //Reset state timer
+        //Cleanup:-
+        transform.localScale = Vector3.one; //Make sure projectile is at its base scale
+        state = HookState.Retracting;       //Indicate that hook is now returning to its owner
+        timeInState = 0;                    //Reset state timer
     }
     /// <summary>
     /// Hook has hit something.
@@ -253,13 +272,6 @@ public class HookProjectile : Projectile
             return;        //Hit resolution has finished
         }
 
-       /* float effectivePullSpeed = controller.settings.basePullSpeed * (punchWhipped ? controller.settings.punchWhipBoost : 1);                 //Initialize value to pass as player pull speed (increase if hook was punch-whipped)
-        Vector3 newVelocity = (lockPoint.position - controller.barrel.position).normalized * effectivePullSpeed;                                //Get base speed at which grappling hook pulls you toward target
-        Vector3 handDiff = controller.RelativePosition - controller.hookedHandPos;                                                              //Get difference between current position of hand and position when it initially hooked something
-        if (Vector3.Angle(handDiff, hitDirection) > 90) newVelocity -= Vector3.Project(handDiff, hitDirection) * controller.settings.yankForce; //Apply additional velocity to player based on how much they are pulling their arm back
-        if (!punchWhipped) newVelocity -= Vector3.ProjectOnPlane(handDiff, hitDirection) * controller.settings.lateralManeuverForce;            //Apply additional velocity to player based on how much they are pulling their arm to the side
-        controller.player.bodyRb.velocity = newVelocity;                                                                                        //Apply new velocity*/
-
         //Check hook type:
         hitDirection = (transform.position - controller.barrel.position).normalized;       //Get direction from hook to hit object
         hitPlayer = hitInfo.collider.GetComponentInParent<NetworkPlayer>();                //Try to get network player from hit collider
@@ -268,7 +280,8 @@ public class HookProjectile : Projectile
         else HookToPoint(hitInfo.point);                                                   //Hook to given point
 
         //Cleanup:
-        if (trail != null) trail.enabled = false; //Hide trail on hit
+        tetherDistance = Vector3.Distance(hitInfo.point, controller.barrel.position); //Get exact max length of tether
+        if (trail != null) trail.enabled = false;                                     //Hide trail on hit
     }
     /// <summary>
     /// Makes projectile think that it has hit target object.

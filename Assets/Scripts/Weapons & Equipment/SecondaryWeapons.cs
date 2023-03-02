@@ -40,29 +40,29 @@ public class SecondaryWeapons : PlayerEquipment
     // Update is called once per frame
     private protected override void Update()
     {
-        if (shotsToFire > 0 && !shootin)
-        {
-            //StartCoroutine(ShootAbsorbed());
-        }
-        if (deployed)
-        {
-            tipPos = bladeTip.transform.position;
-            GameObject[] bullethits = GameObject.FindGameObjectsWithTag("Bullet");
-            foreach (var hit in bullethits)
-            {
-                float bulletDistance = Vector3.Distance(bladeTip.position, hit.transform.position);
-                projScript = hit.gameObject.GetComponent<Projectile>();
-                if (hit.gameObject.TryGetComponent(out HookProjectile hook)) continue;
-                if (bulletDistance <= blockRadius&&shotsHeld<shotCap)
-                {
-                    if (projScript != null && projScript.originPlayerID == PlayerController.photonView.ViewID) return;
-                    Destroy(hit);
-                    shotsHeld++;
-                    StoredShots[shotsHeld - 1].SetActive(true);
-                    break;
-                }
-            }
-        }
+        //if (shotsToFire > 0 && !shootin)
+        //{
+        //    //StartCoroutine(ShootAbsorbed());
+        //}
+        //if (deployed)
+        //{
+        //    tipPos = bladeTip.transform.position;
+        //    GameObject[] bullethits = GameObject.FindGameObjectsWithTag("Bullet");
+        //    foreach (var hit in bullethits)
+        //    {
+        //        float bulletDistance = Vector3.Distance(bladeTip.position, hit.transform.position);
+        //        projScript = hit.gameObject.GetComponent<Projectile>();
+        //        if (hit.gameObject.TryGetComponent(out HookProjectile hook)) continue;
+        //        if (bulletDistance <= blockRadius&&shotsHeld<shotCap)
+        //        {
+        //            if (projScript != null && projScript.originPlayerID == PlayerController.photonView.ViewID) return;
+        //            Destroy(hit);
+        //            shotsHeld++;
+        //            StoredShots[shotsHeld - 1].SetActive(true);
+        //            break;
+        //        }
+        //    }
+        //}
         tipPos = bladeTip.transform.position;
         Collider[] hits = Physics.OverlapSphere(tipPos, grindRange, ~LayerMask.GetMask("PlayerWeapon", "Player", "Bullet", "EnergyBlade","Blade", "Hitbox"));
         grindin = false;
@@ -149,14 +149,14 @@ public class SecondaryWeapons : PlayerEquipment
         blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeDeployed.transform.position, deploySpeed);
         blade.transform.localRotation = bladeDeployed.transform.localRotation;
         deployed = true;
-        sawAud.PlayOneShot(chainsawDeploy);       
+        sawAud.PlayOneShot(chainsawDeploy, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f));       
         StartCoroutine(StartCooldown());
     }
     public void Sheethe()
     {
         blade.transform.position = Vector3.MoveTowards(blade.transform.position, bladeSheethed.transform.position, deploySpeed);
         deployed = false;
-        sawAud.PlayOneShot(chainsawSheethe);
+        sawAud.PlayOneShot(chainsawSheethe, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f));
         StartCoroutine(StartCooldown());
         if (shotsHeld > 0)
         {

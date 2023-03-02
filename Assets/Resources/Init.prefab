@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   joinRoomOnLoad: 0
-  mainMenuScene: MainMenu
+  mainMenuScene: JustinMenuScene
   roomScene: NetworkLockerRoom
   networkPlayerName: NewNetworkPlayer
+  useFunnyWords: 0
