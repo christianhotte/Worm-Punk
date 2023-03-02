@@ -10,6 +10,7 @@ public class MainMenuController : MonoBehaviour
 
     private PlayerController playerObject;
     [SerializeField, Tooltip("The positions for where the player moves to in the menu areas.")] private Transform[] menuLocations;
+    [SerializeField, Tooltip("The location of the lobby.")] private Transform lobbyLocation;
 
     private void Start()
     {
@@ -53,27 +54,6 @@ public class MainMenuController : MonoBehaviour
         StartCoroutine(MovePlayerInMenu(MenuArea.TUBE, speed));
     }
 
-    /// <summary>
-    /// Launch the player into the sky.
-    /// </summary>
-    public void LaunchPlayer()
-    {
-        if (NetworkManagerScript.instance.IsLocalPlayerInRoom())
-        {
-            GameManager.Instance.levelTransitionActive = true;
-            StartCoroutine(LaunchPlayerSequence());
-        }
-    }
-
-    private IEnumerator LaunchPlayerSequence()
-    {
-        //Launch the player with an upward force
-        playerObject.GetComponentInChildren<Rigidbody>().AddForce(Vector3.up * 10f, ForceMode.Impulse);
-
-        yield return new WaitForSeconds(0.5f);
-        GameManager.Instance.LoadGame(SceneIndexes.NETWORKLOCKERROOM);
-    }
-
     private IEnumerator MovePlayerInMenu(MenuArea menuArea, float speed)
     {
         //Get the starting position and ending position based on the area the player is moving to
@@ -95,5 +75,36 @@ public class MainMenuController : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    public void GoToLobby()
+    {
+        StartCoroutine(TeleportPlayerToLobby());
+    }
+
+    private IEnumerator TeleportPlayerToLobby()
+    {
+        NetworkManagerScript.instance.JoinLobby();
+        FadeScreen playerScreenFader = PlayerController.instance.GetComponentInChildren<FadeScreen>();
+        playerScreenFader.FadeOut();
+        yield return new WaitForSeconds(playerScreenFader.GetFadeDuration());
+        PlayerController.instance.transform.position = lobbyLocation.position;
+        yield return new WaitForSeconds(0.5f);
+        playerScreenFader.FadeIn();
+    }
+
+    public void FadeToLockerRoom()
+    {
+        StartCoroutine(FadeRoutine());
+    }
+
+    private IEnumerator FadeRoutine()
+    {
+        playerObject.GetComponentInChildren<FadeScreen>().FadeOut();
+
+        yield return new WaitForSeconds(playerObject.GetComponentInChildren<FadeScreen>().GetFadeDuration());
+        yield return null;
+
+        GameManager.Instance.LoadGame(SceneIndexes.NETWORKLOCKERROOM);
     }
 }

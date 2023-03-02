@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75231b2903c64f74bbd587426850c128, type: 3}
   m_Name: ChainsawSettings_Hotte1
   m_EditorClassIdentifier: 
-  grindSpeed: 40
+  grindSpeed: 55
   grindLayers:
     serializedVersion: 2
     m_Bits: 257
-  triggerGrindModifier: -25
+  triggerGrindMultiplier: 1.5
+  grindSweetSpot: {x: 0.11164844, y: 0.2250574}
   bladeWidth: 0.17
   bladePreRetractDistance: 0.08
   bladePreRetractCurve:

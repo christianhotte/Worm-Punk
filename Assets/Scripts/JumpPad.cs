@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.XR.CoreUtils;
 
 public class JumpPad : MonoBehaviour
 {
-    public Rigidbody playerRb;
-    public GameObject playerOBJ;
     public float jumpForce=10;
     public Transform jumpDirection;
     // Start is called before the first frame update
@@ -21,29 +20,23 @@ public class JumpPad : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        // print("Wormhole hit " + other.name);
-        NetworkPlayer player = other.GetComponentInParent<NetworkPlayer>();
-        if (player == null) player = other.GetComponent<NetworkPlayer>();
-        if (player != null && player.photonView.IsMine)
+        if (other.TryGetComponent(out XROrigin playerOrigin))
         {
-            playerRb = PlayerController.instance.bodyRb;
-            playerOBJ = PlayerController.instance.bodyRb.gameObject;
-            playerOBJ.transform.position = jumpDirection.position;
-            playerRb.velocity = jumpDirection.up * jumpForce;
-            return;
-        }
-        else
-        {
-            PlayerController playerC = other.GetComponentInParent<PlayerController>();
-            if (playerC == null) playerC = other.GetComponent<PlayerController>();
-            if (playerC != null)
+            foreach (PlayerEquipment equipment in PlayerController.instance.attachedEquipment)
             {
-                playerRb = PlayerController.instance.bodyRb;
-                playerOBJ = PlayerController.instance.bodyRb.gameObject;
-                playerOBJ.transform.position = jumpDirection.position;
-                playerRb.velocity = jumpDirection.up * jumpForce;
-                return;
+                NewGrapplerController grapple = equipment.GetComponent<NewGrapplerController>();
+                if (grapple == null) continue;
+                if (grapple.hook.state != HookProjectile.HookState.Stowed)
+                {
+                    grapple.hook.Release();
+                    grapple.hook.Stow();
+                }
             }
+            print("Jump pad used by " + other.name);
+            Rigidbody playerRb = playerOrigin.GetComponent<Rigidbody>();
+            playerRb.transform.position = this.transform.position;
+            playerRb.velocity = this.transform.up * jumpForce;
+            return;
         }
     }
 }
