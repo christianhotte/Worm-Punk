@@ -632,7 +632,7 @@ MonoBehaviour:
   m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 40, y: 10}
+  m_CellSize: {x: 60, y: 10}
   m_Spacing: {x: 15, y: 5}
   m_Constraint: 2
   m_ConstraintCount: 5
@@ -1465,6 +1465,7 @@ MonoBehaviour:
   errorText: {fileID: 1335372260074456594}
   roomNameLength: 5
   goToLevelButton: {fileID: 0}
+  tutorialMenu: {fileID: 0}
   roomListContent: {fileID: 3976407870015523376}
   playerListContent: {fileID: 4621898783949988027}
   roomListItemPrefab: {fileID: 3445197581204183668, guid: d0c292afbf55ac54aaff89b364a426d6, type: 3}
@@ -1477,6 +1478,7 @@ MonoBehaviour:
   - {fileID: 1335372258846641568}
   - {fileID: 1335372260115363939}
   - {fileID: 7736710873373960782}
+  - {fileID: 0}
 --- !u!1 &1335372258779496656
 GameObject:
   m_ObjectHideFlags: 0
@@ -1966,9 +1968,9 @@ RectTransform:
   m_Father: {fileID: 1335372260517306421}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 33.333332, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 59, y: 24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1335372259178558641
@@ -3646,9 +3648,9 @@ RectTransform:
   m_Father: {fileID: 1335372260517306421}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 166.66666, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 59, y: 24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1335372260082365018
@@ -5460,9 +5462,9 @@ RectTransform:
   m_Father: {fileID: 1335372260517306421}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 59, y: 24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2144266325516894754
@@ -6516,11 +6518,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7035541551013600240, guid: aa2225f372d5e1c41ad2b3abf77358d6, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: 0
+      value: 0.00000015258789
       objectReference: {fileID: 0}
     - target: {fileID: 7035541551013600240, guid: aa2225f372d5e1c41ad2b3abf77358d6, type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: -0.099999994
+      value: -0.10000002
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa2225f372d5e1c41ad2b3abf77358d6, type: 3}

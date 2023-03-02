@@ -2018,7 +2018,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jointSettings: {fileID: 11400000, guid: 6b12243a97cccb34983b382025185c85, type: 2}
-  debugUpdateSettings: 1
+  canMoveHandRig: 0
+  debugUpdateSettings: 0
   blade: {fileID: 1277818383771032511}
   hand: {fileID: 0}
   ProjectilePrefab: {fileID: 5990455804588303578, guid: 0fd9d1413feab904b9d3dbcef74de6a9, type: 3}

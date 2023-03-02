@@ -28,6 +28,8 @@ TagManager:
   - Blade
   - Hook
   - EnergyBlade
+  - PlayerHands
+  - PhysicalUI
   - 
   - 
   - 
@@ -43,9 +45,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - Combat
   - HUD
   m_SortingLayers:
   - name: Default

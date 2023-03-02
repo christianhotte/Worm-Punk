@@ -19,14 +19,16 @@ public class FindRoomController : MonoBehaviour
     private void OnEnable()
     {
         RefreshRoomListItems();
+        UpdateMenu();
+    }
 
-        if(listedRooms.Length > 0)
+    private void SelectFirstRoomByDefault()
+    {
+        if (listedRooms.Length > 0)
         {
             selectedRoom = listedRooms[0];
             selectedRoom.OnSelect();
         }
-
-        UpdateMenu();
     }
 
     /// <summary>
@@ -56,6 +58,7 @@ public class FindRoomController : MonoBehaviour
         if (listedRooms.Length > 0)
         {
             ShowRoomList(true);
+            SelectFirstRoomByDefault();
         }
         else
         {

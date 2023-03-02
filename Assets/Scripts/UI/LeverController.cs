@@ -7,11 +7,14 @@ public class LeverController : MonoBehaviour
 {
     public enum HingeJointState { Min, Max, None }
 
-    [SerializeField, Tooltip("Angle Threshold If Limit Is Reached")] float angleBetweenThreshold = 1f;
+    [SerializeField, Tooltip("Angle Threshold If Limit Is Reached")] float angleBetweenThreshold = 8f;
     public HingeJointState hingeJointState = HingeJointState.None;  //The state of the hinge joint
     private HingeJoint hinge;
 
     [SerializeField, Tooltip("If true, the lever locks when a limit is reached.")] private bool lockOnMinimumLimit, lockOnMaximumLimit;
+    [SerializeField, Tooltip("If true, the lever snaps to each limit.")] private bool snapToLimit;
+    [SerializeField, Tooltip("The speed in seconds in which the lever moves automatically.")] private float snapMovementSpeed = 0.5f;
+    private bool leverAutomaticallyMoving = false;  //Checks to see if the lever is moving by itself
     private bool isLocked = false;  //Checks to see if the lever is locked in place
 
     [SerializeField, Tooltip("The minimum numerical value of the lever.")] private float minimumValue = -1f;
@@ -44,32 +47,13 @@ public class LeverController : MonoBehaviour
             //If the angle has hit the minimum limit and is not already at the limit
             if (angleWithMinLimit < angleBetweenThreshold)
             {
-                if (hingeJointState != HingeJointState.Max)
-                {
-                    Debug.Log(transform.name + "Maximum Limit Reached.");
-                    OnMaxLimitReached.Invoke();
-
-                    //Move the hinge to the upper limit
-                    hinge.transform.localEulerAngles = new Vector3(hinge.limits.min, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z);
-
-                    if (lockOnMaximumLimit)
-                    {
-                        LockLever(true);
-                    }
-                }
-
-                hingeJointState = HingeJointState.Max;
-            }
-            //If the angle has hit the maximum limit and is not already at the limit
-            else if (angleWithMaxLimit < angleBetweenThreshold)
-            {
                 if (hingeJointState != HingeJointState.Min)
                 {
                     Debug.Log(transform.name + "Minimum Limit Reached.");
                     OnMinLimitReached.Invoke();
 
-                    //Move the hinge to the lower limit
-                    hinge.transform.localEulerAngles = new Vector3(hinge.limits.max, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z);
+                    //Move the hinge to the upper limit
+                    hinge.transform.localEulerAngles = new Vector3(hinge.limits.min, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z);
 
                     if (lockOnMinimumLimit)
                     {
@@ -79,6 +63,27 @@ public class LeverController : MonoBehaviour
 
                 hingeJointState = HingeJointState.Min;
             }
+            //If the angle has hit the maximum limit and is not already at the limit
+            else if (angleWithMaxLimit < angleBetweenThreshold)
+            {
+                if (hingeJointState != HingeJointState.Max)
+                {
+                    Debug.Log(transform.name + "Maximum Limit Reached.");
+                    OnMaxLimitReached.Invoke();
+
+                    //Move the hinge to the lower limit
+                    hinge.transform.localEulerAngles = new Vector3(hinge.limits.max, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z);
+
+
+                    if (lockOnMaximumLimit)
+                    {
+                        LockLever(true);
+                    }
+                }
+
+                hingeJointState = HingeJointState.Max;
+            }
+
             else
             {
                 hingeJointState = HingeJointState.None;
@@ -93,6 +98,52 @@ public class LeverController : MonoBehaviour
             OnValueChanged.Invoke(currentValue);
             previousValue = currentValue;
         }
+        //If the value is not changing, check to see where to snap the lever to if applicable
+        else if (snapToLimit && !leverAutomaticallyMoving)
+        {
+            //If the lever has not reached a limit
+            if (hingeJointState == HingeJointState.None)
+            {
+                float currentDistance = (hinge.limits.max - hinge.angle) / (hinge.limits.max - hinge.limits.min);   //Get the current distance of the lever
+                //If the lever is less than halfway, move to the minimum limit
+                if (currentDistance < 0.5f)
+                {
+                    StartCoroutine(MoveLeverToLimit(new Vector3(hinge.limits.max, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z), snapMovementSpeed));
+                }
+                //Else, move to the maximum limit
+                else
+                {
+                    StartCoroutine(MoveLeverToLimit(new Vector3(hinge.limits.min + 360f, hinge.transform.localEulerAngles.y, hinge.transform.localEulerAngles.z), snapMovementSpeed));
+                }
+            }
+        }
+    }
+
+    private IEnumerator MoveLeverToLimit(Vector3 endingPos, float speed)
+    {
+        leverAutomaticallyMoving = true;
+        LockLever(true);
+
+        //Get the starting position and ending position based on the area the lever is moving to
+        Vector3 startingPos = hinge.transform.localEulerAngles;
+        //Move the player with a lerp
+        float timeElapsed = 0;
+
+        while (timeElapsed < speed)
+        {
+            //Smooth lerp duration algorithm
+            float t = timeElapsed / speed;
+
+            hinge.transform.localEulerAngles = Vector3.Lerp(startingPos, endingPos, t);    //Lerp the lever's movement
+
+            timeElapsed += Time.deltaTime;
+
+            yield return null;
+        }
+
+        hinge.transform.localEulerAngles = endingPos;
+        leverAutomaticallyMoving = false;
+        LockLever(false);
     }
 
     /// <summary>
@@ -101,6 +152,11 @@ public class LeverController : MonoBehaviour
     /// <returns>The current numerical value of the lever based on its position.</returns>
     public float GetLeverValue()
     {
+        if (hingeJointState == HingeJointState.Min)
+            return minimumValue;
+        else if (hingeJointState == HingeJointState.Max)
+            return maximumValue;
+
         float maxValueDistance = Mathf.Abs(minimumValue - maximumValue);
         float currentDistance = (hinge.limits.max - hinge.angle) / (hinge.limits.max - hinge.limits.min);
         return minimumValue + (maxValueDistance * currentDistance);

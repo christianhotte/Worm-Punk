@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 
@@ -17,6 +18,7 @@ public class LobbyUIScript : MonoBehaviour
     [SerializeField] private int roomNameLength = 5;
 
     [SerializeField] private GameObject goToLevelButton;
+    [SerializeField] private GameObject tutorialMenu;
 
     [SerializeField] Transform roomListContent;
     [SerializeField] Transform playerListContent;
@@ -25,13 +27,8 @@ public class LobbyUIScript : MonoBehaviour
 
     [SerializeField] Menus[] menus;
 
-    private List<string> playerList;
-
-    // Awake is called first thing.
-    void Awake()
-    {
-        playerList = new List<string>();
-    }
+    private List<string> playerList = new List<string>();
+    private List<PlayerListItem> playerListItems = new List<PlayerListItem>();
 
     // Easier to call the  open menu method through script
     public void OpenMenu(string menuName)
@@ -79,12 +76,13 @@ public class LobbyUIScript : MonoBehaviour
         inputField.text = "";
     }
 
+    // Displays the error message to the player.
     public void UpdateErrorMessage(string errorMessage)
     {
         errorText.text = errorMessage;
     }
 
-    // Easier to call the  open menu method through hierarchy.
+    // Easier to call the open menu method through hierarchy.
     public void OpenMenu(Menus menu)
     {
         // If the menu is open, we want to close it because we only want one menu open at a time.
@@ -195,11 +193,48 @@ public class LobbyUIScript : MonoBehaviour
         playerNameText.text = NetworkManagerScript.instance.GetLocalPlayerName();
 
         playerList = NetworkManagerScript.instance.GetPlayerNameList();
+        print("Players in room list: " + playerList.Count);
+
+        //Destroy the list before updating
+        foreach (Transform trans in playerListContent)
+        {
+            Destroy(trans.gameObject);
+        }
+
+        playerListItems.Clear();
 
         // Loops through the list of players and adds to the list of players in the room.
         for (int i = 0; i < playerList.Count; i++)
         {
-            Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(playerList[i]);
+            //If the player does not exist in the list, add them to the list
+            if (!DoesPlayerExist(playerList[i]))
+            {
+                PlayerListItem newItem = Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>();
+                newItem.SetUp(playerList[i]);
+                playerListItems.Add(newItem);
+            }
         }
+    }
+
+    // Returns a bool if the player with the name exists
+    private bool DoesPlayerExist(string name)
+    {
+        foreach (var player in playerListItems)
+            if (name == player.GetName())
+                return true;
+
+        return false;
+    }
+
+    // Loads into the shotgun tutorial scene.
+    public void ShotGunTutorial()
+    {
+        PhotonNetwork.LoadLevel(3);
+    }
+
+    // Loads into the chainsaw tutorial scene.
+    public void ChainsawTutorial()
+    {
+        PhotonNetwork.LoadLevel(4);
     }
 }

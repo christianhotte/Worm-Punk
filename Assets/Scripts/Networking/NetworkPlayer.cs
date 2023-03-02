@@ -6,162 +6,214 @@ using UnityEngine.XR.Interaction.Toolkit;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
+using RootMotion.FinalIK;
 
-// This script was used from https://youtu.be/KHWuTBmT1oI?t=1511
+// This script was used from https://youtu.be/KHWuTBmT1oI?t=1511\
+// ^ Now heavily modified by Invertebrates
 
+/// <summary>
+/// Maintains consistency of position and appearance for players over the network. Each player gains one when joining a room and keeps that same one until the leave the room, at which point it is destroyed.
+/// </summary>
 public class NetworkPlayer : MonoBehaviour
 {
     //Objects & Components:
-    internal PlayerController player; //Client playerController associated with this network player
-    private GameObject XROrigin;
-    internal PhotonView photonView;
+    /// <summary>
+    /// List of all instantiated network players in the room.
+    /// </summary>
+    public static List<NetworkPlayer> instances = new List<NetworkPlayer>();
 
-    private Transform headRig;
-    private Transform leftHandRig;
-    private Transform rightHandRig;
+    internal PhotonView photonView;                              //PhotonView network component used by this NetworkPlayer to synchronize movement
+    private SkinnedMeshRenderer bodyRenderer;                    //Renderer component for main player body/skin
+    private TrailRenderer trail;                                 //Renderer for trail that makes players more visible to each other
+    internal PlayerStats networkPlayerStats = new PlayerStats(); //The stats for the network player
 
-    // Declaring the player's VR movements
-    public Transform head;
-    public Transform leftHand;
-    public Transform rightHand;
+    private Transform headTarget;      //True local position of player head
+    private Transform leftHandTarget;  //True local position of player left hand
+    private Transform rightHandTarget; //True local position of player right hand
+    private Transform modelTarget;     //True local position of player model base
+    private Transform headRig;         //Networked transform which follows position of player head
+    private Transform leftHandRig;     //Networked transform which follows position of player left hand
+    private Transform rightHandRig;    //Networked transform which follows position of player right hand
+    private Transform modelRig;        //Networked transform which follows position of player model
 
-    // Gets a list of all of the players on the network
-    Player[] allPlayers;
-    int myNumberInRoom;
-    private bool disabled = false;
+    //Runtime Variables:
+    private bool visible = true; //Whether or not this network player is currently visible
+    internal Color currentColor; //Current player color this networkPlayer instance is set to
 
-    //Player Data
-    private PlayerSetup playerSetup;    //The player's setup component
-
+    //RUNTIME METHODS:
     private void Awake()
     {
-        photonView = GetComponent<PhotonView>();    //Get photonView component from NetworkPlayer object
-                                                    // Gets the network player to move with the player instead of just moving locally.
-        XROrigin = GameObject.Find("XR Origin");
-        player = XROrigin.GetComponentInParent<PlayerController>();
+        //Initialize:
+        instances.Add(this); //Add network player to list of instances in scene
 
-        playerSetup = player.GetComponent<PlayerSetup>();
+        //Get objects & components:
+        photonView = GetComponent<PhotonView>();                      //Get photonView component from local object
+        bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>(); //Get body renderer component from model in children
+        trail = GetComponentInChildren<TrailRenderer>();              //Get trail renderer component from children (there should only be one)
 
-        if (photonView.IsMine)
+        //Set up rig:
+        foreach (PhotonTransformView view in GetComponentsInChildren<PhotonTransformView>()) //Iterate through each network-tracked component
         {
-            PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
-            SceneManager.sceneLoaded += SettingsOnLoad;
-
-            LocalPlayerSettings(PlayerSettings.Instance.charData, false);
-            SyncData();
-
-            foreach (Renderer r in transform.GetComponentsInChildren<Renderer>()) r.enabled = false;
+            //Check for rig labels:
+            if (view.name.Contains("Head")) { headRig = view.transform; continue; }           //Get head rig
+            if (view.name.Contains("Left")) { leftHandRig = view.transform; continue; }       //Get left hand rig
+            if (view.name.Contains("Right")) { rightHandRig = view.transform; continue; }     //Get right hand rig
+            if (view.TryGetComponent(out VRIK vrik)) { modelRig = view.transform; continue; } //Get model rig
         }
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        if (headRig == null || leftHandRig == null || rightHandRig == null) { Debug.LogError("Network Player " + name + " was not able to successfully get its rigged components. Have the names of its children been changed?"); }
 
-        DontDestroyOnLoad(gameObject);
+        //Alternate setup modes:
+        if (photonView.IsMine) //This script is the master instance of this particular NetworkPlayer
+        {
+            //Object & component setup:
+            PlayerController.photonView = photonView; //Give playerController a reference to local client photon view component
+
+            //Local initialization:
+            PlayerController.instance.playerSetup.ApplyAllSettings();                                //Apply default settings to player
+            SyncData();                                                                              //Sync settings between every version of this network player
+            foreach (Renderer r in transform.GetComponentsInChildren<Renderer>()) r.enabled = false; //Local player should never be able to see their own NetworkPlayer
+        }
+
+        //Event subscriptions:
+        SceneManager.sceneLoaded += OnSceneLoaded; //Subscribe to scene load event (every NetworkPlayer should do this)
+        DontDestroyOnLoad(gameObject);             //Make sure network players are not destroyed when a new scene is loaded
     }
-
-    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        //Update network visibility:
-        if (scene.name == "MainMenu") { photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered); }
-        else { photonView.RPC("RPC_MakeVisible", RpcTarget.OthersBuffered); }
-
-        //Update client collisions:
-        bool inMenuScenes = scene.name == "NetworkLockerRoom" || scene.name == "MainMenu";
-        foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = !inMenuScenes;
-
-        if (photonView.IsMine) SetRig();
-    }
-
-    private void ChangeVisibility(bool makeEnabled)
-    {
-        disabled = !makeEnabled;
-        foreach (Renderer r in transform.GetComponentsInChildren<Renderer>()) r.enabled = makeEnabled;
-        foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = makeEnabled;
-    }
-
-    // Start is called before the first frame update
     void Start()
     {
-        if (SceneManager.GetActiveScene().name == "MainMenu")
+        if (photonView.IsMine) //Initialization for local network player
         {
-            photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered);
-        }
-        if (photonView.IsMine) SetRig();
-
-        // Gets the player list
-        allPlayers = PhotonNetwork.PlayerList;
-        foreach (Player p in allPlayers)
-        {
-            // Adds more numbers until the number of players match
-            if (p != PhotonNetwork.LocalPlayer)
-            {
-                myNumberInRoom++;
-            }
+            RigToActivePlayer();                                                                                                                                  //Rig to active player immediately
+            foreach (Renderer r in GetComponentsInChildren<Renderer>()) r.enabled = false;                                                                        //Client NetworkPlayer is always invisible to them
+            trail.enabled = false;                                                                                                                                //Disable local player trail
+            if (SceneManager.GetActiveScene().name == NetworkManagerScript.instance.mainMenuScene) photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered); //Remote instances are hidden while client is in the main menu
         }
 
-        //Ignore collisions:
-        bool inMenuScenes = SceneManager.GetActiveScene().name == "NetworkLockerRoom" || SceneManager.GetActiveScene().name == "MainMenu";
-        foreach (Collider collider in GetComponentsInChildren<Collider>())
+        //Component activity check:
+        foreach (Collider collider in GetComponentsInChildren<Collider>()) //Iterate through each collider in this network player
         {
-            foreach (Collider otherCollider in XROrigin.transform.parent.GetComponentsInChildren<Collider>())
+            if (photonView.IsMine) //Client-exclusive collision operations
             {
-                Physics.IgnoreCollision(collider, otherCollider);
+                foreach (Collider otherCollider in PlayerController.instance.GetComponentsInChildren<Collider>()) Physics.IgnoreCollision(collider, otherCollider); //Make sure player can't collide with its own network player
             }
-
-            collider.enabled = !inMenuScenes;
+            collider.enabled = !GameManager.Instance.InMenu(); //Disable colliders altogether if network player is in any kind of menu
         }
-
-        //Hide client renderers:
-        if (photonView.IsMine)
+        if (!photonView.IsMine) { if (GameManager.Instance.InMenu()) trail.enabled = false; } //Disable trail in menu scenes
+    }
+    void Update()
+    {
+        //Synchronize position:
+        if (photonView.IsMine) //Client network player has references to actual targets
         {
-            foreach (var item in GetComponentsInChildren<Renderer>())
-            {
-                item.enabled = false;
-            }
+            MapPosition(headRig, headTarget);           //Update position of head rig
+            MapPosition(leftHandRig, leftHandTarget);   //Update position of left hand rig
+            MapPosition(rightHandRig, rightHandTarget); //Update position of right hand rig
+            MapPosition(modelRig, modelTarget);         //Update position of base model
         }
     }
-
-    private void SetRig()
+    private void OnDestroy()
     {
-        XROrigin = GameObject.Find("XR Origin");
+        //Reference cleanup:
+        instances.Remove(this);                                                                                 //Remove from instance list
+        if (photonView.IsMine && PlayerController.photonView == photonView) PlayerController.photonView = null; //Clear client photonView reference
+    }
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (photonView.IsMine) //Local player has loaded into a new scene
+        {
+            //Local scene setup:
+            RigToActivePlayer(); //Re-apply rig to new scene's PlayerController
 
-        headRig = XROrigin.transform.Find("Camera Offset/Main Camera");
-        leftHandRig = XROrigin.transform.Find("Camera Offset/LeftHand Controller");
-        rightHandRig = XROrigin.transform.Find("Camera Offset/RightHand Controller");
+            if (scene.name == NetworkManagerScript.instance.mainMenuScene) 
+            { 
+                photonView.RPC("RPC_MakeInvisible", RpcTarget.OthersBuffered);  //Hide all remote players when entering main menu
+            }
+            else if (scene.name == NetworkManagerScript.instance.roomScene) 
+            {
+                PhotonNetwork.AutomaticallySyncScene = true;                    // Start syncing scene with other players
+                photonView.RPC("RPC_MakeVisible", RpcTarget.OthersBuffered);    //Show all remote players when entering locker room
+            }
+        }
+        else
+        {
+            trail.enabled = !GameManager.Instance.InMenu();               //Disable trail while in menus
+            if (scene.name == "NetworkLockerRoom") trail.enabled = false; //Super disable trail if in the locker room
+        }
+
+        //Generic scene load checks:
+        foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = !GameManager.Instance.InMenu(); //Always disable colliders if networkPlayer is in a menu scene
+        
+    }
+
+    //FUNCTIONALITY METHODS:
+    private void ChangeVisibility(bool makeEnabled)
+    {
+        //Enable/Disable components:
+        foreach (Renderer r in transform.GetComponentsInChildren<Renderer>()) r.enabled = makeEnabled; //Update status of each renderer on player avatar
+        foreach (Collider c in transform.GetComponentsInChildren<Collider>()) c.enabled = makeEnabled; //Update status of each collider on player avatar
+
+        //Cleanup:
+        visible = makeEnabled; //Indicate whether or not networkPlayer is currently visible
+    }
+    /// <summary>
+    /// Sets up networkPlayer avatar to mimic movements of current PlayerController (and XR Origin) instance in scene.
+    /// </summary>
+    private void RigToActivePlayer()
+    {
+        //Component setup:
+        PlayerController attachedPlayer = PlayerController.instance; //Get reference to playerController script from current scene
+
+        //Setup rig targets:
+        headTarget = attachedPlayer.cam.transform;            //Get head from player using camera component reference
+        leftHandTarget = attachedPlayer.leftHand.transform;   //Get left hand from player script (since it has already automatically collected the reference)
+        rightHandTarget = attachedPlayer.rightHand.transform; //Get right hand from player script (since it has already automatically collected the reference)
+        modelTarget = attachedPlayer.bodyRig.transform;       //Get base model transform from player script
+    }
+
+    public void SyncStats()
+    {
+        Debug.Log("Syncing Player Stats...");
+        string statsData = PlayerSettings.PlayerStatsToString(networkPlayerStats);
+        photonView.RPC("LoadPlayerStats", RpcTarget.AllBuffered, statsData);
     }
 
     /// <summary>
-    /// An event called to load settings when a new scene is loaded.
+    /// Syncs and applies settings data (such as color) between all versions of this network player (only call this on the network player local to the client who's settings you want to use).
     /// </summary>
-    /// <param name="scene">The new scene information.</param>
-    /// <param name="mode">The mode in which the scene was loaded in.</param>
-    private void SettingsOnLoad(Scene scene, LoadSceneMode mode)
+    public void SyncData()
     {
-        Debug.Log("Function called on load...");
-        //LoadPlayerSettings(playerSetup.CharDataToString());
+        Debug.Log("Syncing Player Data...");                                        //Indicate that data is being synced
+        string characterData = PlayerSettings.Instance.CharDataToString();          //Encode data to a string so that it can be sent over the network
+        photonView.RPC("LoadPlayerSettings", RpcTarget.AllBuffered, characterData); //Send data to every player on the network (including this one)
     }
 
-    private void SyncData()
+    //REMOTE METHODS:
+    [PunRPC]
+    public void LoadPlayerStats(string data)
     {
-        Debug.Log("Syncing Player Data...");
-        string characterData = PlayerSettings.Instance.CharDataToString();
-        photonView.RPC("LoadPlayerSettings", RpcTarget.AllBuffered, characterData);
+        //Initialization:
+        Debug.Log("Applying Synced Stats...");                           //Indicate that message has been received
+        PlayerStats stats = JsonUtility.FromJson<PlayerStats>(data);    //Decode stats into PlayerStats object
+        networkPlayerStats = stats;
     }
 
+    /// <summary>
+    /// Loads given settings (as CharacterData) and applies them to this network player instance.
+    /// </summary>
     [PunRPC]
     public void LoadPlayerSettings(string data)
     {
-        if (photonView.IsMine)
+        //Initialization:
+        Debug.Log("Applying Synced Settings...");                           //Indicate that message has been received
+        CharacterData settings = JsonUtility.FromJson<CharacterData>(data); //Decode settings into CharacterData object
+        currentColor = settings.testColor;                                  //Store color currently being used for player
+
+        //Apply settings:
+        foreach (Material mat in bodyRenderer.materials) mat.color = currentColor; //Apply color to entire player body
+        for (int x = 0; x < trail.colorGradient.colorKeys.Length; x++) //Iterate through color keys in trail gradient
         {
-            Debug.Log("Loading Player Settings...");
-            LocalPlayerSettings(JsonUtility.FromJson<CharacterData>(data), true);
+            trail.colorGradient.colorKeys[x].color = currentColor; //Apply color setting to trail key
         }
-    }
-
-    private void LocalPlayerSettings(CharacterData charData, bool isOnNetwork)
-    {
-        Debug.Log("Is On Network: " + isOnNetwork);
-
-        Debug.Log("Changing " + charData.playerName + " to " + charData.testColor);
-        playerSetup.SetColor(charData.testColor);
+        trail.startColor = currentColor; trail.endColor = currentColor; //Set actual trail colors (just in case)
     }
 
     /// <summary>
@@ -169,61 +221,106 @@ public class NetworkPlayer : MonoBehaviour
     /// </summary>
     /// <param name="damage">How much damage the projectile dealt.</param>
     [PunRPC]
-    public void RPC_Hit(int damage)
+    public void RPC_Hit(int damage, int enemyID)
     {
-        if (photonView.IsMine) player.IsHit(damage); //Inflict damage upon hit player
+        if (photonView.IsMine)
+        {
+            bool killedPlayer = PlayerController.instance.IsHit(damage); //Inflict damage upon local player
+            if (killedPlayer)
+            {
+                networkPlayerStats.numOfDeaths++;                                                                      //Increment death counter
+                PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
+                SyncStats();
+                PhotonNetwork.GetPhotonView(enemyID).RPC("RPC_KilledEnemy", RpcTarget.AllBuffered, photonView.ViewID); //Indicate that this player has been killed by enemy
+            }
+        }
     }
+
+    /// <summary>
+    /// Launches this player with given amount of force.
+    /// </summary>
+    [PunRPC]
+    public void RPC_Launch(Vector3 force)
+    {
+        if (photonView.IsMine) PlayerController.instance.bodyRb.AddForce(force, ForceMode.VelocityChange); //Apply launch force to client rigidbody
+    }
+
     /// <summary>
     /// Indicates that this player has successfully hit an enemy with a projecile.
     /// </summary>
     [PunRPC]
     public void RPC_HitEnemy()
     {
-        if (photonView.IsMine) player.HitEnemy(); //Pass enemy hit onto player
+        if (photonView.IsMine) PlayerController.instance.HitEnemy(); //Indicate that local player has hit an enemy
+    }
+
+    /// <summary>
+    /// Indicates that this player has successfully killed an enemy.
+    /// </summary>
+    /// <param name="enemyID"></param>
+    [PunRPC]
+    public void RPC_KilledEnemy(int enemyID)
+    {
+        if (photonView.IsMine)
+        {
+            networkPlayerStats.numOfKills++;
+            print(PhotonNetwork.LocalPlayer.NickName + " killed enemy with index " + enemyID);
+            PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
+            SyncStats();
+            PlayerController.instance.combatHUD.AddToDeathInfoBoard(PhotonNetwork.LocalPlayer.NickName, PhotonNetwork.GetPhotonView(enemyID).Owner.NickName);
+        }
+    }
+
+    /// <summary>
+    /// Moves client player to designated position.
+    /// </summary>
+    /// <param name="point"></param>
+    [PunRPC]
+    public void RPC_MovePlayerToPoint(Vector3 point)
+    {
+        if (photonView.IsMine) PlayerController.instance.bodyRb.transform.position = point; //Move player rigidbody origin to given point
     }
     [PunRPC]
     public void RPC_ChangeVisibility()
     {
-        print("why");
+        print("why"); //This should never be called
     }
+    /// <summary>
+    /// Makes this player visible to the whole network and enables remote collisions (can also be used to clear their trail).
+    /// </summary>
     [PunRPC]
     public void RPC_MakeVisible()
     {
-        ChangeVisibility(true);
+        ChangeVisibility(true); //Show renderers and enable colliders
+        trail.Clear();          //Clean up trail
     }
+    /// <summary>
+    /// Hides this player's renderers and disables all remote collision detection.
+    /// </summary>
     [PunRPC]
     public void RPC_MakeInvisible()
     {
-        ChangeVisibility(false);
+        ChangeVisibility(false); //Hide renderers and disable colliders
     }
-
-    private void OnDestroy()
+    /// <summary>
+    /// Connects player to given target and makes them move toward each other. Overrides previous target's tether state if valid. Pass again to same player to un-tether them.
+    /// </summary>
+    [PunRPC]
+    public void RPC_Tether(int targetId)
     {
-        if (photonView.IsMine) PlayerController.photonView = null; //Clear client photonView referenc
+
     }
 
-    // Update is called once per frame
-    void Update()
+    //UTILITY METHODS:
+    /// <summary>
+    /// Matches the target's position and orientation to those of the reference.
+    /// </summary>
+    private void MapPosition(Transform target, Transform reference)
     {
-        // Synchronizes the player over the network.
-        if (photonView.IsMine)
-        {
-            MapPosition(head, headRig);
-            MapPosition(leftHand, leftHandRig);
-            MapPosition(rightHand, rightHandRig);
-        }
-
-        // The player dies if the player falls too far below the map.
-        if (transform.position.y < -15f)
-        {
-            // You die/lose ();
-        }
+        target.position = reference.position; //Map position
+        target.rotation = reference.rotation; //Map orientation
     }
 
-    // This synchronizes the positions of the headset & the hand controllers 
-    void MapPosition(Transform target, Transform rigTransform)
-    {
-        target.position = rigTransform.position;
-        target.rotation = rigTransform.rotation;
-    }
+    public PlayerStats GetNetworkPlayerStats() => networkPlayerStats;
+    public string GetName() => photonView.Owner.NickName;
 }

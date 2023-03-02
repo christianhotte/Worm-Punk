@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3785405285969716516}
   - component: {fileID: 3785405285969716517}
   - component: {fileID: 3785405285969716518}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 3785405286586255464}
   - component: {fileID: 3785405286586255465}
   - component: {fileID: 3785405286586255466}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -217,7 +217,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3785405286769506889}
   - component: {fileID: 3785405286769506888}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: LeverObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -256,6 +256,8 @@ MonoBehaviour:
   hingeJointState: 2
   lockOnMinimumLimit: 0
   lockOnMaximumLimit: 0
+  snapToLimit: 0
+  snapMovementSpeed: 0.15
   minimumValue: -1
   maximumValue: 1
   OnMinLimitReached:
@@ -282,7 +284,7 @@ GameObject:
   - component: {fileID: 3785405286875227753}
   - component: {fileID: 3785405286875227754}
   - component: {fileID: 3785405286875227755}
-  m_Layer: 10
+  m_Layer: 14
   m_Name: Stick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -376,7 +378,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0

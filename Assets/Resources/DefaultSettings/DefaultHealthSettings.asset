@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: DefaultHealthSettings
   m_EditorClassIdentifier: 
   defaultHealth: 3
-  regenSpeed: 0
-  regenPauseTime: 0
+  regenSpeed: 0.5
+  regenPauseTime: 3
+  hurtSound: {fileID: 0}
+  deathSound: {fileID: 0}

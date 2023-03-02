@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3332131641012599515}
   - component: {fileID: 3332131641012599513}
   - component: {fileID: 3332131641012599514}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3332131641392872297}
   - component: {fileID: 3332131641392872296}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: SliderObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 3332131641423982013}
   - component: {fileID: 3332131641423982011}
   - component: {fileID: 3332131641423982012}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -232,7 +232,7 @@ GameObject:
   - component: {fileID: 3332131641912882498}
   - component: {fileID: 3332131641912882499}
   - component: {fileID: 3332131641912882500}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -324,7 +324,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3332131642004319562}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: BoundLeft
   m_TagString: Untagged
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
@@ -354,7 +354,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3332131642018560210}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: BoundRight
   m_TagString: Untagged
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
@@ -387,7 +387,7 @@ GameObject:
   - component: {fileID: 3332131642173440261}
   - component: {fileID: 3332131642173440260}
   - component: {fileID: 3332131642173440259}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -578,7 +578,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6797428040441294156}
   - component: {fileID: 3679364950481808443}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
