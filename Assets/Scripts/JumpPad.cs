@@ -24,18 +24,17 @@ public class JumpPad : MonoBehaviour
         {
             foreach (PlayerEquipment equipment in PlayerController.instance.attachedEquipment)
             {
-                NewGrapplerController grapple = equipment.GetComponent<NewGrapplerController>();
+                NewGrapplerController grapple = equipment.GetComponent<NewGrapplerController>(); // Searches for the grappling hook atached to the hit player
                 if (grapple == null) continue;
                 if (grapple.hook.state != HookProjectile.HookState.Stowed)
                 {
-                    grapple.hook.Release();
+                    grapple.hook.Release();//forces the grapplehook to release when hitting jump pad
                     grapple.hook.Stow();
                 }
             }
-            print("Jump pad used by " + other.name);
             Rigidbody playerRb = playerOrigin.GetComponent<Rigidbody>();
-            playerRb.transform.position = this.transform.position;
-            playerRb.velocity = this.transform.up * jumpForce;
+            playerRb.transform.position = this.transform.position; // moves the player to the center of the jump pad
+            playerRb.velocity = this.transform.up * jumpForce;// Launches the player off of the pad
             return;
         }
     }
