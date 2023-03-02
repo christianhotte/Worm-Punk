@@ -37,7 +37,7 @@ public class Leaderboards : MonoBehaviourPunCallbacks
     void Start()
     {
         //Initialization:
-        if (PhotonNetwork.LocalPlayer.ActorNumber != GetComponentInParent<LockerTubeController>().tubeNumber) gameObject.SetActive(false); //Hide board if it does not correspond with player's tube
+        if (PhotonNetwork.LocalPlayer.ActorNumber != GetComponentInParent<LockerTubeController>().tubeNumber) { gameObject.SetActive(false); return; } //Hide board if it does not correspond with player's tube
 
         //Check scene state:
         foreach (NetworkPlayer player in NetworkPlayer.instances) { if (player.networkPlayerStats.numOfKills > 0) { showingLeaderboard = true; break; } } //Show leaderboard if any players have any kills
@@ -73,36 +73,36 @@ public class Leaderboards : MonoBehaviourPunCallbacks
                 playerColor = Color.Lerp(playerColor, Color.white, playerColorGamma); //Make color a bit lighter so it is more readable
 
                 //Place rank number:
-                TMP_Text newRank = Instantiate(ranks, ranks.rectTransform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                Vector3 newPos = ranks.rectTransform.localPosition;                                         //Reference position of original text object for new text
-                newPos.y = yHeight;                                                                         //Set Y height of text object
-                newRank.rectTransform.position = newPos;                                                    //Move text object to new position
-                newRank.text = "#" + (x + 1) + ":";                                                         //Display ranks in order by number
-                newRank.color = playerColor;                                                                //Set text color to given player color
+                TMP_Text newRank = Instantiate(ranks, ranks.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
+                Vector3 newPos = ranks.transform.localPosition;                                         //Reference position of original text object for new text
+                newPos.y = yHeight;                                                                     //Set Y height of text object
+                newRank.transform.position = newPos;                                                    //Move text object to new position
+                newRank.text = "#" + (x + 1) + ":";                                                     //Display ranks in order by number
+                newRank.color = playerColor;                                                            //Set text color to given player color
 
                 //Place name:
-                TMP_Text newName = Instantiate(names, names.rectTransform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                newPos = names.rectTransform.localPosition;                                                 //Reference position of original text object for new text
+                TMP_Text newName = Instantiate(names, names.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
+                newPos = names.transform.localPosition;                                                 //Reference position of original text object for new text
+                newPos.y = yHeight;                                                                     //Set Y height of text object
+                newName.transform.position = newPos;                                                    //Move text object to new position
+                newName.text = rankedPlayers[x].GetName();                                              //Display player name
+                newName.color = playerColor;                                                            //Set text color to given player color
+
+                //Place kills:
+                TMP_Text newKills = Instantiate(kills, kills.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
+                newPos = kills.transform.localPosition;                                                  //Reference position of original text object for new text
+                newPos.y = yHeight;                                                                      //Set Y height of text object
+                newKills.transform.position = newPos;                                                    //Move text object to new position
+                newKills.text = stats.numOfKills.ToString();                                             //Display killcount
+                newKills.color = playerColor;                                                            //Set text color to given player color
+
+                //Place kills:
+                TMP_Text newDeaths = Instantiate(deaths, deaths.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
+                newPos = kills.transform.localPosition;                                                     //Reference position of original text object for new text
                 newPos.y = yHeight;                                                                         //Set Y height of text object
-                newName.rectTransform.position = newPos;                                                    //Move text object to new position
-                newName.text = rankedPlayers[x].GetName();                                                  //Display player name
-                newName.color = playerColor;                                                                //Set text color to given player color
-
-                //Place kills:
-                TMP_Text newKills = Instantiate(kills, kills.rectTransform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                newPos = kills.rectTransform.localPosition;                                                  //Reference position of original text object for new text
-                newPos.y = yHeight;                                                                          //Set Y height of text object
-                newKills.rectTransform.position = newPos;                                                    //Move text object to new position
-                newKills.text = stats.numOfKills.ToString();                                                 //Display killcount
-                newKills.color = playerColor;                                                                //Set text color to given player color
-
-                //Place kills:
-                TMP_Text newDeaths = Instantiate(deaths, deaths.rectTransform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                newPos = kills.rectTransform.localPosition;                                                     //Reference position of original text object for new text
-                newPos.y = yHeight;                                                                             //Set Y height of text object
-                newDeaths.rectTransform.position = newPos;                                                      //Move text object to new position
-                newDeaths.text = stats.numOfDeaths.ToString();                                                  //Display death count
-                newDeaths.color = playerColor;                                                                  //Set text color to given player color
+                newDeaths.transform.position = newPos;                                                      //Move text object to new position
+                newDeaths.text = stats.numOfDeaths.ToString();                                              //Display death count
+                newDeaths.color = playerColor;                                                              //Set text color to given player color
             }
 
             //Clear list references:
