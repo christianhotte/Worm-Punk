@@ -38,6 +38,7 @@ public class NetworkPlayer : MonoBehaviour
 
     //Runtime Variables:
     private bool visible = true; //Whether or not this network player is currently visible
+    internal Color currentColor; //Current player color this networkPlayer instance is set to
 
     //RUNTIME METHODS:
     private void Awake()
@@ -216,13 +217,15 @@ public class NetworkPlayer : MonoBehaviour
         //Initialization:
         Debug.Log("Applying Synced Settings...");                           //Indicate that message has been received
         CharacterData settings = JsonUtility.FromJson<CharacterData>(data); //Decode settings into CharacterData object
+        currentColor = settings.testColor;                                  //Store color currently being used for player
 
         //Apply settings:
-        foreach (Material mat in bodyRenderer.materials) mat.color = settings.testColor; //Apply color to entire player body
+        foreach (Material mat in bodyRenderer.materials) mat.color = currentColor; //Apply color to entire player body
         for (int x = 0; x < trail.colorGradient.colorKeys.Length; x++) //Iterate through color keys in trail gradient
         {
-            trail.colorGradient.colorKeys[x].color = settings.testColor; //Apply color setting to trail key
+            trail.colorGradient.colorKeys[x].color = currentColor; //Apply color setting to trail key
         }
+        trail.startColor = currentColor; trail.endColor = currentColor; //Set actual trail colors (just in case)
     }
 
     /// <summary>
