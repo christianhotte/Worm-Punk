@@ -82,7 +82,9 @@ public class Leaderboards : MonoBehaviourPunCallbacks
                 //Place name:
                 TMP_Text newName = Instantiate(names, names.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
                 newName.rectTransform.localPosition -= Vector3.down * yHeight;                          //Move text to target position
-                newName.text = rankedPlayers[x].GetName();                                              //Display player name
+                string nameText = rankedPlayers[x].GetName();
+                nameText.Remove(nameText.ToCharArray().Length - 5, 5);
+                newName.text = nameText;                                                                //Display player name
                 newName.color = playerColor;                                                            //Set text color to given player color
                 if (rankedPlayers[x].photonView.IsMine) newName.fontStyle = FontStyles.Underline;       //Underline local player's name
 
@@ -102,7 +104,8 @@ public class Leaderboards : MonoBehaviourPunCallbacks
                 TMP_Text newKD = Instantiate(ratios, ratios.transform.parent).GetComponent<TMP_Text>();                        //Instantiate new text object
                 newKD.rectTransform.localPosition -= Vector3.down * yHeight;                                                   //Move text to target position
                 //float KD = Mathf.RoundToInt((stats.numOfKills / (stats.numOfDeaths > 0 ? stats.numOfDeaths : 1)) * 100) / 100; //Round to hundredths
-                newKD.text = (stats.numOfKills / (stats.numOfDeaths > 0 ? stats.numOfDeaths : 1)).ToString("F2");              //Display KD ratio
+                float KD = ((float)stats.numOfKills / (stats.numOfDeaths > 0 ? (float)stats.numOfDeaths : 1));
+                newKD.text = KD.ToString("F2");                                                                                                //Display KD ratio
                 newKD.color = playerColor;                                                                                     //Set text color to given player color
             }
 
