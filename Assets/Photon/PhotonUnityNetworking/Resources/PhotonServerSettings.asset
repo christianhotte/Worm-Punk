@@ -67,6 +67,7 @@ MonoBehaviour:
   - RPC_Stow
   - RPC_Tether
   - RPC_KilledEnemy
+  - RPC_DeathLog
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
