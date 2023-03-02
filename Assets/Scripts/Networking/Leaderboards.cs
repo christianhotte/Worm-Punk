@@ -74,33 +74,26 @@ public class Leaderboards : MonoBehaviourPunCallbacks
 
                 //Place rank number:
                 TMP_Text newRank = Instantiate(ranks, ranks.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                Vector3 newPos = ranks.transform.localPosition;                                         //Reference position of original text object for new text
-                newPos.y = yHeight;                                                                     //Set Y height of text object
-                newRank.transform.position = newPos;                                                    //Move text object to new position
+                newRank.rectTransform.localPosition -= Vector3.down * yHeight;                          //Move text to target position
                 newRank.text = "#" + (x + 1) + ":";                                                     //Display ranks in order by number
                 newRank.color = playerColor;                                                            //Set text color to given player color
 
                 //Place name:
                 TMP_Text newName = Instantiate(names, names.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                newPos = names.transform.localPosition;                                                 //Reference position of original text object for new text
-                newPos.y = yHeight;                                                                     //Set Y height of text object
-                newName.transform.position = newPos;                                                    //Move text object to new position
+                newName.rectTransform.localPosition -= Vector3.down * yHeight;                          //Move text to target position
                 newName.text = rankedPlayers[x].GetName();                                              //Display player name
                 newName.color = playerColor;                                                            //Set text color to given player color
+                if (rankedPlayers[x].photonView.IsMine) newName.fontStyle = FontStyles.Underline;       //Underline local player's name
 
                 //Place kills:
                 TMP_Text newKills = Instantiate(kills, kills.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                newPos = kills.transform.localPosition;                                                  //Reference position of original text object for new text
-                newPos.y = yHeight;                                                                      //Set Y height of text object
-                newKills.transform.position = newPos;                                                    //Move text object to new position
+                newKills.rectTransform.localPosition -= Vector3.down * yHeight;                          //Move text to target position
                 newKills.text = stats.numOfKills.ToString();                                             //Display killcount
                 newKills.color = playerColor;                                                            //Set text color to given player color
 
                 //Place kills:
                 TMP_Text newDeaths = Instantiate(deaths, deaths.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                newPos = kills.transform.localPosition;                                                     //Reference position of original text object for new text
-                newPos.y = yHeight;                                                                         //Set Y height of text object
-                newDeaths.transform.position = newPos;                                                      //Move text object to new position
+                newDeaths.rectTransform.localPosition -= Vector3.down * yHeight;                            //Move text to target position
                 newDeaths.text = stats.numOfDeaths.ToString();                                              //Display death count
                 newDeaths.color = playerColor;                                                              //Set text color to given player color
             }
