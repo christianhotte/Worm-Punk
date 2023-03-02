@@ -176,6 +176,18 @@ public class NetworkPlayer : MonoBehaviour
         photonView.RPC("LoadPlayerStats", RpcTarget.AllBuffered, statsData);
     }
 
+    public void AddToKillBoard(string killerName, string victimName)
+    {
+        Debug.Log("Adding To Kill Board...");
+        photonView.RPC("RPC_DeathLog", RpcTarget.AllBuffered, killerName, victimName);
+    }
+
+    [PunRPC]
+    public void RPC_DeathLog(string killerName, string victimName)
+    {
+        PlayerController.instance.combatHUD.AddToDeathInfoBoard(killerName, victimName);
+    }
+
     /// <summary>
     /// Syncs and applies settings data (such as color) between all versions of this network player (only call this on the network player local to the client who's settings you want to use).
     /// </summary>
@@ -231,7 +243,7 @@ public class NetworkPlayer : MonoBehaviour
                 networkPlayerStats.numOfDeaths++;                                                                      //Increment death counter
                 PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
                 SyncStats();
-                PhotonNetwork.GetPhotonView(enemyID).RPC("RPC_KilledEnemy", RpcTarget.AllBuffered, photonView.ViewID); //Indicate that this player has been killed by enemy
+                AddToKillBoard(PhotonNetwork.LocalPlayer.NickName, PhotonNetwork.GetPhotonView(enemyID).Owner.NickName);
             }
         }
     }
@@ -267,7 +279,6 @@ public class NetworkPlayer : MonoBehaviour
             print(PhotonNetwork.LocalPlayer.NickName + " killed enemy with index " + enemyID);
             PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
             SyncStats();
-            PlayerController.instance.combatHUD.AddToDeathInfoBoard(PhotonNetwork.LocalPlayer.NickName, PhotonNetwork.GetPhotonView(enemyID).Owner.NickName);
         }
     }
 
