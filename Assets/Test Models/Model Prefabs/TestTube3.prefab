@@ -456,11 +456,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3785405286875227755, guid: 3cdd94f972d59b343a976b1653112af0, type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: 0.00000033644028
+      value: 0.000004542293
       objectReference: {fileID: 0}
     - target: {fileID: 3785405286875227755, guid: 3cdd94f972d59b343a976b1653112af0, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: 0.08010011
+      value: 0.080093026
       objectReference: {fileID: 0}
     - target: {fileID: 3785405286875227755, guid: 3cdd94f972d59b343a976b1653112af0, type: 3}
       propertyPath: m_ConnectedAnchor.z
@@ -624,25 +624,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5805044184379500391}
     m_Modifications:
-    - target: {fileID: 3582978821219018842, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 51.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3844669399972101801, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
-      propertyPath: m_HorizontalAlignment
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3844669399972101803, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 51.8
-      objectReference: {fileID: 0}
     - target: {fileID: 3844669401891502263, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
       propertyPath: m_Name
       value: Post-Game Leaderboard (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 3844669401891502268, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
-      propertyPath: m_Camera
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3844669401891502269, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
       propertyPath: m_Pivot.x
@@ -727,10 +711,6 @@ PrefabInstance:
     - target: {fileID: 3844669401891502269, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6202434822716770507, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 33.7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 614427dc3de34a2448074a3dafa82f15, type: 3}
