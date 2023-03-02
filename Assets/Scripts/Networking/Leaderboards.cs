@@ -82,11 +82,25 @@ public class Leaderboards : MonoBehaviourPunCallbacks
                 //Place name:
                 TMP_Text newName = Instantiate(names, names.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
                 newName.rectTransform.localPosition -= Vector3.down * yHeight;                          //Move text to target position
-                string nameText = rankedPlayers[x].GetName();
-                nameText.Remove(nameText.ToCharArray().Length - 5, 5);
-                newName.text = nameText;                                                                //Display player name
-                newName.color = playerColor;                                                            //Set text color to given player color
-                if (rankedPlayers[x].photonView.IsMine) newName.fontStyle = FontStyles.Underline;       //Underline local player's name
+                List<char> nameCharacters = new List<char>();
+                foreach (char c in rankedPlayers[x].GetName().ToCharArray())
+                {
+                    if (c == '#') continue;
+                    if (c == '0') continue;
+                    if (c == '1') continue;
+                    if (c == '2') continue;
+                    if (c == '3') continue;
+                    if (c == '4') continue;
+                    if (c == '5') continue;
+                    if (c == '6') continue;
+                    if (c == '7') continue;
+                    if (c == '8') continue;
+                    if (c == '9') continue;
+                    nameCharacters.Add(c);
+                }
+                newName.text = new string(nameCharacters.ToArray());                              //Display player name
+                newName.color = playerColor;                                                      //Set text color to given player color
+                if (rankedPlayers[x].photonView.IsMine) newName.fontStyle = FontStyles.Underline; //Underline local player's name
 
                 //Place kills:
                 TMP_Text newKills = Instantiate(kills, kills.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
@@ -101,12 +115,11 @@ public class Leaderboards : MonoBehaviourPunCallbacks
                 newDeaths.color = playerColor;                                                              //Set text color to given player color
 
                 //Place K/D:
-                TMP_Text newKD = Instantiate(ratios, ratios.transform.parent).GetComponent<TMP_Text>();                        //Instantiate new text object
-                newKD.rectTransform.localPosition -= Vector3.down * yHeight;                                                   //Move text to target position
-                //float KD = Mathf.RoundToInt((stats.numOfKills / (stats.numOfDeaths > 0 ? stats.numOfDeaths : 1)) * 100) / 100; //Round to hundredths
+                TMP_Text newKD = Instantiate(ratios, ratios.transform.parent).GetComponent<TMP_Text>();        //Instantiate new text object
+                newKD.rectTransform.localPosition -= Vector3.down * yHeight;                                   //Move text to target position
                 float KD = ((float)stats.numOfKills / (stats.numOfDeaths > 0 ? (float)stats.numOfDeaths : 1));
-                newKD.text = KD.ToString("F2");                                                                                                //Display KD ratio
-                newKD.color = playerColor;                                                                                     //Set text color to given player color
+                newKD.text = KD.ToString("F2");                                                                //Display KD ratio
+                newKD.color = playerColor;                                                                     //Set text color to given player color
             }
 
             //Clear list references:
