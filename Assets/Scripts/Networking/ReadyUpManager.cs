@@ -85,6 +85,10 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
         // If all players are ready, load the game scene
         if (playersReady == playersInRoom && (playersInRoom >= MINIMUM_PLAYERS_NEEDED || GameSettings.debugMode))
         {
+            //Reset all players
+            foreach (var player in NetworkPlayer.instances)
+                player.networkPlayerStats = new PlayerStats();
+
             NetworkManagerScript.instance.LoadSceneWithFade(sceneToLoad);
         }
     }
