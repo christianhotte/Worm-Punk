@@ -13,12 +13,9 @@ public class WormHole : MonoBehaviour
     public GameObject playerOrigin;
     public static List<WormHole> ActiveWormholes = new List<WormHole>();
     private WormHoleTrigger triggerScript;
-    // Start is called before the first frame update
     void Start()
     {
     }
-
-    // Update is called once per frame
     void Update()
     {
     }
