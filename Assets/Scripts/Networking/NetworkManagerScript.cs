@@ -271,7 +271,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
     public void SetPlayerNickname(string name)
     {
         PhotonNetwork.NickName = name;
-        PlayerSettings.Instance.charData.playerName = PhotonNetwork.NickName;
+        PlayerSettingsController.Instance.charData.playerName = PhotonNetwork.NickName;
     }
 
     //UTILITY METHODS:
