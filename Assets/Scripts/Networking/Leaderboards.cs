@@ -12,14 +12,15 @@ public class Leaderboards : MonoBehaviourPunCallbacks
     [SerializeField, Tooltip("Displays which rank each player placed in.")]              private TMP_Text ranks;
     [SerializeField, Tooltip("Displays name of each player who participated in match.")] private TMP_Text names;
     [SerializeField, Tooltip("Displays how many kills each player got.")]                private TMP_Text kills;
-    [SerializeField, Tooltip("Displays how many time player died")]                      private TMP_Text deaths;
+    [SerializeField, Tooltip("Displays how many time player died.")]                     private TMP_Text deaths;
+    [SerializeField, Tooltip("Displays player's K/D ratio.")]                            private TMP_Text ratios;
 
     //Settings:
     [Header("Settings:")]
     [SerializeField, Tooltip("How far apart each new line is (in Y units).")]                                     private float lineSeparation;
     [Range(0, 1), SerializeField, Tooltip("How light player colors are (increase for consistency/readability).")] private float playerColorGamma;
     [SerializeField, Tooltip("If true, system will reset player stats as they leave the scene.")]                 private bool clearStats = true;
-
+    
     //Runtime Vars:
     private bool showingLeaderboard; //True when leaderboard is enabled for the scene (only when players are coming back from combat)
 
@@ -43,22 +44,22 @@ public class Leaderboards : MonoBehaviourPunCallbacks
         foreach (NetworkPlayer player in NetworkPlayer.instances) { if (player.networkPlayerStats.numOfKills > 0) { showingLeaderboard = true; break; } } //Show leaderboard if any players have any kills
         if (showingLeaderboard) //Leaderboard is being shown this scene
         {
-            //Rank players by K/D:
+            //Rank players:
             List<NetworkPlayer> rankedPlayers = new List<NetworkPlayer>(); //Create a new list for sorting network players by rank
             foreach (NetworkPlayer player in NetworkPlayer.instances) //Iterate through each network player in scene
             {
                 if (rankedPlayers.Count == 0) { rankedPlayers.Add(player); continue; } //Add first player immediately to list
 
                 //Get stats:
-                PlayerStats stats = player.networkPlayerStats;          //Get current player's stats from last round
-                float currentKD = stats.numOfKills / stats.numOfDeaths; //Get KD of current player
+                PlayerStats stats = player.networkPlayerStats; //Get current player's stats from last round
+                float currentH = stats.numOfKills;             //Get KD of current player
 
                 //Rank against competitors:
                 for (int x = 0; x < rankedPlayers.Count; x++) //Iterate through ranked player list
                 {
-                    PlayerStats otherStats = rankedPlayers[x].networkPlayerStats;        //Get stats from other player
-                    float otherKD = otherStats.numOfKills / otherStats.numOfDeaths;      //Get KD of other player
-                    if (otherKD < currentKD) { rankedPlayers.Insert(x, player); break; } //Insert current player above the first player it outranks
+                    PlayerStats otherStats = rankedPlayers[x].networkPlayerStats;      //Get stats from other player
+                    float otherH = otherStats.numOfKills;                              //Get KD of other player
+                    if (otherH < currentH) { rankedPlayers.Insert(x, player); break; } //Insert current player above the first player it outranks
                 }
                 if (!rankedPlayers.Contains(player)) rankedPlayers.Add(player); //Add player in last if it doesn't outrank anyone
             }
@@ -74,35 +75,34 @@ public class Leaderboards : MonoBehaviourPunCallbacks
 
                 //Place rank number:
                 TMP_Text newRank = Instantiate(ranks, ranks.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                Vector3 newPos = ranks.transform.localPosition;                                         //Reference position of original text object for new text
-                newPos.y = yHeight;                                                                     //Set Y height of text object
-                newRank.transform.position = newPos;                                                    //Move text object to new position
+                newRank.rectTransform.localPosition -= Vector3.down * yHeight;                          //Move text to target position
                 newRank.text = "#" + (x + 1) + ":";                                                     //Display ranks in order by number
                 newRank.color = playerColor;                                                            //Set text color to given player color
 
                 //Place name:
                 TMP_Text newName = Instantiate(names, names.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                newPos = names.transform.localPosition;                                                 //Reference position of original text object for new text
-                newPos.y = yHeight;                                                                     //Set Y height of text object
-                newName.transform.position = newPos;                                                    //Move text object to new position
+                newName.rectTransform.localPosition -= Vector3.down * yHeight;                          //Move text to target position
                 newName.text = rankedPlayers[x].GetName();                                              //Display player name
                 newName.color = playerColor;                                                            //Set text color to given player color
+                if (rankedPlayers[x].photonView.IsMine) newName.fontStyle = FontStyles.Underline;       //Underline local player's name
 
                 //Place kills:
                 TMP_Text newKills = Instantiate(kills, kills.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                newPos = kills.transform.localPosition;                                                  //Reference position of original text object for new text
-                newPos.y = yHeight;                                                                      //Set Y height of text object
-                newKills.transform.position = newPos;                                                    //Move text object to new position
+                newKills.rectTransform.localPosition -= Vector3.down * yHeight;                          //Move text to target position
                 newKills.text = stats.numOfKills.ToString();                                             //Display killcount
                 newKills.color = playerColor;                                                            //Set text color to given player color
 
                 //Place kills:
                 TMP_Text newDeaths = Instantiate(deaths, deaths.transform.parent).GetComponent<TMP_Text>(); //Instantiate new text object
-                newPos = kills.transform.localPosition;                                                     //Reference position of original text object for new text
-                newPos.y = yHeight;                                                                         //Set Y height of text object
-                newDeaths.transform.position = newPos;                                                      //Move text object to new position
+                newDeaths.rectTransform.localPosition -= Vector3.down * yHeight;                            //Move text to target position
                 newDeaths.text = stats.numOfDeaths.ToString();                                              //Display death count
                 newDeaths.color = playerColor;                                                              //Set text color to given player color
+
+                //Place K/D:
+                TMP_Text newKD = Instantiate(ratios, ratios.transform.parent).GetComponent<TMP_Text>();         //Instantiate new text object
+                newKD.rectTransform.localPosition -= Vector3.down * yHeight;                                    //Move text to target position
+                newKD.text = (stats.numOfKills / stats.numOfDeaths > 0 ? stats.numOfDeaths : 1).ToString("F2"); //Display KD ratio (rounded to hundredths)
+                newKD.color = playerColor;                                                                      //Set text color to given player color
             }
 
             //Clear list references:
