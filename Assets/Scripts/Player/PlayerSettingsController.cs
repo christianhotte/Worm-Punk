@@ -5,10 +5,10 @@ using UnityEngine;
 /// <summary>
 /// Contains settings object (relevant to local player) and functionality for sending it over the network.
 /// </summary>
-public class PlayerSettings : MonoBehaviour
+public class PlayerSettingsController : MonoBehaviour
 {
     //Objects & Components:
-    public static PlayerSettings Instance; //Singleton reference to this script at runtime (each player uses only their own local version)
+    public static PlayerSettingsController Instance; //Singleton reference to this script at runtime (each player uses only their own local version)
     public CharacterData charData;         //Object where player settings are set, stored and sent from
 
     //RUNTIME METHODS:
