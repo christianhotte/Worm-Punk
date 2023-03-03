@@ -500,7 +500,7 @@ MonoBehaviour:
   isInteractable: 1
   onPressedSoundEffect: {fileID: 8300000, guid: 912239047f3caab4d8a591b09ae97c75, type: 3}
   onReleasedSoundEffect: {fileID: 0}
-  onDisabledSoundEffect: {fileID: 0}
+  onDisabledSoundEffect: {fileID: 8300000, guid: 99803e2ad24f5ae4388f3c86c01e4ae7, type: 3}
   onPressed:
     m_PersistentCalls:
       m_Calls: []

@@ -25,11 +25,32 @@ public class LeverController : MonoBehaviour
     [Tooltip("The event called when the lever is moved.")] public UnityEvent<float> OnValueChanged;
 
     private float previousValue, currentValue;  //The previous and current frame's value of the lever
+    private HandleController handle;
+
+    private Transform activeHandPos;
 
     // Start is called before the first frame update
     void Start()
     {
         hinge = GetComponentInChildren<HingeJoint>();
+    }
+
+    private void OnEnable()
+    {
+        handle = GetComponentInChildren<HandleController>();
+
+        handle.OnStartGrabbing += SetHandParent;
+        handle.OnStopGrabbing += RemoveHandParent;
+    }
+
+    private void SetHandParent(Transform hand)
+    {
+        activeHandPos = hand;
+    }
+
+    private void RemoveHandParent()
+    {
+        activeHandPos = null;
     }
 
     private void FixedUpdate()
@@ -41,6 +62,14 @@ public class LeverController : MonoBehaviour
         //If the lever is not locked, check its angle
         if (!isLocked)
         {
+/*            if(activeHandPos != null)
+            {
+                var lookPos = activeHandPos.position - hinge.transform.position;
+                lookPos.x = 0;
+                var rotation = Quaternion.LookRotation(lookPos);
+                hinge.transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 0.5f);
+            }
+*/
             float angleWithMinLimit = Mathf.Abs(hinge.angle - hinge.limits.min);
             float angleWithMaxLimit = Mathf.Abs(hinge.angle - hinge.limits.max);
 

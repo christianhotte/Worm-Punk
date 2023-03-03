@@ -15,7 +15,7 @@ public class ReadyUpManager : MonoBehaviourPunCallbacks
 
     [SerializeField] private LockerTubeController[] lockerTubes;
 
-    private const int MINIMUM_PLAYERS_NEEDED = 1;   // The minimum number of players needed for a round to start
+    private const int MINIMUM_PLAYERS_NEEDED = 2;   // The minimum number of players needed for a round to start
     [SerializeField] private string sceneToLoad = "DM_0.11_Arena";
 
     private int playersReady, playersInRoom;

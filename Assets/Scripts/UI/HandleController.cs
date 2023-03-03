@@ -7,7 +7,8 @@ public class HandleController : MonoBehaviour, IGrabbable
 {
     [SerializeField, Tooltip("The bounds that keeps the handle within the slider.")] private Transform handleSnapPointLeft, handleSnapPointRight;
 
-    private MeshRenderer handleRenderer;
+    private MeshRenderer[] handleRenderers;
+    private List<Material> defaultMats = new List<Material>();
     private Material defaultMat;
     [SerializeField] private Material inRangeMat, closestOneMat, grabbedMat;
 
@@ -19,8 +20,11 @@ public class HandleController : MonoBehaviour, IGrabbable
 
     private void Awake()
     {
-        handleRenderer = GetComponentInChildren<MeshRenderer>();
-        defaultMat = handleRenderer.material;
+        handleRenderers = GetComponentsInChildren<MeshRenderer>();
+        for (int i = 0; i < handleRenderers.Length; i++)
+            defaultMats.Add(handleRenderers[i].material);
+
+        SetDefaultMaterials();
     }
 
     /// <summary>
@@ -29,7 +33,7 @@ public class HandleController : MonoBehaviour, IGrabbable
     public void EnterRange()
     {
         if(inRangeMat != null)
-            handleRenderer.material = inRangeMat;
+            SetAllMaterials(inRangeMat);
         OnEnteredRange();
     }
 
@@ -38,7 +42,7 @@ public class HandleController : MonoBehaviour, IGrabbable
     /// </summary>
     public void ExitRange()
     {
-        handleRenderer.material = defaultMat;
+        SetDefaultMaterials();
         OnExitRange();
     }
 
@@ -48,7 +52,7 @@ public class HandleController : MonoBehaviour, IGrabbable
     public void SetClosestOne()
     {
         if (closestOneMat != null)
-            handleRenderer.material = closestOneMat;
+            SetAllMaterials(closestOneMat);
         OnSetClosestOne();
     }
 
@@ -59,7 +63,8 @@ public class HandleController : MonoBehaviour, IGrabbable
     public void StartGrabbing(Transform handAnchor)
     {
         if (grabbedMat != null)
-            handleRenderer.material = grabbedMat;
+            SetAllMaterials(grabbedMat);
+
         OnStartGrabbing(handAnchor);
     }
 
@@ -68,7 +73,23 @@ public class HandleController : MonoBehaviour, IGrabbable
     /// </summary>
     public void StopGrabbing()
     {
-        handleRenderer.material = defaultMat;
+        SetDefaultMaterials();
         OnStopGrabbing();
+    }
+
+    private void SetAllMaterials(Material newMat)
+    {
+        for(int i = 0; i < handleRenderers.Length; i++)
+        {
+            handleRenderers[i].material = newMat;
+        }
+    }
+
+    private void SetDefaultMaterials()
+    {
+        for (int i = 0; i < handleRenderers.Length; i++)
+        {
+            handleRenderers[i].material = defaultMats[i];
+        }
     }
 }
