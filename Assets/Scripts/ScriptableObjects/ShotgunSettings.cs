@@ -15,6 +15,7 @@ public class ShotgunSettings : ScriptableObject
     [Min(0), Tooltip("How much time weapon needs to be left open for in order for it to be reloaded.")]                                      public float cooldownTime = 0.7f;
     [Min(0), Tooltip("If both shotguns are fired within this amount of time, player will get a speed boost.")]                               public float doubleFireTime = 0.25f;
     [Min(1), Tooltip("Fire velocity multiplier used when shotguns are double-fired.")]                                                       public float doubleFireBoost = 1.8f;
+    [Tooltip("How long to wait after emptying gun before automatically ejecting (set negative to turn off this feature).")]                  public float emptyEjectWait = 0.6f;
     [Header("Locomotion:")]
     [Min(0), Tooltip("Magnitude of velocity imparted on player when weapon is fired (primary locomotion setting).")]                  public float fireVelocity;
     [Min(1), Tooltip("Multiplier applied to launch velocity when player is firing backwards.")]                                       public float reverseFireBoost;

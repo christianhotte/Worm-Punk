@@ -172,7 +172,7 @@ public class NetworkPlayer : MonoBehaviour
     public void SyncStats()
     {
         Debug.Log("Syncing Player Stats...");
-        string statsData = PlayerSettings.PlayerStatsToString(networkPlayerStats);
+        string statsData = PlayerSettingsController.PlayerStatsToString(networkPlayerStats);
         photonView.RPC("LoadPlayerStats", RpcTarget.AllBuffered, statsData);
     }
 
@@ -194,7 +194,7 @@ public class NetworkPlayer : MonoBehaviour
     public void SyncData()
     {
         Debug.Log("Syncing Player Data...");                                        //Indicate that data is being synced
-        string characterData = PlayerSettings.Instance.CharDataToString();          //Encode data to a string so that it can be sent over the network
+        string characterData = PlayerSettingsController.Instance.CharDataToString();          //Encode data to a string so that it can be sent over the network
         photonView.RPC("LoadPlayerSettings", RpcTarget.AllBuffered, characterData); //Send data to every player on the network (including this one)
     }
 

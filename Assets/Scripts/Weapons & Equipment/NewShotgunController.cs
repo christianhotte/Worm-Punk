@@ -171,6 +171,7 @@ public class NewShotgunController : PlayerEquipment
         }
         if (doubleFireWindow > 0) doubleFireWindow = Mathf.Max(doubleFireWindow - Time.deltaTime, 0); //Decrement time tracker and floor at zero
         timeSinceFiring += Time.deltaTime; //Always update timeSinceFiring tracker (whatever state weapon is in)
+        if (gunSettings.emptyEjectWait >= 0 && !breachOpen && loadedShots == 0 && timeSinceFiring >= gunSettings.emptyEjectWait) Eject(); //Do auto-eject sequence
 
         //Perform swing-closing:
         if (breachOpen && breachOpenTime >= gunSettings.swingCloseWait) //Breach is currently open and swing warmup time has been passed
@@ -345,7 +346,6 @@ public class NewShotgunController : PlayerEquipment
             if (currentBarrelIndex >= barrels.Length) currentBarrelIndex = 0; //Overflow barrel index if relevant
         }
         loadedShots = Mathf.Max(loadedShots - 1, 0); //Spend one shot (floor at zero)
-        if (loadedShots == 0) Eject();
         return projectile; //Return reference to the master script of the projectile that was fired
     }
     /// <summary>
