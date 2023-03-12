@@ -40,6 +40,7 @@ public class HookshotSettings : ScriptableObject
     [Min(0), Tooltip("Minimum distance at which full punch whip can be triggered on an object (also distance at which hook will release).")] public float minPunchWhipDist;
     [Min(1), Tooltip("Multiplier for reel-in speed after a punch-whip.")]                                                                    public float punchWhipBoost;
     [Min(0), Tooltip("Amount of time grappler needs to cool down for after completing a punch-whip.")]                                       public float punchWhipCooldown;
+    [Tooltip("Causes weapon on matching hand to become holstered while grappling hook is in use.")]                                          public bool holstersWeapon;
     [Header("Haptics:")]
     [Tooltip("Haptic vibration made when player launches the hook.")]          public PlayerEquipment.HapticData launchHaptics;
     [Tooltip("Haptic vibration made when hook is traveling through the air.")] public PlayerEquipment.HapticData reelHaptics;
