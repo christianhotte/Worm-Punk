@@ -11,26 +11,21 @@ public class HoopBoost : MonoBehaviour
     internal bool launchin = false;
     // Start is called before the first frame update
     void Start()
-    {
-        
+    {        
     }
     // Update is called once per frame
     void Update()
-    {
-          
+    {          
     }
     public IEnumerator HoopLaunch(Collider hitPlayer)
     {
-        Debug.Log("boostCalled");
         launchin = true;
         PC = PlayerController.instance;
         playerRB = PC.bodyRb;
-
-        Vector3 entryVel = Vector3.Project(playerRB.velocity, hoopCenter.forward);
-        Vector3 exitVel = entryVel + (entryVel.normalized * boostAmount);
-        playerRB = hitPlayer.GetComponent<Rigidbody>();
-        playerRB.velocity = exitVel;
-        yield return new WaitForSeconds(0.2f);
+        Vector3 entryVel = Vector3.Project(playerRB.velocity, hoopCenter.forward);//Gets the velocity on one axis in relation to the hoops forward
+        Vector3 exitVel = entryVel + (entryVel.normalized * boostAmount); // adds the projected amount to the players velocity
+        playerRB.velocity = exitVel;//actually sets the velocity
+        yield return new WaitForSeconds(0.2f);//cooldown so only one boost given
         launchin = false;
     }
 
