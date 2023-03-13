@@ -172,8 +172,20 @@ public class NetworkPlayer : MonoBehaviour
     public void SyncStats()
     {
         Debug.Log("Syncing Player Stats...");
-        string statsData = PlayerSettings.PlayerStatsToString(networkPlayerStats);
+        string statsData = PlayerSettingsController.PlayerStatsToString(networkPlayerStats);
         photonView.RPC("LoadPlayerStats", RpcTarget.AllBuffered, statsData);
+    }
+
+    public void AddToKillBoard(string killerName, string victimName)
+    {
+        Debug.Log("Adding To Kill Board...");
+        photonView.RPC("RPC_DeathLog", RpcTarget.AllBuffered, killerName, victimName);
+    }
+
+    [PunRPC]
+    public void RPC_DeathLog(string killerName, string victimName)
+    {
+        PlayerController.instance.combatHUD.AddToDeathInfoBoard(killerName, victimName);
     }
 
     /// <summary>
@@ -182,7 +194,7 @@ public class NetworkPlayer : MonoBehaviour
     public void SyncData()
     {
         Debug.Log("Syncing Player Data...");                                        //Indicate that data is being synced
-        string characterData = PlayerSettings.Instance.CharDataToString();          //Encode data to a string so that it can be sent over the network
+        string characterData = PlayerSettingsController.Instance.CharDataToString();          //Encode data to a string so that it can be sent over the network
         photonView.RPC("LoadPlayerSettings", RpcTarget.AllBuffered, characterData); //Send data to every player on the network (including this one)
     }
 
@@ -211,9 +223,11 @@ public class NetworkPlayer : MonoBehaviour
         foreach (Material mat in bodyRenderer.materials) mat.color = currentColor; //Apply color to entire player body
         for (int x = 0; x < trail.colorGradient.colorKeys.Length; x++) //Iterate through color keys in trail gradient
         {
-            trail.colorGradient.colorKeys[x].color = currentColor; //Apply color setting to trail key
+            if (currentColor == Color.black) trail.colorGradient.colorKeys[x].color = Color.white;
+            else trail.colorGradient.colorKeys[x].color = currentColor; //Apply color setting to trail key
         }
-        trail.startColor = currentColor; trail.endColor = currentColor; //Set actual trail colors (just in case)
+        if (currentColor == Color.black) { trail.startColor = Color.white; trail.endColor = Color.white; }
+        else { trail.startColor = currentColor; trail.endColor = currentColor; } //Set actual trail colors (just in case)
     }
 
     /// <summary>
@@ -231,7 +245,8 @@ public class NetworkPlayer : MonoBehaviour
                 networkPlayerStats.numOfDeaths++;                                                                      //Increment death counter
                 PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
                 SyncStats();
-                PhotonNetwork.GetPhotonView(enemyID).RPC("RPC_KilledEnemy", RpcTarget.AllBuffered, photonView.ViewID); //Indicate that this player has been killed by enemy
+                AddToKillBoard(PhotonNetwork.LocalPlayer.NickName, PhotonNetwork.GetPhotonView(enemyID).Owner.NickName);
+                PhotonNetwork.GetPhotonView(enemyID).RPC("RPC_KilledEnemy", RpcTarget.AllBuffered, photonView.ViewID);
             }
         }
     }
@@ -267,7 +282,6 @@ public class NetworkPlayer : MonoBehaviour
             print(PhotonNetwork.LocalPlayer.NickName + " killed enemy with index " + enemyID);
             PlayerController.instance.combatHUD.UpdatePlayerStats(networkPlayerStats);
             SyncStats();
-            PlayerController.instance.combatHUD.AddToDeathInfoBoard(PhotonNetwork.LocalPlayer.NickName, PhotonNetwork.GetPhotonView(enemyID).Owner.NickName);
         }
     }
 
