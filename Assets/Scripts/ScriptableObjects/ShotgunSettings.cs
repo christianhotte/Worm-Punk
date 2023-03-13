@@ -30,6 +30,7 @@ public class ShotgunSettings : ScriptableObject
     [Min(0), Tooltip("Dampens gun wobble when pressed to make aiming a bit easier.")]              public float triggerDamper = 20;
     [Min(0), Tooltip("Strength of force used to close breach when swinging guns vertically.")]     public float closerForce;
     [Min(0), Tooltip("Time to wait after opening breach before allowing swing-close assistance.")] public float swingCloseWait;
+    [Tooltip("When true, shotguns will only bounce player when shooting directly at a wall.")]     public bool wallBoostOnly;
     [Space()]
     [Min(0), Tooltip("Length of linear recoil weapon goes through when fired.")]                           public float recoilDistance;
     [Min(0.01f), Tooltip("Amout of time (in seconds) gun spends in linear recoil phase.")]                 public float recoilTime;

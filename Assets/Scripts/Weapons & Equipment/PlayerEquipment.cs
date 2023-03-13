@@ -335,7 +335,14 @@ public class PlayerEquipment : MonoBehaviour
     /// <param name="holster">Pass true to hoster this equipment, false to un-holster it.</param>
     public void Holster(bool holster = true)
     {
-        if (holster) holstered = true;        //Immediately indicate holster status if holstering weapon
+        if (holster) //Weapon is being holstered
+        {
+            holstered = true;//Immediately indicate holster status if holstering weapon
+        }
+        else //Weapon is being unholstered
+        {
+            if (TryGetComponent(out NewShotgunController gun)) gun.reverseFireStage = 0; //Make sure weapon does not become unholstered in reverse fire mode
+        }
         StartCoroutine(MoveHolster(holster)); //Move holster to designated position over time
     }
 
