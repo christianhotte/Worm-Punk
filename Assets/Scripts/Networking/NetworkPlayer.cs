@@ -39,6 +39,7 @@ public class NetworkPlayer : MonoBehaviour
     //Runtime Variables:
     private bool visible = true; //Whether or not this network player is currently visible
     internal Color currentColor; //Current player color this networkPlayer instance is set to
+    private int lastTubeNumber;  //Number of the tube this player was latest spawned at
 
     //RUNTIME METHODS:
     private void Awake()
@@ -197,6 +198,13 @@ public class NetworkPlayer : MonoBehaviour
         string characterData = PlayerSettingsController.Instance.CharDataToString();          //Encode data to a string so that it can be sent over the network
         photonView.RPC("LoadPlayerSettings", RpcTarget.AllBuffered, characterData); //Send data to every player on the network (including this one)
     }
+    public void LeftRoom()
+    {
+        if (SpawnManager2.instance != null)
+        {
+            photonView.RPC("RPC_TubeVacated", RpcTarget.MasterClient, lastTubeNumber);
+        }
+    }
 
     //REMOTE METHODS:
     [PunRPC]
@@ -323,6 +331,44 @@ public class NetworkPlayer : MonoBehaviour
     public void RPC_Tether(int targetId)
     {
 
+    }
+
+    [PunRPC]
+    public void RPC_RemoteSpawnPlayer(int tubeNumber)
+    {
+        lastTubeNumber = tubeNumber;
+        if (SpawnManager2.instance != null)
+        {
+            LockerTubeController spawnTube = LockerTubeController.GetTubeByNumber(tubeNumber);
+            spawnTube.occupied = true;
+            PlayerController.instance.bodyRb.transform.position = spawnTube.spawnPoint.position;
+            PlayerController.instance.bodyRb.transform.rotation = spawnTube.spawnPoint.rotation;
+        }
+    }
+
+    //BELOW METHODS ONLY GET CALLED ON MASTER CLIENT
+    [PunRPC]
+    public void RPC_GiveMeSpawnpoint(int myViewID)
+    {
+        if (SpawnManager2.instance != null)
+        {
+            LockerTubeController spawnTube = SpawnManager2.instance.GetEmptyTube();
+            if (spawnTube != null)
+            {
+                spawnTube.occupied = true;
+                Player targetPlayer = PhotonNetwork.GetPhotonView(myViewID).Owner;
+                photonView.RPC("RPC_RemoteSpawnPlayer", targetPlayer, spawnTube.tubeNumber);
+            }
+        }
+    }
+    [PunRPC]
+    public void RPC_TubeVacated(int tubeNumber)
+    {
+        if (SpawnManager2.instance != null)
+        {
+            LockerTubeController tube = LockerTubeController.GetTubeByNumber(tubeNumber);
+            tube.occupied = false;
+        }
     }
 
     //UTILITY METHODS:

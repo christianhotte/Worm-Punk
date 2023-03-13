@@ -37,7 +37,7 @@ public class NewShotgunController : PlayerEquipment
     private bool triggerPulled = false; //Whether or not the trigger is currently pulled
     private float doubleFireWindow = 0; //Above zero means that weapon has just been fired and firing another weapon will cause a double fire
     internal bool locked = false;       //Lets the other equipment disable the guns
-    private int reverseFireStage = 0;   //Used to twirl guns and fire them backwards. Progressed from 0 to 3 (in order to make sure guns always spin the correct way)
+    internal int reverseFireStage = 0;  //Used to twirl guns and fire them backwards. Progressed from 0 to 3 (in order to make sure guns always spin the correct way)
     private float recoilRotOffset = 0;  //Current rotational offset along the X axis due to weapon recoil sequence
     private string projResourceName;    //Calculated at start, the name/directory of projectile this weapon uses in the Resources folder
 
@@ -313,27 +313,44 @@ public class NewShotgunController : PlayerEquipment
             player.ShakeScreen(gunSettings.fireScreenShake); //Shake screen (gently)
 
             //Exit velocity modifiers:
-            float effectiveFireVel = gunSettings.fireVelocity;                                                  //Store fire velocity so it can be optionally modified
-            if (otherGun != null && otherGun.doubleFireWindow > 0 &&                                            //Player is firing both weapons simultaneously...
-                otherGun.reverseFireStage == reverseFireStage) effectiveFireVel *= gunSettings.doubleFireBoost; //And both weapons are in the same firing mode, apply double-fire boost
-            if (reverseFireStage == 2) effectiveFireVel *= gunSettings.reverseFireBoost;                        //Add reverse firing boost
-            if (Physics.Raycast(currentBarrel.position, currentBarrel.forward, out RaycastHit hit, gunSettings.maxWallBoostDist, gunSettings.wallBoostLayers)) //Weapon is firing at a nearby wall
+            if (!gunSettings.wallBoostOnly || reverseFireStage == 2) //Player is using normal fire velocity system
             {
-                float distInterpolant =  1 - (hit.distance / gunSettings.maxWallBoostDist); //Get interpolant value representing how close weapon barrel is to a wall (the closer the higher)
-                effectiveFireVel *= gunSettings.maxWallBoost * distInterpolant;             //Apply multiplier to shot power based on how close player is to the wall
-            }
+                //Calculate exit velocity:
+                float effectiveFireVel = gunSettings.fireVelocity;                                                  //Store fire velocity so it can be optionally modified
+                if (otherGun != null && otherGun.doubleFireWindow > 0 &&                                            //Player is firing both weapons simultaneously...
+                    otherGun.reverseFireStage == reverseFireStage) effectiveFireVel *= gunSettings.doubleFireBoost; //And both weapons are in the same firing mode, apply double-fire boost
+                if (reverseFireStage == 2) effectiveFireVel *= gunSettings.reverseFireBoost;                        //Add reverse firing boost
+                if (Physics.Raycast(currentBarrel.position, currentBarrel.forward, out RaycastHit hit, gunSettings.maxWallBoostDist, gunSettings.wallBoostLayers)) //Weapon is firing at a nearby wall
+                {
+                    float distInterpolant = 1 - (hit.distance / gunSettings.maxWallBoostDist); //Get interpolant value representing how close weapon barrel is to a wall (the closer the higher)
+                    effectiveFireVel *= gunSettings.maxWallBoost * distInterpolant;             //Apply multiplier to shot power based on how close player is to the wall
+                }
 
-            //Apply velocity to player
-            Vector3 newVelocity = -currentBarrel.forward * effectiveFireVel;                                    //Store new velocity for player (always directly away from barrel that fired latest shot, unless reverse firing)
-            float velocityAngleDelta = Vector3.Angle(newVelocity, player.bodyRb.velocity);                      //Get angle between current velocity and new velocity
-            if (velocityAngleDelta <= gunSettings.additiveVelocityMaxAngle) //Player is firing to push themself in the direction they are generally already going
-            {
-                float velAngleInterpolant = 1 - (velocityAngleDelta / gunSettings.additiveVelocityMaxAngle); //Get interpolant value for closeness of velocity angles
-                float addVel = gunSettings.additiveVelocityCurve.Evaluate(velAngleInterpolant);              //Get multiplier for component of new player velocity
-                addVel *= effectiveFireVel * gunSettings.additiveVelocityMultiplier;                         //Apply both multipliers to base velocity magnitude
-                newVelocity = newVelocity.normalized * (player.bodyRb.velocity.magnitude + addVel);          //Keep exact direction of new velocity but use existing speed and add some previous speed
+                //Apply velocity to player
+                Vector3 newVelocity = -currentBarrel.forward * effectiveFireVel;               //Store new velocity for player (always directly away from barrel that fired latest shot, unless reverse firing)
+                float velocityAngleDelta = Vector3.Angle(newVelocity, player.bodyRb.velocity); //Get angle between current velocity and new velocity
+                if (velocityAngleDelta <= gunSettings.additiveVelocityMaxAngle) //Player is firing to push themself in the direction they are generally already going
+                {
+                    float velAngleInterpolant = 1 - (velocityAngleDelta / gunSettings.additiveVelocityMaxAngle); //Get interpolant value for closeness of velocity angles
+                    float addVel = gunSettings.additiveVelocityCurve.Evaluate(velAngleInterpolant);              //Get multiplier for component of new player velocity
+                    addVel *= effectiveFireVel * gunSettings.additiveVelocityMultiplier;                         //Apply both multipliers to base velocity magnitude
+                    newVelocity = newVelocity.normalized * (player.bodyRb.velocity.magnitude + addVel);          //Keep exact direction of new velocity but use existing speed and add some previous speed
+                }
+                player.bodyRb.velocity = newVelocity; //Launch player instantaneously (no acceleration)
             }
-            player.bodyRb.velocity = newVelocity; //Launch player instantaneously (no acceleration)
+            else //Player is using wall boost velocity only
+            {
+                if (Physics.Raycast(currentBarrel.position, currentBarrel.forward, out RaycastHit hit, gunSettings.maxWallBoostDist, gunSettings.wallBoostLayers)) //Weapon is firing at a nearby wall
+                {
+                    float effectiveFireVel = gunSettings.fireVelocity;                                                  //Store fire velocity so it can be optionally modified
+                    if (otherGun != null && otherGun.doubleFireWindow > 0 &&                                            //Player is firing both weapons simultaneously...
+                        otherGun.reverseFireStage == reverseFireStage) effectiveFireVel *= gunSettings.doubleFireBoost; //And both weapons are in the same firing mode, apply double-fire boost
+                    if (reverseFireStage == 2) effectiveFireVel *= gunSettings.reverseFireBoost;                        //Add reverse firing boost
+                    float distInterpolant = 1 - (hit.distance / gunSettings.maxWallBoostDist);                          //Get interpolant value representing how close weapon barrel is to a wall (the closer the higher)
+                    effectiveFireVel *= gunSettings.maxWallBoost * distInterpolant;                                     //Apply multiplier to shot power based on how close player is to the wall
+                    player.bodyRb.velocity = -currentBarrel.forward * effectiveFireVel;
+                }
+            }
         }
 
         //Cleanup:

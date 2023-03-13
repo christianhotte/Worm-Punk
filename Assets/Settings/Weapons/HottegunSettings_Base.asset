@@ -65,6 +65,7 @@ MonoBehaviour:
   triggerDamper: 30
   closerForce: 31
   swingCloseWait: 0.3
+  wallBoostOnly: 1
   recoilDistance: 0.18
   recoilTime: 0.39
   recoilCurve:

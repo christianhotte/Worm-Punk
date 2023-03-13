@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &734840284635562547
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4331579703379710752}
+  m_Layer: 0
+  m_Name: Spawnpoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4331579703379710752
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734840284635562547}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.45304465, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5805044184379500391}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1175588468293146698
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,6 +293,7 @@ Transform:
   - {fileID: 531758594558998983}
   - {fileID: 3866055738636660830}
   - {fileID: 398255871}
+  - {fileID: 4331579703379710752}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -714,14 +745,14 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 3525eb2557a29cf4ca16989084046d40, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: df99d4f5e2d7fe043beede7ae7106f8c, type: 3}
---- !u!4 &2276671644869726367 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 400000, guid: df99d4f5e2d7fe043beede7ae7106f8c, type: 3}
-  m_PrefabInstance: {fileID: 2276671644869855775}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2276671644869954751 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: df99d4f5e2d7fe043beede7ae7106f8c, type: 3}
+  m_PrefabInstance: {fileID: 2276671644869855775}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2276671644869726367 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400000, guid: df99d4f5e2d7fe043beede7ae7106f8c, type: 3}
   m_PrefabInstance: {fileID: 2276671644869855775}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3844669401667378754

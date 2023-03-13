@@ -174,8 +174,8 @@ public class NewGrapplerController : PlayerEquipment
         {
             if (settings.launchSound != null) audioSource.PlayOneShot(settings.launchSound, PlayerPrefs.GetFloat("SFXVolume", 0.5f) * PlayerPrefs.GetFloat("MasterVolume", 0.5f)); //Play sound effect
         }
-        handWeapon.Holster();                      //Holster gun while grappling
-        SendHapticImpulse(settings.launchHaptics); //Play haptic impulse
+        if (settings.holstersWeapon) handWeapon.Holster(); //Holster gun while grappling (if set to do so)
+        SendHapticImpulse(settings.launchHaptics);         //Play haptic impulse
     }
     /// <summary>
     /// Releases whatever hookshot is currently hooked on to (if anything) and begins reeling it back in.
