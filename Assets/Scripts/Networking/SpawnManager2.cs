@@ -13,10 +13,10 @@ public class SpawnManager2 : MonoBehaviourPunCallbacks
     // Called on the first frame.
     void Start()
     {
-        demoPlayer = GameObject.Find("DemoPlayer5");
+        demoPlayer = PlayerController.instance.gameObject;
         if (demoPlayer == null)
         {
-            Debug.LogError("DemoPlayer5 not found in scene.");
+            Debug.LogError("Player not found in scene.");
             return;
         }
 
