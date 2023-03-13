@@ -6,11 +6,13 @@ using Photon.Realtime;
 
 public class SpawnManager2 : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private Transform[] spawnPoints;
-
+    public static SpawnManager2 instance;
     private GameObject demoPlayer;
 
-    // Called on the first frame.
+    private void Awake()
+    {
+        instance = this;
+    }
     void Start()
     {
         demoPlayer = PlayerController.instance.gameObject;
@@ -26,23 +28,61 @@ public class SpawnManager2 : MonoBehaviourPunCallbacks
             return;
         }
 
-        MoveDemoPlayerToSpawnPoint();
+        if (PhotonNetwork.IsMasterClient) MoveDemoPlayerToSpawnPoint();
+        else
+        {
+            PlayerController.photonView.RPC("RPC_GiveMeSpawnpoint", RpcTarget.MasterClient, PlayerController.photonView.ViewID);
+        }
+    }
+    private void OnDestroy()
+    {
+        instance = null;
     }
 
     // Moves the local demo player to a spawn point.
     private void MoveDemoPlayerToSpawnPoint()
     {
-        if (spawnPoints == null || spawnPoints.Length == 0)
+        //int spawnPointIndex = PhotonNetwork.LocalPlayer.ActorNumber - 1;
+        //Debug.Log("Actor Number: " + spawnPointIndex);
+        //Transform spawnPoint = spawnPoints[spawnPointIndex];
+
+        //demoPlayer.transform.position = spawnPoint.position;
+        //demoPlayer.transform.rotation = spawnPoint.rotation;
+
+
+
+        /*Player[] playerList = PhotonNetwork.PlayerList;
+          for (int x = 0; x < playerList.Length; x++)
         {
-            Debug.LogError("Spawn points not set.");
-            return;
+            if (playerList[x].IsLocal)
+            {
+                Transform spawnPoint = spawnPoints[x];
+                demoPlayer.transform.position = spawnPoint.position;
+            }
+        }*/
+
+        LockerTubeController spawnTube = GetEmptyTube();
+        if (spawnTube != null)
+        {
+            spawnTube.occupied = true;
+            PlayerController.instance.bodyRb.transform.position = spawnTube.spawnPoint.position;
+            PlayerController.instance.bodyRb.transform.rotation = spawnTube.spawnPoint.rotation;
+        }
+    }
+
+    public LockerTubeController GetEmptyTube()
+    {
+        for (int x = 0; x < LockerTubeController.tubes.Count; x++)
+        {
+            foreach (LockerTubeController tube in LockerTubeController.tubes)
+            {
+                if (tube.tubeNumber == x + 1)
+                {
+                    if (!tube.occupied) return tube;
+                }
+            }
         }
 
-        int spawnPointIndex = PhotonNetwork.LocalPlayer.ActorNumber - 1;
-        Debug.Log("Actor Number: " + spawnPointIndex);
-        Transform spawnPoint = spawnPoints[spawnPointIndex];
-
-        demoPlayer.transform.position = spawnPoint.position;
-        //demoPlayer.transform.rotation = spawnPoint.rotation;
+        return null;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.SceneManagement;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 /* Code was referenced from https://www.youtube.com/watch?v=KHWuTBmT1oI
@@ -234,6 +235,7 @@ public class NetworkManagerScript : MonoBehaviourPunCallbacks
         }
 
         //Cleanup:
+        localNetworkPlayer.LeftRoom();
         DeSpawnNetworkPlayer(); //De-spawn local network player whenever player leaves a room
     }
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
