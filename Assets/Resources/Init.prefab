@@ -73,4 +73,4 @@ MonoBehaviour:
   mainMenuScene: JustinMenuScene
   roomScene: NetworkLockerRoom
   networkPlayerName: NewNetworkPlayer
-  useFunnyWords: 0
+  useFunnyWords: 1
