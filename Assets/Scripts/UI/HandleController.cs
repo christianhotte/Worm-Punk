@@ -36,6 +36,7 @@ public class HandleController : MonoBehaviour
     {
         if (other.CompareTag("PlayerHand") && !isGrabbable)
         {
+            isGrabbable = true;
             followObject = other.transform;
             SetAllMaterials(inRangeMat);
         }
@@ -45,6 +46,7 @@ public class HandleController : MonoBehaviour
     {
         if (other.CompareTag("PlayerHand") && isGrabbable && !isGrabbed)
         {
+            isGrabbable = false;
             StopGrabLever();
         }
     }
@@ -85,6 +87,11 @@ public class HandleController : MonoBehaviour
         {
             handleRenderers[i].material = defaultMats[i];
         }
+    }
+
+    public void MoveToAngle(float newAngle)
+    {
+        transform.localRotation = Quaternion.Euler(Mathf.Clamp(newAngle, leverController.GetMinimumAngle(), leverController.GetMaximumAngle()), 0, 0);
     }
 
     public float GetAngle() => (transform.localEulerAngles.x > 180) ? transform.localEulerAngles.x - 360 : transform.localEulerAngles.x;

@@ -21,6 +21,8 @@ public class LeverController : MonoBehaviour
     [SerializeField, Tooltip("Minimum lever angle.")] private float minimumAngle = -45f;
     [SerializeField, Tooltip("Maximum lever angle.")] private float maximumAngle = 45f;
 
+    [SerializeField, Tooltip("Starting angle.")] private float startingAngle = -45f;
+
     [SerializeField, Tooltip("Lever movement speed.")] private float leverMovementSpeed = 5f;
 
     [SerializeField, Tooltip("The minimum numerical value of the lever.")] private float minimumValue = -1f;
@@ -50,6 +52,7 @@ public class LeverController : MonoBehaviour
     {
         inputActions.Enable();
         handle = GetComponentInChildren<HandleController>();
+        handle.MoveToAngle(startingAngle);
     }
 
     private void OnDisable()
@@ -81,8 +84,6 @@ public class LeverController : MonoBehaviour
         {
             float angleWithMinLimit = Mathf.Abs(handle.GetAngle() - minimumAngle);
             float angleWithMaxLimit = Mathf.Abs(handle.GetAngle() - maximumAngle);
-
-            Debug.Log("Angle: " + handle.GetAngle());
 
             //If the angle has hit the minimum limit and is not already at the limit
             if (angleWithMinLimit < angleBetweenThreshold)
