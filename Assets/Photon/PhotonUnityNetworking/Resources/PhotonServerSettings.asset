@@ -15,8 +15,8 @@ MonoBehaviour:
   AppSettings:
     AppIdRealtime: 66ef2e59-3cdd-4c83-a932-ce42d1c1fd9c
     AppIdFusion: 
-    AppIdChat: 266fc9ea-b599-4b6d-8e04-6b2b83958942
-    AppIdVoice: 
+    AppIdChat: 
+    AppIdVoice: ff990731-a4f5-4eef-b086-f7ced5177cbe
     AppVersion: 
     UseNameServer: 1
     FixedRegion: 
@@ -28,46 +28,42 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: us
+  DevRegion: 
   PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
   StartInOfflineMode: 0
   RpcList:
+  - CantHearYou
+  - ChangeColour
   - ClickRpc
   - DestroyRpc
   - DestroySpaceship
   - Fire
-  - RespawnSpaceship
-  - NetworkShoot
-  - RpcFire
-  - RPC_ShootProjectile
-  - RPC_DestroyProjectile
-  - RPC_Fire
-  - RPC_Initialize
-  - RPC_AcquireTarget
-  - RPC_Hit
-  - RPC_Move
-  - RPC_AcquireTargetDumb
-  - RPC_HitEnemy
-  - RPC_LostTarget
-  - RPC_UpdateReadyStatus
+  - HeresWhy
   - LoadPlayerSettings
-  - RPC_MakeInvisible
-  - RPC_MakeVisible
-  - RPC_ChangeVisibility
-  - RPC_MovePlayerToPoint
-  - RPC_Launch
   - LoadPlayerStats
-  - RPC_UpdateLights
+  - RespawnSpaceship
+  - RPC_AcquireTarget
+  - RPC_AcquireTargetDumb
+  - RPC_ChangeVisibility
   - RPC_Explode
+  - RPC_Fire
+  - RPC_Hit
+  - RPC_HitEnemy
   - RPC_HookToPlayer
   - RPC_HookToPoint
+  - RPC_KilledEnemy
+  - RPC_Launch
+  - RPC_LostTarget
+  - RPC_MakeInvisible
+  - RPC_MakeVisible
+  - RPC_Move
+  - RPC_MovePlayerToPoint
   - RPC_Release
   - RPC_Stow
   - RPC_Tether
-  - RPC_KilledEnemy
-  - RPC_DeathLog
+  - RPC_UpdateReadyStatus
   DisableAutoOpenWizard: 1
   ShowSettings: 1
-  DevRegionSetOnce: 1
+  DevRegionSetOnce: 0
