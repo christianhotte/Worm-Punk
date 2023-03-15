@@ -65,6 +65,9 @@ MonoBehaviour:
   - RPC_Tether
   - RPC_UpdateReadyStatus
   - RPC_DeathLog
+  - RPC_GiveMeSpawnpoint
+  - RPC_RemoteSpawnPlayer
+  - RPC_TubeVacated
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
