@@ -18,87 +18,87 @@ public class DialRotationController : MonoBehaviour
     [SerializeField, Tooltip("The event called when the dial has been rotated, sends the angle rotation.")] private UnityEvent<float> OnValueChanged;
 
     private Transform dialTransform;    //The dial transform, what needs to be rotated
-    private XRBaseInteractor interactor;    //The object interacting with the dial
     private float startAngle;   //The starting angle for the dial
     private bool requiresStartAngle = true; //Requires the dial to be at the start angle to rotate
     private bool shouldGetHandRotation = false; //If the dial should be checking for hand rotation
 
-    private XRGrabInteractable grabInteractor => GetComponentInChildren<XRGrabInteractable>();  //The part of the dial that can be interacted with
+    private Transform followObject;
+    private bool isGrabbable;
+    private bool isGrabbed;
+
+    private HotteInputActions inputActions;
+
+    private void Awake()
+    {
+        inputActions = new HotteInputActions();
+        inputActions.XRILeftHandInteraction.Grip.performed += _ => GrabDial();
+        inputActions.XRIRightHandInteraction.Grip.performed += _ => GrabDial();
+        inputActions.XRILeftHandInteraction.Grip.canceled += _ => ReleaseDial();
+        inputActions.XRIRightHandInteraction.Grip.canceled += _ => ReleaseDial();
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        dialTransform = grabInteractor.transform;
+        dialTransform = transform.Find("Dial");
     }
 
     private void OnEnable()
     {
-        //Subscribe events for when the player grabs and releases the dial
-        if(grabInteractor != null)
-        {
-            grabInteractor.selectEntered.AddListener(GrabStart);
-            grabInteractor.selectExited.AddListener(GrabEnd);
-        }
+        inputActions.Enable();
     }
 
     private void OnDisable()
     {
-        //Removes events for when the player grabs and releases the dial
-        if (grabInteractor != null)
+        inputActions.Disable();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("PlayerHand") && !isGrabbable)
         {
-            grabInteractor.selectEntered.RemoveListener(GrabStart);
-            grabInteractor.selectExited.RemoveListener(GrabEnd);
+            isGrabbable = true;
+            followObject = other.transform;
         }
     }
 
-    /// <summary>
-    /// The function that calls when something grabs the dial.
-    /// </summary>
-    /// <param name="args"></param>
-    private void GrabStart(SelectEnterEventArgs args)
+    private void OnTriggerExit(Collider other)
     {
-        //Get the earliest interactor that is grabbing the dial
-        interactor = (XRBaseInteractor)args.interactorObject;
-        Debug.Log(args.interactorObject);
-        Debug.Log(interactor);
-        interactor.GetComponent<XRBaseControllerInteractor>().hideControllerOnSelect = true;
-
-        //Start checking for hand rotation
-        shouldGetHandRotation = true;
-        startAngle = 0f;
-
-        HandModelVisibility(true);  //Show the dummy hand model if applicable
-
-        //Scale the dial so that it matches back to the parent after being unparented
-        Vector3 newScale = ReturnToScale(dialTransform.transform.localScale);
-        dialTransform.transform.SetParent(transform);
-        dialTransform.transform.GetChild(0).localScale = newScale;
+        if (other.CompareTag("PlayerHand"))
+        {
+            isGrabbable = false;
+            if (!isGrabbed)
+                followObject = null;
+        }
     }
 
-    private Vector3 ReturnToScale(Vector3 localScale)
+    private void GrabDial()
     {
-        Vector3 newScale = localScale;
+        if (!isGrabbed)
+        {
+            //Start checking for hand rotation
+            isGrabbed = true;
+            shouldGetHandRotation = true;
+            startAngle = 0f;
 
-        newScale.x = 1f / localScale.x;
-        newScale.y = 1f / localScale.y;
-        newScale.z = 1f / localScale.x;
-
-        return newScale;
+            HandModelVisibility(true);  //Show the dummy hand model if applicable
+        }
     }
 
-    /// <summary>
-    /// The function that calls when something lets go of the dial.
-    /// </summary>
-    /// <param name="args"></param>
-    private void GrabEnd(SelectExitEventArgs args)
+    private void ReleaseDial()
     {
-        //Stop checking for hand rotation
-        shouldGetHandRotation = false;
-        requiresStartAngle = true;
+        if (isGrabbed)
+        {
+            Debug.Log("Dial Grab End");
 
-        Debug.Log("Dial Grab End");
+            //Stop checking for hand rotation
+            isGrabbed = false;
+            shouldGetHandRotation = false;
+            requiresStartAngle = true;
 
-        HandModelVisibility(false); //Hide the dummy hand model if applicable
+            HandModelVisibility(false); //Hide the dummy hand model if applicable
+            followObject = null;
+        }
     }
 
     /// <summary>
@@ -109,19 +109,19 @@ public class DialRotationController : MonoBehaviour
     {
         if (!useDummyHands)
             return;
-
+/*
         //Show a different dummy hand depending on the player hand being used
         if (interactor.CompareTag("RightHand"))
             rightHandModel.SetActive(visibilityState);
         else
-            leftHandModel.SetActive(visibilityState);
+            leftHandModel.SetActive(visibilityState);*/
     }
 
     // Update is called once per frame
     void Update()
     {
         //If the dial should be getting rotation
-        if (shouldGetHandRotation)
+        if (shouldGetHandRotation && followObject != null)
         {
             float rotationAngle = GetInteractorRotation();
             GetRotationDistance(rotationAngle);
@@ -132,7 +132,7 @@ public class DialRotationController : MonoBehaviour
     /// Gets current rotation of our controller.
     /// </summary>
     /// <returns></returns>
-    public float GetInteractorRotation() => interactor.GetComponent<Transform>().eulerAngles.z;
+    public float GetInteractorRotation() => (followObject.localEulerAngles.z > 180) ? followObject.localEulerAngles.z - 360 : followObject.localEulerAngles.z;
 
 
 

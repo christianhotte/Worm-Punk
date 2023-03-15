@@ -2,73 +2,103 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class HandleController : MonoBehaviour, IGrabbable
+public class HandleController : MonoBehaviour
 {
     [SerializeField, Tooltip("The bounds that keeps the handle within the slider.")] private Transform handleSnapPointLeft, handleSnapPointRight;
 
-    private MeshRenderer handleRenderer;
-    private Material defaultMat;
+    private MeshRenderer[] handleRenderers;
+    private List<Material> defaultMats = new List<Material>();
     [SerializeField] private Material inRangeMat, closestOneMat, grabbedMat;
 
-    internal event Action OnEnteredRange = delegate { };
-    internal event Action OnExitRange = delegate { };
-    internal event Action OnSetClosestOne = delegate { };
-    internal event Action<Transform> OnStartGrabbing = delegate { };
-    internal event Action OnStopGrabbing = delegate { };
+    private bool isGrabbable = false;
+    private bool isGrabbed = false;
+
+    private Transform followObject;
+    private LeverController leverController;
+
+    private Vector3 startingVector;
 
     private void Awake()
     {
-        handleRenderer = GetComponentInChildren<MeshRenderer>();
-        defaultMat = handleRenderer.material;
+        leverController = GetComponentInParent<LeverController>();
+        startingVector = transform.up;
+
+        handleRenderers = GetComponentsInChildren<MeshRenderer>();
+        for (int i = 0; i < handleRenderers.Length; i++)
+            defaultMats.Add(handleRenderers[i].material);
+
+        SetDefaultMaterials();
     }
 
-    /// <summary>
-    /// Logic for when the player is within grabbing range of the handle.
-    /// </summary>
-    public void EnterRange()
+    private void OnTriggerEnter(Collider other)
     {
-        if(inRangeMat != null)
-            handleRenderer.material = inRangeMat;
-        OnEnteredRange();
+        if (other.CompareTag("PlayerHand") && !isGrabbable)
+        {
+            isGrabbable = true;
+            followObject = other.transform;
+            SetAllMaterials(inRangeMat);
+        }
     }
 
-    /// <summary>
-    /// Logic for when the player leaves the grabbing range of the handle.
-    /// </summary>
-    public void ExitRange()
+    private void OnTriggerExit(Collider other)
     {
-        handleRenderer.material = defaultMat;
-        OnExitRange();
+        if (other.CompareTag("PlayerHand") && isGrabbable && !isGrabbed)
+        {
+            isGrabbable = false;
+            StopGrabLever();
+        }
     }
 
-    /// <summary>
-    /// Logic for when the handle becomes the closest grabbable object.
-    /// </summary>
-    public void SetClosestOne()
+    public void StartGrabLever()
     {
-        if (closestOneMat != null)
-            handleRenderer.material = closestOneMat;
-        OnSetClosestOne();
+        isGrabbed = true;
+        SetAllMaterials(grabbedMat);
     }
 
-    /// <summary>
-    /// Logic for when the player grabs the handle.
-    /// </summary>
-    /// <param name="handAnchor">The transform of the player's hand.</param>
-    public void StartGrabbing(Transform handAnchor)
+    public void StopGrabLever()
     {
-        if (grabbedMat != null)
-            handleRenderer.material = grabbedMat;
-        OnStartGrabbing(handAnchor);
+        isGrabbed = false;
+        followObject = null;
+        SetDefaultMaterials();
     }
 
-    /// <summary>
-    /// Logic for when the player stops grabbing the handle.
-    /// </summary>
-    public void StopGrabbing()
+    private void Update()
     {
-        handleRenderer.material = defaultMat;
-        OnStopGrabbing();
+        if (isGrabbed && followObject != null)
+        {
+            Quaternion lookAngle = Quaternion.Euler(Mathf.Clamp(Vector2.SignedAngle(followObject.position - transform.position, startingVector), leverController.GetMinimumAngle(), leverController.GetMaximumAngle()), 0, 0);
+            transform.localRotation = lookAngle;
+        }
+    }
+
+    private void SetAllMaterials(Material newMat)
+    {
+        for (int i = 0; i < handleRenderers.Length; i++)
+        {
+            handleRenderers[i].material = newMat;
+        }
+    }
+
+    private void SetDefaultMaterials()
+    {
+        for (int i = 0; i < handleRenderers.Length; i++)
+        {
+            handleRenderers[i].material = defaultMats[i];
+        }
+    }
+
+    public void MoveToAngle(float newAngle)
+    {
+        transform.localRotation = Quaternion.Euler(Mathf.Clamp(newAngle, leverController.GetMinimumAngle(), leverController.GetMaximumAngle()), 0, 0);
+    }
+
+    public float GetAngle() => (transform.localEulerAngles.x > 180) ? transform.localEulerAngles.x - 360 : transform.localEulerAngles.x;
+    public bool IsGrabbed => IsGrabbed;
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
     }
 }

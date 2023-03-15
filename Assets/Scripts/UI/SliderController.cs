@@ -36,10 +36,6 @@ public class SliderController : MonoBehaviour
     {
         sliderHandle = GetComponentInChildren<HandleController>();
 
-        //Subscribe handle events
-        sliderHandle.OnStartGrabbing += StartGrabbing;
-        sliderHandle.OnStopGrabbing += StopGrabbing;
-
         //Subscribe events for when the player grabs and releases the slider
         if (grabInteractor != null)
         {
@@ -50,10 +46,6 @@ public class SliderController : MonoBehaviour
 
     private void OnDisable()
     {
-        //Remove handle events
-        sliderHandle.OnStartGrabbing -= StartGrabbing;
-        sliderHandle.OnStopGrabbing -= StopGrabbing;
-
         //Removes events for when the player grabs and releases the slider
         if (grabInteractor != null)
         {
@@ -78,7 +70,7 @@ public class SliderController : MonoBehaviour
         Vector3 newScale = ReturnToScale(sliderHandle.transform.localScale);
         sliderHandle.transform.SetParent(transform);
         sliderHandle.transform.GetChild(0).localScale = newScale;
-        sliderHandle.StartGrabbing(interactor.transform); //Call the start grabbing function
+        //sliderHandle.StartGrabbing(interactor.transform); //Call the start grabbing function
     }
 
     /// <summary>
@@ -89,7 +81,7 @@ public class SliderController : MonoBehaviour
     {
         Debug.Log("Slider Grab End");
 
-        sliderHandle.StopGrabbing();  //Call the stop grabbing function
+        //sliderHandle.StopGrabbing();  //Call the stop grabbing function
     }
 
     private Vector3 ReturnToScale(Vector3 localScale)
