@@ -185,8 +185,8 @@
       }
     },
     "com.unity.xr.core-utils": {
-      "version": "2.0.0",
-      "depth": 1,
+      "version": "2.0.1",
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.xr": "1.0.0"
@@ -209,8 +209,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.legacyinputhelpers": {
-      "version": "2.1.8",
-      "depth": 1,
+      "version": "2.1.10",
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.vr": "1.0.0",
@@ -219,7 +219,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.management": {
-      "version": "4.3.1",
+      "version": "4.3.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
