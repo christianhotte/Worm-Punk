@@ -11,6 +11,8 @@ public class PhysicalButtonController : MonoBehaviour
     [SerializeField, Tooltip("If true, locks the button in place after pressing the button.")] private bool lockOnPress;
     [SerializeField, Tooltip("If true, the player can press the button to perform an action.")] private bool isInteractable = true;
 
+    [SerializeField] private AnimationCurve buttonAniCurve;
+
     [SerializeField] private AudioClip onPressedSoundEffect;
     [SerializeField] private AudioClip onReleasedSoundEffect;
     [SerializeField] private AudioClip onDisabledSoundEffect;
