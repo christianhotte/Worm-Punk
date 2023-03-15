@@ -18,7 +18,8 @@ public class NewGrapplerController : PlayerEquipment
     internal PlayerEquipment handWeapon; //Player weapon held in the same hand as this chainsaw
 
     //Settings:
-    [Tooltip("Mechanical properties describing hookshot functionality and effects.")] public HookshotSettings settings;
+    [Tooltip("Mechanical properties describing hookshot functionality and effects.")]                                         public HookshotSettings settings;
+    [Tooltip("When hook is stowed, hook will be visible and will be childed to barrel (weapon will not need a stow point).")] public bool hookVisibleOnBarrel;
     [Header("Debug Stuff:")]
     [SerializeField, Tooltip("Launches grappling hook.")] private bool debugLaunch;
     [SerializeField, Tooltip("Releases grappling hook.")] private bool debugRelease;
@@ -45,8 +46,8 @@ public class NewGrapplerController : PlayerEquipment
 
         //Get objects & components:
         if (handedness == Handedness.None) { Debug.LogError("GrapplingHook cannot recognize which side it is on. Make sure parent has the word Left or Right in its name."); Destroy(this); } //Make sure grappling hook knows which hand it is associated with
-        stowPoint = transform.Find("StowPoint"); if (stowPoint == null) stowPoint = transform; //Get stow position (use own transform if none is given)
-        barrel = transform.Find("Barrel"); if (barrel == null) barrel = transform;             //Get barrel position (use own transform if none is given)
+        if (!hookVisibleOnBarrel) { stowPoint = transform.Find("StowPoint"); if (stowPoint == null) stowPoint = transform; } //Get stow position (use own transform if none is given)
+        barrel = transform.Find("Barrel"); if (barrel == null) barrel = transform;                                           //Get barrel position (use own transform if none is given)
 
         //Set up projectile:
         StartCoroutine(TryToInitialize()); //Begin trying to spawn hook (NOTE: will break if player leaves a room)
